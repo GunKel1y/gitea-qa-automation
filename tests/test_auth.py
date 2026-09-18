@@ -1,38 +1,27 @@
+import os
+
 from playwright.sync_api import Page, expect
-from uuid import uuid4
 
-from conftest import TEST_LOGIN
 
-TEST_EMAIL = 'test-email-' + str(uuid4())[:20] + '@test.ru'
-TEST_PASSWORD = str(uuid4())
+def test_login_with_valid_creds(page: Page, register_person_for_auth):
+    person_login = register_person_for_auth[0]
+    person_pass = register_person_for_auth[1]
 
-REGISTER_FORM = "//div[@class='ui attached segment']/form[@action='/user/sign_up']/.."
+    auth_form = page.locator("//div[@class='ui attached segment']/form[@action='/user/login']/..")
+    expect(auth_form).to_be_visible()
 
-def test_auth_with_truth_creds(page: Page, register_page):
-    (expect(page.locator(REGISTER_FORM)).to_be_visible(),
-     'Форма регистрации не отображается')
+    username_field = page.locator("input#user_name")
+    username_field.fill(person_login)
+    expect(username_field).to_have_value(person_login)
 
-    username_field = page.locator('#user_name')
-    username_field.fill(TEST_LOGIN)
-    expect(username_field).to_have_value(TEST_LOGIN)
+    password_field = page.locator("input#password")
+    password_field.fill(person_pass)
+    expect(password_field).to_have_value(person_pass)
 
-    email_field = page.locator('#email')
-    email_field.fill(TEST_EMAIL)
-    expect(email_field).to_have_value(TEST_EMAIL)
+    login_button = page.locator('button.ui.primary.button')
+    login_button.click()
 
-    password_field = page.locator('#password')
-    password_field.fill(TEST_PASSWORD)
-    expect(password_field).to_have_value(TEST_PASSWORD)
+    expect(page).to_have_url(f'{os.getenv("BASE_URL_UI")}/')
 
-    doublecheck_password_field = page.locator('#retype')
-    doublecheck_password_field.fill(TEST_PASSWORD)
-    expect(doublecheck_password_field).to_have_value(TEST_PASSWORD)
-
-    register_button = page.get_by_text('Регистрация аккаунта')
-    register_button.click()
-
-    positive_register_banner = page.locator('div.positive.message')
-    expect(positive_register_banner).to_be_visible()
-    expect(positive_register_banner).to_have_text('Учётная запись успешно создана. Добро пожаловать!')
-
-    expect(page).to_have_url('http://localhost:3000/')
+    dashboard = page.locator("div.dashboard[role='main']")
+    expect(dashboard).to_be_visible()
