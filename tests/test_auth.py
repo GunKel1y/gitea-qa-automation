@@ -51,3 +51,19 @@ def test_login_with_invalid_creds(page: Page, register_person_for_auth, case):
 
     auth_page.auth_form_is_displayed()
     auth_page.check_url(f'{os.getenv("BASE_URL_UI")}/user/login')
+
+def test_logout(authenticated_user_page: Page):
+    dashboard_page = DashboardPage(authenticated_user_page)
+    auth_page = AuthPage(authenticated_user_page)
+
+    dashboard_page.open()
+    dashboard_page.profile_menu_button_is_displayed()
+
+    dashboard_page.click_profile_menu_button()
+    dashboard_page.menu_exit_button_is_displayed()
+
+    dashboard_page.click_menu_exit_button()
+    auth_page.header_registration_button_is_displayed()
+    auth_page.header_login_button_is_displayed()
+    auth_page.check_url(f'{os.getenv("BASE_URL_UI")}/')
+
