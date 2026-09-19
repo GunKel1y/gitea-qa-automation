@@ -9,8 +9,7 @@ TEST_PASSWORD = str(uuid4())
 REGISTER_FORM = "//div[@class='ui attached segment']/form[@action='/user/sign_up']/.."
 
 def test_register_with_truth_creds(page: Page, register_page):
-    (expect(page.locator(REGISTER_FORM)).to_be_visible(),
-     'Форма регистрации не отображается')
+    expect(page.locator(REGISTER_FORM)).to_be_visible()
 
     username_field = page.locator('#user_name')
     username_field.fill(TEST_LOGIN)
