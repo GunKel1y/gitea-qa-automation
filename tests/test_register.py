@@ -1,3 +1,5 @@
+import os
+
 from playwright.sync_api import Page, expect
 from uuid import uuid4
 
@@ -34,5 +36,5 @@ def test_register_with_truth_creds(page: Page, register_page):
     expect(positive_register_banner).to_be_visible()
     expect(positive_register_banner).to_have_text('Учётная запись успешно создана. Добро пожаловать!')
 
-    expect(page).to_have_url('http://localhost:3000/')
+    expect(page).to_have_url(f'{os.getenv("BASE_URL_UI")}/')
 
