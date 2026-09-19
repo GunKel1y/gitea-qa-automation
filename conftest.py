@@ -36,6 +36,6 @@ def register_person_for_auth(page: Page):
 
     yield [test_user_login, test_user_pass]
 
-    req.delete(f"{os.getenv('BASE_API_URL')}/admin/users" + test_user_login,
+    req.delete(f"{os.getenv('BASE_API_URL')}/admin/users/" + test_user_login,
                headers={"Authorization": f"token {os.getenv('ADMIN_TOKEN')}"},
                params='purge=true')
