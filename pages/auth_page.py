@@ -11,6 +11,7 @@ class AuthPage(BasePage):
         self.__USERNAME_FIELD = page.locator("input#user_name")
         self.__PASSWORD_FIELD = page.locator("input#password")
         self.__LOGIN_BUTTON = page.locator('button.ui.primary.button')
+        self.__ERROR_MESSAGE = page.locator('div.negative.message.flash-message.flash-error')
 
     def auth_form_is_displayed(self) -> None:
         expect(self.__AUTH_FORM).to_be_visible()
@@ -27,9 +28,15 @@ class AuthPage(BasePage):
     def check_value_password(self, value: str) -> None:
         expect(self.__PASSWORD_FIELD).to_have_value(value)
 
-    def click_register_account_button(self) -> None:
+    def click_login_button(self) -> None:
         self.__LOGIN_BUTTON.click()
 
     def check_url(self, expected: str) -> None:
         expect(self.page).to_have_url(expected)
+
+    def error_message_is_displayed(self) -> None:
+        expect(self.__ERROR_MESSAGE).to_be_visible()
+
+    def check_negative_message_text(self, expected_mgs: str) -> None:
+        expect(self.__ERROR_MESSAGE).to_have_text(expected_mgs)
 
