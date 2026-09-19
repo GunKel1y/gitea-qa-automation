@@ -10,6 +10,10 @@ TEST_LOGIN = 'test_username-' + str(uuid4())[:20]
 
 load_dotenv(Path(__file__).parent / ".env")
 
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    return {**browser_context_args, "locale": "ru-RU"}
+
 @pytest.fixture()
 def register_page(page: Page):
     page.goto(f"{os.getenv('BASE_URL_UI')}/user/sign_up")
