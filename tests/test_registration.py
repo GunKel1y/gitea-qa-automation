@@ -39,7 +39,8 @@ def test_register_with_truth_creds(page: Page, register_page):
     dashboard_page.check_success_registration_banner_text('Учётная запись успешно создана. Добро пожаловать!')
     dashboard_page.check_url(f'{os.getenv("BASE_URL_UI")}/')
 
-@pytest.mark.parametrize("case", ["in_use_username", "in_use_email", "invalid_email"])
+@pytest.mark.parametrize("case",
+                         ["in_use_username", "in_use_email", "invalid_email", "failed_confirm_pass"])
 def test_registration_with_invalid_creds(page: Page, register_person_for_auth, case):
     registration_page = RegisterPage(page)
 
@@ -53,10 +54,14 @@ def test_registration_with_invalid_creds(page: Page, register_person_for_auth, c
         person_username = random_login()
         person_email = register_person_for_auth[2]
         error_message = "Этот адрес электронной почты уже используется."
+    elif case == "invalid_email":
+        person_username = random_login()
+        person_email = random_login()
+        error_message = None
     else:
         person_username = random_login()
-        person_email = register_person_for_auth[2]
-        error_message = None
+        person_email = random_email()
+        error_message = "Пароли не совпадают."
 
     registration_page.open()
     registration_page.registration_form_is_displayed()
@@ -70,14 +75,18 @@ def test_registration_with_invalid_creds(page: Page, register_person_for_auth, c
     registration_page.fill_password(person_password)
     registration_page.check_password_value(person_password)
 
-    registration_page.fill_doublecheck_password(person_password)
-    registration_page.check_doublecheck_password_value(person_password)
+    if case == "failed_confirm_pass":
+        failed_confirm_pass = random_password()
+        registration_page.fill_doublecheck_password(failed_confirm_pass)
+        registration_page.check_doublecheck_password_value(failed_confirm_pass)
+    else:
+        registration_page.fill_doublecheck_password(person_password)
+        registration_page.check_doublecheck_password_value(person_password)
 
     registration_page.click_registration_button()
 
-    registration_page.error_message_is_displayed()
-
     if case != "invalid_email":
+        registration_page.error_message_is_displayed()
         registration_page.check_error_message_text(error_message)
     registration_page.registration_form_is_displayed()
     registration_page.check_url(f"{os.getenv('BASE_URL_UI')}/user/sign_up")
