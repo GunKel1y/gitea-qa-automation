@@ -1,0 +1,1 @@
+# gitea-qa-automation
