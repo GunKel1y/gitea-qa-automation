@@ -39,7 +39,7 @@ def test_register_with_truth_creds(page: Page, register_page):
     dashboard_page.check_success_registration_banner_text('Учётная запись успешно создана. Добро пожаловать!')
     dashboard_page.check_url(f'{os.getenv("BASE_URL_UI")}/')
 
-@pytest.mark.parametrize("case", ["in_use_username", "in_use_email"])
+@pytest.mark.parametrize("case", ["in_use_username", "in_use_email", "invalid_email"])
 def test_registration_with_invalid_creds(page: Page, register_person_for_auth, case):
     registration_page = RegisterPage(page)
 
@@ -49,10 +49,14 @@ def test_registration_with_invalid_creds(page: Page, register_person_for_auth, c
         person_username = register_person_for_auth[0]
         person_email = random_email()
         error_message = "Имя пользователя уже занято."
-    else:
+    elif case == "in_use_email":
         person_username = random_login()
         person_email = register_person_for_auth[2]
         error_message = "Этот адрес электронной почты уже используется."
+    else:
+        person_username = random_login()
+        person_email = register_person_for_auth[2]
+        error_message = None
 
     registration_page.open()
     registration_page.registration_form_is_displayed()
@@ -72,5 +76,8 @@ def test_registration_with_invalid_creds(page: Page, register_person_for_auth, c
     registration_page.click_registration_button()
 
     registration_page.error_message_is_displayed()
-    registration_page.check_error_message_text(error_message)
+
+    if case != "invalid_email":
+        registration_page.check_error_message_text(error_message)
+    registration_page.registration_form_is_displayed()
     registration_page.check_url(f"{os.getenv('BASE_URL_UI')}/user/sign_up")
