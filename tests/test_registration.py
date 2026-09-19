@@ -9,7 +9,7 @@ from conftest import TEST_LOGIN
 from pages.registration_page import RegisterPage
 from pages.dashboard_page import DashboardPage
 
-from helpers.test_data import random_email, random_password, random_login
+from helpers.test_data import random_email, random_password, random_login, password_with_length
 
 TEST_EMAIL = 'test-email-' + str(uuid4())[:20] + '@test.ru'
 TEST_PASSWORD = str(uuid4())
@@ -40,28 +40,32 @@ def test_register_with_truth_creds(page: Page, register_page):
     dashboard_page.check_url(f'{os.getenv("BASE_URL_UI")}/')
 
 @pytest.mark.parametrize("case",
-                         ["in_use_username", "in_use_email", "invalid_email", "failed_confirm_pass"])
+                         ["in_use_username", "in_use_email", "invalid_email",
+                          "failed_confirm_pass", "min_length_pass", "max_length_pass"])
 def test_registration_with_invalid_creds(page: Page, register_person_for_auth, case):
     registration_page = RegisterPage(page)
 
+    person_username = random_login()
+    person_email = random_email()
     person_password = random_password()
 
     if case == "in_use_username":
         person_username = register_person_for_auth[0]
-        person_email = random_email()
         error_message = "Имя пользователя уже занято."
     elif case == "in_use_email":
-        person_username = random_login()
         person_email = register_person_for_auth[2]
         error_message = "Этот адрес электронной почты уже используется."
     elif case == "invalid_email":
-        person_username = random_login()
         person_email = random_login()
         error_message = None
-    else:
-        person_username = random_login()
-        person_email = random_email()
+    elif case == "failed_confirm_pass":
         error_message = "Пароли не совпадают."
+    elif case == "min_length_pass":
+        person_password = person_password[:7]
+        error_message = "Пароль не может быть короче 8 символов."
+    else:
+        person_password = password_with_length(256)
+        error_message = "Пароль должен содержать максимум 255 символов."
 
     registration_page.open()
     registration_page.registration_form_is_displayed()
