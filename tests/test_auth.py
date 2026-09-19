@@ -26,15 +26,14 @@ def test_login_with_valid_creds(page: Page, register_person_for_auth):
     auth_page.check_url(f'{os.getenv("BASE_URL_UI")}/')
     dashboard_page.dashboard_is_displayed()
 
-@pytest.mark.parametrize("case_id", ["invalid_password", "non_exit_creds"])
-def test_login_with_invalid_creds(page: Page, register_person_for_auth, case_id):
+@pytest.mark.parametrize("case", ["invalid_password", "non_exit_creds", "no_creds"])
+def test_login_with_invalid_creds(page: Page, register_person_for_auth, case):
     auth_page = AuthPage(page)
 
-    if case_id == "invalid_password":
+    if case == "invalid_password":
         person_login, person_password = register_person_for_auth[0], register_person_for_auth[1] + "invalid"
     else:
         person_login, person_password = random_login(), random_password()
-
 
     auth_page.auth_form_is_displayed()
 
@@ -46,5 +45,9 @@ def test_login_with_invalid_creds(page: Page, register_person_for_auth, case_id)
 
     auth_page.click_login_button()
 
-    auth_page.error_message_is_displayed()
-    auth_page.check_negative_message_text('Неверное имя пользователя или пароль.')
+    if case != "no_creds":
+        auth_page.error_message_is_displayed()
+        auth_page.check_negative_message_text('Неверное имя пользователя или пароль.')
+
+    auth_page.auth_form_is_displayed()
+    auth_page.check_url(f'{os.getenv("BASE_URL_UI")}/user/login')
