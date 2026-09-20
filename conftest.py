@@ -47,12 +47,14 @@ def authenticated_user_page(browser: Browser, browser_context_args):
     delete_user(test_user_login)
 
 @pytest.fixture()
-def register_page(page: Page):
-    page.goto(f"{os.getenv('BASE_URL_UI')}/user/sign_up")
-    yield
-    req.delete(f"{os.getenv('BASE_API_URL')}/admin/users/" + TEST_LOGIN,
-               headers={"Authorization": f"token {os.getenv("ADMIN_TOKEN")}"},
-               params='purge=true')
+def delete_user_after_registration(page: Page):
+    user_login = random_login()
+    user_password = random_password()
+    user_email = random_email()
+
+    yield [user_login, user_password, user_email]
+
+    delete_user(user_login)
 
 @pytest.fixture()
 def register_person_for_auth(page: Page):

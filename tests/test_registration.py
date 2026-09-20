@@ -1,36 +1,33 @@
 import os
-
 import pytest
 
-from playwright.sync_api import Page, expect
-from uuid import uuid4
+from playwright.sync_api import Page
 
-from conftest import TEST_LOGIN
 from pages.registration_page import RegisterPage
 from pages.dashboard_page import DashboardPage
 
 from helpers.test_data import random_email, random_password, random_login, password_with_length
 
-TEST_EMAIL = 'test-email-' + str(uuid4())[:20] + '@test.ru'
-TEST_PASSWORD = str(uuid4())
 
-def test_register_with_truth_creds(page: Page, register_page):
+def test_register_with_truth_creds(page: Page, delete_user_after_registration):
     register_page = RegisterPage(page)
     dashboard_page = DashboardPage(page)
 
+    register_page.open()
+
     register_page.registration_form_is_displayed()
 
-    register_page.fill_username(TEST_LOGIN)
-    register_page.check_username_value(TEST_LOGIN)
+    register_page.fill_username(delete_user_after_registration[0])
+    register_page.check_username_value(delete_user_after_registration[0])
 
-    register_page.fill_email(TEST_EMAIL)
-    register_page.check_email_value(TEST_EMAIL)
+    register_page.fill_email(delete_user_after_registration[2])
+    register_page.check_email_value(delete_user_after_registration[2])
 
-    register_page.fill_password(TEST_PASSWORD)
-    register_page.check_password_value(TEST_PASSWORD)
+    register_page.fill_password(delete_user_after_registration[1])
+    register_page.check_password_value(delete_user_after_registration[1])
 
-    register_page.fill_doublecheck_password(TEST_PASSWORD)
-    register_page.check_doublecheck_password_value(TEST_PASSWORD)
+    register_page.fill_doublecheck_password(delete_user_after_registration[1])
+    register_page.check_doublecheck_password_value(delete_user_after_registration[1])
 
     register_page.click_registration_button()
 
