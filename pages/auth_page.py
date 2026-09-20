@@ -13,8 +13,6 @@ class AuthPage(BasePage):
         self.__PASSWORD_FIELD = page.locator("input#password")
         self.__LOGIN_BUTTON = page.locator("button.ui.primary.button")
         self.__ERROR_MESSAGE = page.locator("div.negative.message.flash-message.flash-error")
-        self.__HEADER_LOGIN_BUTTON = page.locator("a[href='/user/login']")
-        self.__HEADER_REGISTRATION_BUTTON = page.locator("a[href='/user/sign_up']")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv('BASE_URL_UI')}/user/login")
@@ -42,11 +40,5 @@ class AuthPage(BasePage):
 
     def check_negative_message_text(self, expected_mgs: str) -> None:
         expect(self.__ERROR_MESSAGE).to_have_text(expected_mgs)
-
-    def header_login_button_is_displayed(self):
-        expect(self.__HEADER_LOGIN_BUTTON).to_be_visible()
-
-    def header_registration_button_is_displayed(self):
-        expect(self.__HEADER_REGISTRATION_BUTTON).to_be_visible()
 
 
