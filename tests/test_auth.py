@@ -57,13 +57,13 @@ def test_logout(authenticated_user_page: Page):
     auth_page = AuthPage(authenticated_user_page)
 
     dashboard_page.open()
-    dashboard_page.profile_menu_button_is_displayed()
+    dashboard_page.global_header.profile_menu_button_is_displayed()
 
-    dashboard_page.click_profile_menu_button()
-    dashboard_page.menu_exit_button_is_displayed()
+    dashboard_page.global_header.click_profile_menu_button()
+    dashboard_page.global_header.menu_exit_button_is_displayed()
 
-    dashboard_page.click_menu_exit_button()
-    auth_page.header_registration_button_is_displayed()
-    auth_page.header_login_button_is_displayed()
+    dashboard_page.global_header.click_menu_exit_button()
+    auth_page.global_header.registration_button_is_displayed()
+    auth_page.global_header.login_button_is_displayed()
     auth_page.check_url(f'{os.getenv("BASE_URL_UI")}/')
 
