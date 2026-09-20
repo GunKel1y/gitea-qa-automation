@@ -19,12 +19,16 @@ def browser_context_args(browser_context_args):
             }
 
 @pytest.fixture()
-def authenticated_user_page(browser: Browser, browser_context_args):
-    test_user_login = random_login()
-    test_user_pass = random_password()
-    test_user_email = random_email()
+def test_user():
+    login = random_login()
+    password = random_password()
+    email = random_email()
+    create_user(username=login, email=email, password=password, must_change_password=False)
+    yield {"login": login, "password": password, "email": email}
+    delete_user(login)
 
-    create_user(username=test_user_login, email=test_user_email, password=test_user_pass, must_change_password=False)
+@pytest.fixture()
+def authenticated_user_page(browser: Browser, browser_context_args, test_user):
 
     context = browser.new_context(**browser_context_args)
     context.add_cookies([{
@@ -33,8 +37,8 @@ def authenticated_user_page(browser: Browser, browser_context_args):
     }])
 
     context.request.post(f"{os.getenv('BASE_URL_UI')}/user/login", form={
-        "user_name": test_user_login,
-        "password": test_user_pass,
+        "user_name": test_user["login"],
+        "password": test_user["password"],
     })
 
     page = context.new_page()
@@ -42,7 +46,6 @@ def authenticated_user_page(browser: Browser, browser_context_args):
     yield page
 
     context.close()
-    delete_user(test_user_login)
 
 @pytest.fixture()
 def delete_user_after_registration(page: Page):

@@ -10,6 +10,8 @@ class GlobalHeader:
         self.__PROFILE_AND_SETTINGS_MENU_BUTTON = page.locator("div[data-tooltip-content='Профиль и настройки...']")
         self.__PROFILE_MENU = page.locator("div.menu[id='_aria_dropdown_menu_5']")
         self.__MENU_EXIT_BUTTON = page.locator("a[href='/user/logout']")
+        self.__CREATE_DROPDOWN_BUTTON = page.locator("div[data-tooltip-content='Создать…']")
+        self.__CREATE_NEW_REPOSITORY_BUTTON = page.locator("a.item[href='/repo/create']")
 
     def login_button_is_displayed(self):
         expect(self.__LOGIN_BUTTON).to_be_visible()
@@ -32,3 +34,14 @@ class GlobalHeader:
     def click_menu_exit_button(self):
         self.__MENU_EXIT_BUTTON.click()
 
+    def create_dropdown_button_is_displayed(self):
+        expect(self.__CREATE_DROPDOWN_BUTTON).to_be_visible()
+
+    def click_dropdown_button(self):
+        self.__CREATE_DROPDOWN_BUTTON.click()
+
+    def create_new_repository_button_is_displayed(self):
+        expect(self.__CREATE_NEW_REPOSITORY_BUTTON).to_be_visible()
+
+    def click_create_new_repository_button(self):
+        self.__CREATE_NEW_REPOSITORY_BUTTON.click()
