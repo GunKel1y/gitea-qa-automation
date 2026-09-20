@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 import requests as req
 
 load_dotenv(Path(__file__).parent.parent / ".env")

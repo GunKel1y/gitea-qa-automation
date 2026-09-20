@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 from pages.auth_page import AuthPage
 from pages.dashboard_page import DashboardPage
 

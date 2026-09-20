@@ -1,15 +1,13 @@
-from pathlib import Path
-from uuid import uuid4
 import os
-from playwright.sync_api import Page, Browser
 import pytest
-import requests as req
+
+from pathlib import Path
 from dotenv import load_dotenv
+
+from playwright.sync_api import Page, Browser
 
 from helpers.api_client import create_user, delete_user
 from helpers.test_data import random_login, random_password, random_email
-
-TEST_LOGIN = 'test_username-' + str(uuid4())[:20]
 
 load_dotenv(Path(__file__).parent / ".env")
 
