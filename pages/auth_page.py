@@ -37,9 +37,6 @@ class AuthPage(BasePage):
     def click_login_button(self) -> None:
         self.__LOGIN_BUTTON.click()
 
-    def check_url(self, expected: str) -> None:
-        expect(self.page).to_have_url(expected)
-
     def error_message_is_displayed(self) -> None:
         expect(self.__ERROR_MESSAGE).to_be_visible()
 

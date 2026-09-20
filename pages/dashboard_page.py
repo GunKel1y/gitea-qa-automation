@@ -25,9 +25,6 @@ class DashboardPage(BasePage):
     def check_success_registration_banner_text(self, expected: str):
         expect(self.__SUCCESS_REGISTRATION_BANNER).to_have_text(expected)
 
-    def check_url(self, expected: str) -> None:
-        expect(self.page).to_have_url(expected)
-
     def click_profile_menu_button(self):
         self.__PROFILE_MENU_BUTTON.click()
 

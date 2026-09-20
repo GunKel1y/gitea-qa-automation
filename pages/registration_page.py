@@ -48,9 +48,6 @@ class RegisterPage(BasePage):
     def click_registration_button(self) -> None:
         self.__REGISTRATION_BUTTON.click()
 
-    def check_url(self, expected: str) -> None:
-        expect(self.page).to_have_url(expected)
-
     def error_message_is_displayed(self) -> None:
         expect(self.__ERROR_MESSAGE).to_be_visible()
 
