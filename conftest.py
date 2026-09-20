@@ -1,13 +1,13 @@
 from pathlib import Path
-import re
 from uuid import uuid4
 import os
 from playwright.sync_api import Page, Browser
 import pytest
 import requests as req
 from dotenv import load_dotenv
+
+from helpers.api_client import create_user, delete_user
 from helpers.test_data import random_login, random_password, random_email
-from pages.auth_page import AuthPage
 
 TEST_LOGIN = 'test_username-' + str(uuid4())[:20]
 
@@ -26,17 +26,9 @@ def authenticated_user_page(browser: Browser, browser_context_args):
     test_user_pass = random_password()
     test_user_email = random_email()
 
-    req.post(f"{os.getenv('BASE_API_URL')}/admin/users/",
-             headers={"Authorization": f"token {os.getenv('ADMIN_TOKEN')}"},
-             json={
-                 "email": test_user_email,
-                 "password": test_user_pass,
-                 "username": test_user_login,
-                 "must_change_password": False
-             })
+    create_user(username=test_user_login, email=test_user_email, password=test_user_pass, must_change_password=False)
 
     context = browser.new_context(**browser_context_args)
-
     context.add_cookies([{
         "name": "lang", "value": "ru-RU",
         "domain": "localhost", "path": "/"
@@ -52,9 +44,7 @@ def authenticated_user_page(browser: Browser, browser_context_args):
     yield page
 
     context.close()
-    req.delete(f"{os.getenv('BASE_API_URL')}/admin/users/" + test_user_login,
-               headers={"Authorization": f"token {os.getenv('ADMIN_TOKEN')}"},
-               params='purge=true')
+    delete_user(test_user_login)
 
 @pytest.fixture()
 def register_page(page: Page):
@@ -70,19 +60,10 @@ def register_person_for_auth(page: Page):
     test_user_pass = random_password()
     test_user_email = random_email()
 
-    req.post(f"{os.getenv('BASE_API_URL')}/admin/users/",
-             headers={"Authorization": f"token {os.getenv('ADMIN_TOKEN')}"},
-             json={
-                 "email": test_user_email,
-                 "password": test_user_pass,
-                 "username": test_user_login,
-                 "must_change_password": False
-             })
+    create_user(username=test_user_login, password=test_user_pass, email=test_user_email, must_change_password=False)
 
     page.goto(f"{os.getenv('BASE_URL_UI')}/user/login")
 
     yield [test_user_login, test_user_pass, test_user_email]
 
-    req.delete(f"{os.getenv('BASE_API_URL')}/admin/users/" + test_user_login,
-               headers={"Authorization": f"token {os.getenv('ADMIN_TOKEN')}"},
-               params='purge=true')
+    delete_user(test_user_login)
