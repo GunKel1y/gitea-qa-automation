@@ -9,7 +9,7 @@ from pages.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
 from pages.repo_page import RepoPage
 
-@pytest.mark.parametrize("case", ["min", "max", "greater_max", "with_space", "with_slash"])
+@pytest.mark.parametrize("case", ["min", "max", "greater_max", "with_space", "with_slash", "unicode_with_emoji"])
 def test_name_validation(authenticated_user_page: Page, test_user, case):
     dashboard_page = DashboardPage(authenticated_user_page)
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
@@ -43,11 +43,16 @@ def test_name_validation(authenticated_user_page: Page, test_user, case):
         create_repo_page.fill_repo_name_field(repo_name)
         create_repo_page.check_repo_name_field_value(repo_name)
         repo_name = repo_name.replace("/", "-")
-    else:
+    elif case == "with_space":
         repo_name = repo_name_with_length(1) + " " + repo_name_with_length(1)
         create_repo_page.fill_repo_name_field(repo_name)
         create_repo_page.check_repo_name_field_value(repo_name)
         repo_name = repo_name.replace(" ", "-")
+    else:
+        repo_name = "test-⭐"
+        create_repo_page.fill_repo_name_field(repo_name)
+        create_repo_page.check_repo_name_field_value(repo_name)
+        repo_name = repo_name.replace("⭐", f"-")
 
     create_repo_page.click_repo_create_button()
     repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user['login']}/{repo_name}")
