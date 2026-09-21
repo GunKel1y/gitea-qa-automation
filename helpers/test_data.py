@@ -16,4 +16,7 @@ def password_with_length(length: int) -> str:
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 def random_repo_name() -> str:
-    return f'repo-{str(uuid4())[:10]}'
+    return f'repo-{str(uuid4())[:5]}_{str(uuid4())[:5]}'
+
+def repo_name_with_length(length:int):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
