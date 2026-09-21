@@ -12,6 +12,7 @@ class CreateRepositoryPage(BasePage):
             "//div[@class='inline field']/button[contains(text(), 'Создать репозиторий')]"
         )
         self.__CREATE_REPO_FORM = page.locator("form.new-repo-form[action='/repo/create']")
+        self.__error_message = page.locator("div.negative.message.flash-message.flash-error")
 
     def open(self):
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")
@@ -30,3 +31,9 @@ class CreateRepositoryPage(BasePage):
 
     def create_repo_form_is_displayed(self):
         expect(self.__CREATE_REPO_FORM).to_be_visible()
+
+    def error_message_is_displayed(self) -> None:
+        expect(self.__error_message).to_be_visible()
+
+    def check_negative_message_text(self, expected_mgs: str) -> None:
+        expect(self.__error_message).to_have_text(expected_mgs)
