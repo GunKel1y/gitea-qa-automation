@@ -43,3 +43,17 @@ def test_name_validation(authenticated_user_page: Page, test_user, case):
     repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user['login']}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.empty_repo_guide_is_displayed()
+
+def test_create_repository_with_empty_name(authenticated_user_page: Page):
+    dashboard_page = DashboardPage(authenticated_user_page)
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+
+    dashboard_page.open()
+    dashboard_page.global_header.click_dropdown_button()
+    dashboard_page.global_header.click_create_new_repository_button()
+
+    create_repo_page.check_url(f"{os.getenv('BASE_URL_UI')}/repo/create")
+    create_repo_page.click_repo_create_button()
+
+    create_repo_page.check_url(f"{os.getenv('BASE_URL_UI')}/repo/create")
+    create_repo_page.create_repo_form_is_displayed()
