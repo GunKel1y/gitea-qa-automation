@@ -42,7 +42,7 @@ def test_name_validation(authenticated_user_page: Page, test_user, case):
         repo_name = repo_name_with_length(1) + "/" + repo_name_with_length(1)
         create_repo_page.fill_repo_name_field(repo_name)
         create_repo_page.check_repo_name_field_value(repo_name)
-        repo_name = repo_name.replace(" ", "-")
+        repo_name = repo_name.replace("/", "-")
     else:
         repo_name = repo_name_with_length(1) + " " + repo_name_with_length(1)
         create_repo_page.fill_repo_name_field(repo_name)
