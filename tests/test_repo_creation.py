@@ -54,7 +54,7 @@ def test_name_validation(authenticated_user_page: Page, test_user, case):
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.empty_repo_guide_is_displayed()
 
-@pytest.mark.parametrize("case", ["empty_name", "with_double_dot"])
+@pytest.mark.parametrize("case", ["empty_name", "with_double_dot", "emoji"])
 def test_name_validation_no_repo_create(authenticated_user_page: Page, case):
     dashboard_page = DashboardPage(authenticated_user_page)
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
@@ -65,6 +65,10 @@ def test_name_validation_no_repo_create(authenticated_user_page: Page, case):
 
     if case == "with_double_dot":
         repo_name = ".."
+        create_repo_page.fill_repo_name_field(repo_name)
+        create_repo_page.check_repo_name_field_value(repo_name)
+    elif case == "emoji":
+        repo_name = "⭐"
         create_repo_page.fill_repo_name_field(repo_name)
         create_repo_page.check_repo_name_field_value(repo_name)
 
