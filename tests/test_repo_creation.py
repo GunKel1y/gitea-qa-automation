@@ -9,8 +9,8 @@ from pages.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
 from pages.repo_page import RepoPage
 
-@pytest.mark.parametrize("case", ["min", "max"])
-def test_create_repo_min_and_max(authenticated_user_page: Page, test_user, case):
+@pytest.mark.parametrize("case", ["min", "max", "greater_max"])
+def test_name_validation(authenticated_user_page: Page, test_user, case):
     dashboard_page = DashboardPage(authenticated_user_page)
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -30,6 +30,10 @@ def test_create_repo_min_and_max(authenticated_user_page: Page, test_user, case)
         repo_name = "a"
         create_repo_page.fill_repo_name_field("a")
         create_repo_page.check_repo_name_field_value("a")
+    elif case == "greater_max":
+        repo_name = repo_name_with_length(100)
+        create_repo_page.fill_repo_name_field(repo_name + "T")
+        create_repo_page.check_repo_name_field_value(repo_name)
     else:
         repo_name = repo_name_with_length(100)
         create_repo_page.fill_repo_name_field(repo_name)
