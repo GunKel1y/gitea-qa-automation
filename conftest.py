@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 
 from playwright.sync_api import Page, Browser
 
-from helpers.api_client import create_user, delete_user
-from helpers.test_data import random_login, random_password, random_email
+from helpers.api_client import create_user, delete_user, create_repo, delete_repo
+from helpers.test_data import random_login, random_password, random_email, random_repo_name
 
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -70,3 +70,12 @@ def register_person_for_auth(page: Page):
     yield [test_user_login, test_user_pass, test_user_email]
 
     delete_user(test_user_login)
+
+@pytest.fixture()
+def created_repo(authenticated_user_page, test_user):
+    repo_name = random_repo_name()
+    create_repo(owner=test_user["login"], repo_name=repo_name)
+
+    yield {"repo_name": repo_name}
+
+    delete_repo(owner=test_user["login"], repo_name=repo_name)
