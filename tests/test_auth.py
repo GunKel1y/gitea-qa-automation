@@ -4,9 +4,11 @@ import pytest
 
 from playwright.sync_api import Page
 from pages.auth_page import AuthPage
+from pages.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
 
 from helpers.test_data import random_password, random_login
+
 
 def test_login_with_valid_creds(page: Page, test_user):
     auth_page = AuthPage(page)
@@ -69,3 +71,11 @@ def test_logout(authenticated_user_page: Page):
     auth_page.global_header.login_button_is_displayed()
     auth_page.check_url(f'{os.getenv("BASE_URL_UI")}/')
 
+def test_access_page_without_auth_is_denied(page: Page, test_user):
+    auth_page = AuthPage(page)
+    create_repo_page = CreateRepositoryPage(page)
+    auth_page.open()
+
+    create_repo_page.open()
+    auth_page.check_url(f"{os.getenv("BASE_URL_UI")}/user/login?redirect_to=%2Frepo%2Fcreate")
+    auth_page.auth_form_is_displayed()
