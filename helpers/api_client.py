@@ -30,14 +30,14 @@ def delete_user(username: str) -> req.Response:
         params={"purge": "true"}
     )
 
-def create_repo(*, owner: str, repo_name: str):
+def create_repo(*, owner: str, repo_name: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/admin/users/{owner}/repos",
         headers=HEADERS,
         json={"name": repo_name}
     )
 
-def delete_repo(*, owner: str, repo_name: str):
+def delete_repo(*, owner: str, repo_name: str) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/repos/{owner}/{repo_name}",
         headers=HEADERS
