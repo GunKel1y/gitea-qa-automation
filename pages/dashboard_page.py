@@ -10,7 +10,7 @@ class DashboardPage(BasePage):
         self._dashboard = page.locator("div.dashboard[role='main']")
         self._success_registration_banner  = page.locator('div.positive.message')
 
-    def open(self):
+    def open(self) -> None:
         self.page.goto(os.getenv("BASE_URL_UI"))
 
     def dashboard_is_displayed(self) -> None:
@@ -19,5 +19,5 @@ class DashboardPage(BasePage):
     def success_registration_banner_is_displayed(self) -> None:
         expect(self._success_registration_banner).to_be_visible()
 
-    def check_success_registration_banner_text(self, expected: str):
+    def check_success_registration_banner_text(self, expected: str) -> None:
         expect(self._success_registration_banner).to_have_text(expected)

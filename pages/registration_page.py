@@ -15,7 +15,7 @@ class RegisterPage(BasePage):
         self._registration_button = page.get_by_text('Регистрация аккаунта')
         self._error_message = page.locator('div.negative.message.flash-message.flash-error')
 
-    def open(self):
+    def open(self) -> None:
         self.page.goto(f"{os.getenv('BASE_URL_UI')}/user/sign_up")
 
     def registration_form_is_displayed(self) -> None:
