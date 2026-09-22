@@ -8,12 +8,13 @@ from pages.dashboard_page import DashboardPage
 
 from helpers.test_data import random_password, random_login
 
-def test_login_with_valid_creds(page: Page, register_person_for_auth):
+def test_login_with_valid_creds(page: Page, test_user):
     auth_page = AuthPage(page)
     dashboard_page = DashboardPage(page)
+    auth_page.open()
 
-    person_login = register_person_for_auth[0]
-    person_pass = register_person_for_auth[1]
+    person_login = test_user["login"]
+    person_pass = test_user["password"]
 
     auth_page.auth_form_is_displayed()
 
@@ -27,11 +28,12 @@ def test_login_with_valid_creds(page: Page, register_person_for_auth):
     dashboard_page.dashboard_is_displayed()
 
 @pytest.mark.parametrize("case", ["invalid_password", "non_exit_creds", "no_creds"])
-def test_login_with_invalid_creds(page: Page, register_person_for_auth, case):
+def test_login_with_invalid_creds(page: Page, test_user, case):
     auth_page = AuthPage(page)
+    auth_page.open()
 
     if case == "invalid_password":
-        person_login, person_password = register_person_for_auth[0], register_person_for_auth[1] + "invalid"
+        person_login, person_password = test_user["login"], test_user["password"] + "invalid"
     else:
         person_login, person_password = random_login(), random_password()
 
