@@ -1,7 +1,7 @@
 
 from playwright.sync_api import Page, expect
 
-from components.main_header import GlobalHeader
+from components.global_header import GlobalHeader
 
 
 class BasePage:
