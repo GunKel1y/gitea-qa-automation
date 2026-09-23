@@ -14,6 +14,7 @@ class CreateRepositoryPage(BasePage):
         self._create_repo_form = page.locator("form.new-repo-form[action='/repo/create']")
         self._error_message = page.locator("div.negative.message.flash-message.flash-error")
         self._checkbox_private_repo = page.locator("input[name='private'][type='checkbox']")
+        self._initialization_repo_checkbox = page.locator("input[name='auto_init'][type='checkbox']")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")
@@ -44,3 +45,9 @@ class CreateRepositoryPage(BasePage):
 
     def verify_activated_checkbox_private_repo(self):
         expect(self._checkbox_private_repo).to_be_checked()
+
+    def select_checkbox_initialization_repo(self):
+        self._initialization_repo_checkbox.check()
+
+    def verify_checkbox_activated_initialization_repo(self):
+        expect(self._initialization_repo_checkbox).to_be_checked()
