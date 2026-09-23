@@ -1,7 +1,8 @@
 import os
 
+from components.search_dropdown import SearchDropdown
 from pages.base_page import BasePage
-from playwright.sync_api import Page, expect, Locator
+from playwright.sync_api import Page, expect
 
 
 class CreateRepositoryPage(BasePage):
@@ -16,18 +17,7 @@ class CreateRepositoryPage(BasePage):
         self._error_message = page.locator("div.negative.message.flash-message.flash-error")
         self._checkbox_private_repo = page.locator("input[name='private'][type='checkbox']")
         self._initialization_repo_checkbox = page.locator("input[name='auto_init'][type='checkbox']")
-
-    def _field_dropdown_menu(self, field_name: str) -> Locator:
-        return self.page.locator(f"input[name='{field_name}']~div.menu")
-
-    def _field_input_search(self, field_name: str) -> Locator:
-        return self.page.locator(f"*[name='{field_name}']~input.search")
-
-    def _tags_in_field_search(self, *, field_name: str, tag_name: str) -> Locator:
-        return self.page.locator(f"input[name='{field_name}']~a[data-value='{tag_name}']")
-
-    def _item_in_dropdown_menu_field(self, *, field_name: str, value: str) -> Locator:
-        return self.page.locator(f"input[name='{field_name}']~div.menu>div[data-value='{value}']")
+        self.gitignore_dropdown = SearchDropdown(page, "gitignores")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")
@@ -64,16 +54,3 @@ class CreateRepositoryPage(BasePage):
 
     def verify_checkbox_activated_initialization_repo(self):
         expect(self._initialization_repo_checkbox).to_be_checked()
-
-    def click_field_input_search(self, field_name: str) -> None:
-        self._field_input_search(field_name).click()
-
-    def field_dropdown_menu_is_displayed(self, field_name: str) -> None:
-        expect(self._field_dropdown_menu(field_name)).to_be_visible()
-
-    def select_item_in_dropdown_menu(self, *, field_name: str, value: str) -> None:
-        self._item_in_dropdown_menu_field(field_name=field_name, value=value).click()
-
-    def verify_tag_is_displayed_in_input_field(self, *, field_name: str, tag_name: str) -> None:
-        expect(self._tags_in_field_search(field_name=field_name, tag_name=tag_name)).to_be_visible()
-
