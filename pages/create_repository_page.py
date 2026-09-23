@@ -13,6 +13,7 @@ class CreateRepositoryPage(BasePage):
         )
         self._create_repo_form = page.locator("form.new-repo-form[action='/repo/create']")
         self._error_message = page.locator("div.negative.message.flash-message.flash-error")
+        self._checkbox_private_repo = page.locator("input[name='private'][type='checkbox']")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")
@@ -37,3 +38,9 @@ class CreateRepositoryPage(BasePage):
 
     def check_negative_message_text(self, expected_mgs: str) -> None:
         expect(self._error_message).to_have_text(expected_mgs)
+
+    def select_checkbox_private_repo(self):
+        self._checkbox_private_repo.check()
+
+    def verify_activated_checkbox_private_repo(self):
+        expect(self._checkbox_private_repo).to_be_checked()
