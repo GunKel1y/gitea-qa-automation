@@ -67,7 +67,7 @@ def test_name_validation(authenticated_user_page: Page, test_user, case):
     repo_page.empty_repo_guide_is_displayed()
 
 @pytest.mark.parametrize("case", ["empty_name", "with_double_dot", "emoji", "duplicate_repo"])
-def test_name_validation_no_repo_create(authenticated_user_page: Page, created_repo, case):
+def test_name_validation_no_repo_create(authenticated_user_page: Page, created_public_repo, case):
     dashboard_page = DashboardPage(authenticated_user_page)
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
 
@@ -84,8 +84,8 @@ def test_name_validation_no_repo_create(authenticated_user_page: Page, created_r
         create_repo_page.fill_repo_name_field(repo_name)
         create_repo_page.check_repo_name_field_value(repo_name)
     elif case == "duplicate_repo":
-        create_repo_page.fill_repo_name_field(created_repo["repo_name"])
-        create_repo_page.check_repo_name_field_value(created_repo["repo_name"])
+        create_repo_page.fill_repo_name_field(created_public_repo["repo_name"])
+        create_repo_page.check_repo_name_field_value(created_public_repo["repo_name"])
 
     create_repo_page.click_repo_create_button()
 

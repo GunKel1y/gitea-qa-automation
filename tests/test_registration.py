@@ -39,7 +39,7 @@ def test_register_with_truth_creds(page: Page, delete_user_after_registration):
 @pytest.mark.parametrize("case",
                          ["in_use_username", "in_use_email", "invalid_email",
                           "failed_confirm_pass", "min_length_pass", "max_length_pass"])
-def test_registration_with_invalid_creds(page: Page, register_person_for_auth, case):
+def test_registration_with_invalid_creds(page: Page, test_user, case):
     registration_page = RegisterPage(page)
 
     person_username = random_login()
@@ -47,10 +47,10 @@ def test_registration_with_invalid_creds(page: Page, register_person_for_auth, c
     person_password = random_password()
 
     if case == "in_use_username":
-        person_username = register_person_for_auth[0]
+        person_username = test_user["login"]
         error_message = "Имя пользователя уже занято."
     elif case == "in_use_email":
-        person_email = register_person_for_auth[2]
+        person_email = test_user["email"]
         error_message = "Этот адрес электронной почты уже используется."
     elif case == "invalid_email":
         person_email = random_login()
