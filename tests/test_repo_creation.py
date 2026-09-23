@@ -160,11 +160,11 @@ def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Pag
     create_repo_page.fill_repo_name_field(repo_name)
     create_repo_page.check_repo_name_field_value(repo_name)
 
-    create_repo_page.click_gitignore_field_input()
-    create_repo_page.gitignore_dropdown_menu_is_displayed()
+    create_repo_page.click_field_input_search("gitignores")
+    create_repo_page.field_dropdown_menu_is_displayed("gitignores")
 
-    create_repo_page.select_item_in_dropdown_menu_gitignore("Python")
-    create_repo_page.verify_selected_item_is_displayed_in_input_field("Python")
+    create_repo_page.select_item_in_dropdown_menu(field_name="gitignores", value="Python")
+    create_repo_page.verify_tag_is_displayed_in_input_field(field_name="gitignores", tag_name="Python")
 
     create_repo_page.select_checkbox_initialization_repo()
     create_repo_page.verify_checkbox_activated_initialization_repo()
