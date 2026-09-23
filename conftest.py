@@ -48,6 +48,35 @@ def authenticated_user_page(browser: Browser, browser_context_args, test_user):
     context.close()
 
 @pytest.fixture()
+def second_test_user():
+    login = random_login()
+    password = random_password()
+    email = random_email()
+    create_user(username=login, email=email, password=password, must_change_password=False)
+    yield {"login": login, "password": password, "email": email}
+    delete_user(login)
+
+@pytest.fixture()
+def authenticated_second_user_page(browser: Browser, browser_context_args, second_test_user):
+
+    context = browser.new_context(**browser_context_args)
+    context.add_cookies([{
+        "name": "lang", "value": "ru-RU",
+        "domain": "localhost", "path": "/"
+    }])
+
+    context.request.post(f"{os.getenv('BASE_URL_UI')}/user/login", form={
+        "user_name": second_test_user["login"],
+        "password": second_test_user["password"],
+    })
+
+    page = context.new_page()
+
+    yield page
+
+    context.close()
+
+@pytest.fixture()
 def delete_user_after_registration(page: Page):
     user_login = random_login()
     user_password = random_password()
@@ -58,9 +87,18 @@ def delete_user_after_registration(page: Page):
     delete_user(user_login)
 
 @pytest.fixture()
-def created_repo(authenticated_user_page, test_user):
+def created_public_repo(test_user):
     repo_name = random_repo_name()
-    create_repo(owner=test_user["login"], repo_name=repo_name)
+    create_repo(owner=test_user["login"], repo_name=repo_name, private=False)
+
+    yield {"repo_name": repo_name}
+
+    delete_repo(owner=test_user["login"], repo_name=repo_name)
+
+@pytest.fixture()
+def created_private_repo(test_user):
+    repo_name = random_repo_name()
+    create_repo(owner=test_user["login"], repo_name=repo_name, private=True)
 
     yield {"repo_name": repo_name}
 
