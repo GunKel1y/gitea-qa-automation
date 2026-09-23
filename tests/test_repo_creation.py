@@ -148,6 +148,32 @@ def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
     repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
 
-    repo_page.readme_file_is_listed()
+    repo_page.specified_file_in_list("README.md")
+    repo_page.readme_content_is_displayed()
+
+def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Page, test_user):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = random_repo_name()
+
+    create_repo_page.open()
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.check_repo_name_field_value(repo_name)
+
+    create_repo_page.click_gitignore_field_input()
+    create_repo_page.gitignore_dropdown_menu_is_displayed()
+
+    create_repo_page.select_item_in_dropdown_menu_gitignore("Python")
+    create_repo_page.verify_selected_item_is_displayed_in_input_field("Python")
+
+    create_repo_page.select_checkbox_initialization_repo()
+    create_repo_page.verify_checkbox_activated_initialization_repo()
+
+    create_repo_page.click_repo_create_button()
+    repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
+    repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+    repo_page.specified_file_in_list(".gitignore")
+    repo_page.specified_file_in_list("README.md")
+
     repo_page.readme_content_is_displayed()
 
