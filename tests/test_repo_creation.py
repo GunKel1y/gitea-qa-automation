@@ -7,6 +7,7 @@ from helpers.test_data import repo_name_with_length, random_repo_name
 
 from pages.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
+from pages.not_found_error_page import NotFoundErrorPage
 from pages.repo_page import RepoPage
 
 @pytest.mark.parametrize("case",
@@ -96,7 +97,7 @@ def test_name_validation_no_repo_create(authenticated_user_page: Page, created_r
     create_repo_page.create_repo_form_is_displayed()
 
 @pytest.mark.parametrize("case", ["public", "private"])
-def test_create_repo(authenticated_user_page: Page, created_repo, test_user, case):
+def test_create_repo(authenticated_user_page: Page, created_public_repo, test_user, case):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
     repo_name = random_repo_name()
@@ -116,3 +117,17 @@ def test_create_repo(authenticated_user_page: Page, created_repo, test_user, cas
 
     if case == "private":
         repo_page.privacy_status_is_displayed()
+
+def test_check_private_repo_is_inaccessible_to_another_user(
+        authenticated_second_user_page: Page, created_private_repo, test_user
+):
+    repo_page = RepoPage(authenticated_second_user_page)
+    not_found_page = NotFoundErrorPage(authenticated_second_user_page)
+    repo_page.open(username=test_user['login'], repo_name=created_private_repo['repo_name'])
+
+    not_found_page.not_found_title_is_displayed()
+    not_found_page.not_found_description_is_displayed()
+    not_found_page.check_title_text("404 Not Found")
+    not_found_page.check_description_text(
+        "Либо страница, которую вы пытаетесь открыть, не существует, либо у вас недостаточно прав для ее просмотра."
+    )
