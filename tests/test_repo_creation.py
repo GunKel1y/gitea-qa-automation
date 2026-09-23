@@ -131,3 +131,23 @@ def test_check_private_repo_is_inaccessible_to_another_user(
     not_found_page.check_description_text(
         "Либо страница, которую вы пытаетесь открыть, не существует, либо у вас недостаточно прав для ее просмотра."
     )
+
+def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = random_repo_name()
+
+    create_repo_page.open()
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.check_repo_name_field_value(repo_name)
+
+    create_repo_page.select_checkbox_initialization_repo()
+    create_repo_page.verify_checkbox_activated_initialization_repo()
+
+    create_repo_page.click_repo_create_button()
+    repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
+    repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+
+    repo_page.readme_file_is_listed()
+    repo_page.readme_content_is_displayed()
+
