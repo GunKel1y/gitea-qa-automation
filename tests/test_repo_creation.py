@@ -94,3 +94,25 @@ def test_name_validation_no_repo_create(authenticated_user_page: Page, created_r
 
     create_repo_page.check_url(f"{os.getenv('BASE_URL_UI')}/repo/create")
     create_repo_page.create_repo_form_is_displayed()
+
+@pytest.mark.parametrize("case", ["public", "private"])
+def test_create_repo(authenticated_user_page: Page, created_repo, test_user, case):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = random_repo_name()
+
+    create_repo_page.open()
+
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.check_repo_name_field_value(repo_name)
+
+    if case == "private":
+        create_repo_page.select_checkbox_private_repo()
+        create_repo_page.verify_activated_checkbox_private_repo()
+
+    create_repo_page.click_repo_create_button()
+    repo_page.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+    repo_page.check_url(f'{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}')
+
+    if case == "private":
+        repo_page.privacy_status_is_displayed()
