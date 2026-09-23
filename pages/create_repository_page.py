@@ -1,7 +1,8 @@
 import os
 
 from pages.base_page import BasePage
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, expect, Locator
+
 
 class CreateRepositoryPage(BasePage):
 
@@ -15,6 +16,11 @@ class CreateRepositoryPage(BasePage):
         self._error_message = page.locator("div.negative.message.flash-message.flash-error")
         self._checkbox_private_repo = page.locator("input[name='private'][type='checkbox']")
         self._initialization_repo_checkbox = page.locator("input[name='auto_init'][type='checkbox']")
+        self._gitignore_field_input = page.locator("*[name='gitignores']+input.search")
+        self._gitignore_dropdown_menu = page.locator("div.menu.transition.visible")
+
+    def _item_in_dropdown_menu_gitignore_field(self, value: str) -> Locator:
+        return self.page.locator(f"div.menu>div[data-value='{value}']")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")
@@ -51,3 +57,15 @@ class CreateRepositoryPage(BasePage):
 
     def verify_checkbox_activated_initialization_repo(self):
         expect(self._initialization_repo_checkbox).to_be_checked()
+
+    def click_gitignore_field_input(self):
+        self._gitignore_field_input.click()
+
+    def gitignore_dropdown_menu_is_displayed(self):
+        expect(self._gitignore_dropdown_menu).to_be_visible()
+
+    def select_item_in_dropdown_menu_gitignore(self, value: str):
+        self._item_in_dropdown_menu_gitignore_field(value).click()
+
+    def verify_selected_item_is_displayed_in_input_field(self, value: str):
+        expect(self._item_in_dropdown_menu_gitignore_field(value)).to_be_visible()
