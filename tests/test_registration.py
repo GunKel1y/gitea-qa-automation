@@ -17,17 +17,17 @@ def test_register_with_truth_creds(page: Page, delete_user_after_registration):
 
     register_page.registration_form_is_displayed()
 
-    register_page.fill_username(delete_user_after_registration[0])
-    register_page.check_username_value(delete_user_after_registration[0])
+    register_page.fill_username(delete_user_after_registration["login"])
+    register_page.check_username_value(delete_user_after_registration["login"])
 
-    register_page.fill_email(delete_user_after_registration[2])
-    register_page.check_email_value(delete_user_after_registration[2])
+    register_page.fill_email(delete_user_after_registration["email"])
+    register_page.check_email_value(delete_user_after_registration["email"])
 
-    register_page.fill_password(delete_user_after_registration[1])
-    register_page.check_password_value(delete_user_after_registration[1])
+    register_page.fill_password(delete_user_after_registration["password"])
+    register_page.check_password_value(delete_user_after_registration["password"])
 
-    register_page.fill_doublecheck_password(delete_user_after_registration[1])
-    register_page.check_doublecheck_password_value(delete_user_after_registration[1])
+    register_page.fill_doublecheck_password(delete_user_after_registration["password"])
+    register_page.check_doublecheck_password_value(delete_user_after_registration["password"])
 
     register_page.click_registration_button()
 

@@ -11,6 +11,21 @@ from helpers.test_data import random_login, random_password, random_email, rando
 
 load_dotenv(Path(__file__).parent / ".env")
 
+def _login_context(*, browser, browser_context_args, user):
+    context = browser.new_context(**browser_context_args)
+    context.add_cookies([{"name": "lang", "value": "ru-RU", "domain": "localhost", "path": "/"}])
+    rspns = context.request.post(f"{os.getenv('BASE_URL_UI')}/user/login", form={
+        "user_name": user["login"],
+        "password": user["password"],
+    })
+    assert rspns.ok and "/user/login" not in rspns.url, f"Login failed: {rspns.status} {rspns.url}"
+    return context
+
+def _make_user() -> dict:
+    user = {"login": random_login(), "password": random_password(), "email": random_email()}
+    create_user(username=user["login"], email=user["email"], password=user["password"])
+    return user
+
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
     return {**browser_context_args,
@@ -20,71 +35,33 @@ def browser_context_args(browser_context_args):
 
 @pytest.fixture()
 def test_user():
-    login = random_login()
-    password = random_password()
-    email = random_email()
-    create_user(username=login, email=email, password=password, must_change_password=False)
-    yield {"login": login, "password": password, "email": email}
-    delete_user(login)
+    user = _make_user()
+    yield {"login": user["login"], "password": user["password"], "email": user["email"]}
+    delete_user(user["login"])
 
 @pytest.fixture()
 def authenticated_user_page(browser: Browser, browser_context_args, test_user):
-
-    context = browser.new_context(**browser_context_args)
-    context.add_cookies([{
-        "name": "lang", "value": "ru-RU",
-        "domain": "localhost", "path": "/"
-    }])
-
-    context.request.post(f"{os.getenv('BASE_URL_UI')}/user/login", form={
-        "user_name": test_user["login"],
-        "password": test_user["password"],
-    })
-
-    page = context.new_page()
-
-    yield page
-
+    context = _login_context(browser=browser, browser_context_args=browser_context_args, user=test_user)
+    yield context.new_page()
     context.close()
 
 @pytest.fixture()
 def second_test_user():
-    login = random_login()
-    password = random_password()
-    email = random_email()
-    create_user(username=login, email=email, password=password, must_change_password=False)
-    yield {"login": login, "password": password, "email": email}
-    delete_user(login)
+    user = _make_user()
+    yield {"login": user["login"], "password": user["password"], "email": user["email"]}
+    delete_user(user["login"])
 
 @pytest.fixture()
 def authenticated_second_user_page(browser: Browser, browser_context_args, second_test_user):
-
-    context = browser.new_context(**browser_context_args)
-    context.add_cookies([{
-        "name": "lang", "value": "ru-RU",
-        "domain": "localhost", "path": "/"
-    }])
-
-    context.request.post(f"{os.getenv('BASE_URL_UI')}/user/login", form={
-        "user_name": second_test_user["login"],
-        "password": second_test_user["password"],
-    })
-
-    page = context.new_page()
-
-    yield page
-
+    context = _login_context(browser=browser, browser_context_args=browser_context_args, user=second_test_user)
+    yield context.new_page()
     context.close()
 
 @pytest.fixture()
 def delete_user_after_registration(page: Page):
-    user_login = random_login()
-    user_password = random_password()
-    user_email = random_email()
-
-    yield [user_login, user_password, user_email]
-
-    delete_user(user_login)
+    user = {"login": random_login(), "password": random_password(), "email": random_email()}
+    yield user
+    delete_user(user["login"])
 
 @pytest.fixture()
 def created_public_repo(test_user):
