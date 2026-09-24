@@ -42,3 +42,13 @@ def delete_repo(*, owner: str, repo_name: str) -> req.Response:
         f"{BASE_URL_API}/repos/{owner}/{repo_name}",
         headers=HEADERS
     )
+
+def create_organization(*, username: str, visibility: str) -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/orgs",
+        headers=HEADERS,
+        json={
+            "username": username,
+            "visibility": visibility
+        }
+    )
