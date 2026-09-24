@@ -34,7 +34,7 @@ def test_register_with_truth_creds(page: Page, delete_user_after_registration):
     dashboard_page.dashboard_is_displayed()
     dashboard_page.success_registration_banner_is_displayed()
     dashboard_page.check_success_registration_banner_text('Учётная запись успешно создана. Добро пожаловать!')
-    dashboard_page.check_url(f'{os.getenv("BASE_URL_UI")}/')
+    dashboard_page.check_url('/')
 
 @pytest.mark.parametrize("case",
                          ["in_use_username", "in_use_email", "invalid_email",
@@ -90,4 +90,4 @@ def test_registration_with_invalid_creds(page: Page, test_user, case):
         registration_page.error_message_is_displayed()
         registration_page.check_error_message_text(error_message)
     registration_page.registration_form_is_displayed()
-    registration_page.check_url(f"{os.getenv('BASE_URL_UI')}/user/sign_up")
+    registration_page.check_url("/user/sign_up")

@@ -25,7 +25,7 @@ def test_name_validation(authenticated_user_page: Page, test_user, case):
     dashboard_page.global_header.create_new_repository_button_is_displayed()
 
     dashboard_page.global_header.click_create_new_repository_button()
-    create_repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/repo/create")
+    create_repo_page.check_url("/repo/create")
     create_repo_page.create_repo_form_is_displayed()
     create_repo_page.repo_name_field_is_displayed()
 
@@ -62,7 +62,7 @@ def test_name_validation(authenticated_user_page: Page, test_user, case):
         create_repo_page.check_repo_name_field_value(repo_name)
 
     create_repo_page.click_repo_create_button()
-    repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user['login']}/{repo_name}")
+    repo_page.check_url(f"/{test_user['login']}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.empty_repo_guide_is_displayed()
 
@@ -74,7 +74,7 @@ def test_name_validation_no_repo_create(authenticated_user_page: Page, created_p
     dashboard_page.open()
     dashboard_page.global_header.click_dropdown_button()
     dashboard_page.global_header.click_create_new_repository_button()
-    create_repo_page.check_url(f"{os.getenv('BASE_URL_UI')}/repo/create")
+    create_repo_page.check_url("/repo/create")
     if case == "with_double_dot":
         repo_name = ".."
         create_repo_page.fill_repo_name_field(repo_name)
@@ -93,7 +93,7 @@ def test_name_validation_no_repo_create(authenticated_user_page: Page, created_p
         create_repo_page.error_message_is_displayed()
         create_repo_page.check_negative_message_text("Название репозитория уже используется.")
 
-    create_repo_page.check_url(f"{os.getenv('BASE_URL_UI')}/repo/create")
+    create_repo_page.check_url("/repo/create")
     create_repo_page.create_repo_form_is_displayed()
 
 @pytest.mark.parametrize("case", ["public", "private"])
@@ -113,7 +113,7 @@ def test_create_repo(authenticated_user_page: Page, created_public_repo, test_us
 
     create_repo_page.click_repo_create_button()
     repo_page.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
-    repo_page.check_url(f'{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}')
+    repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
 
     if case == "private":
         repo_page.privacy_status_is_displayed()
@@ -145,7 +145,7 @@ def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
     create_repo_page.verify_checkbox_activated_initialization_repo()
 
     create_repo_page.click_repo_create_button()
-    repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
+    repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
 
     repo_page.specified_file_in_list("README.md")
@@ -171,7 +171,7 @@ def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Pag
     create_repo_page.verify_checkbox_activated_initialization_repo()
 
     create_repo_page.click_repo_create_button()
-    repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
+    repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.specified_file_in_list(".gitignore")
     repo_page.specified_file_in_list("README.md")
@@ -198,7 +198,7 @@ def test_create_repo_with_license_and_readme_file(authenticated_user_page: Page,
     create_repo_page.verify_checkbox_activated_initialization_repo()
 
     create_repo_page.click_repo_create_button()
-    repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
+    repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.specified_file_in_list("LICENSE")
     repo_page.specified_file_in_list("README.md")
@@ -227,7 +227,7 @@ def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_
     create_repo_page.verify_checkbox_activated_initialization_repo()
 
     create_repo_page.click_repo_create_button()
-    repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
+    repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.specified_file_in_list("LICENSE")
     repo_page.specified_file_in_list(".gitignore")
@@ -258,7 +258,7 @@ def test_create_repo_with_custom_default_branch(authenticated_user_page: Page, t
     create_repo_page.check_value_in_default_branch_field(input_branch)
 
     create_repo_page.click_repo_create_button()
-    repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
+    repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.branch_dropdown_button_is_displayed()
     repo_page.check_branch_dropdown_button_text(expected_branch)
