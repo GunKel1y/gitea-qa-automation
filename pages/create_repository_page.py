@@ -18,6 +18,7 @@ class CreateRepositoryPage(BasePage):
         self._checkbox_private_repo = page.locator("input[name='private'][type='checkbox']")
         self._initialization_repo_checkbox = page.locator("input[name='auto_init'][type='checkbox']")
         self.gitignore_dropdown = SearchDropdown(page, "gitignores")
+        self.license_dropdown = SearchDropdown(page, "license")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")

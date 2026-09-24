@@ -9,6 +9,7 @@ class SearchDropdown:
         self._input = page.locator(f"*[name='{field_name}']~input.search")
         self._menu = page.locator(f"input[name='{field_name}']~div.menu")
         self._tags = page.locator(f"input[name='{field_name}']~a")
+        self._text_in_input = page.locator(f"*[name='{field_name}']~input.search~div.text")
 
     def _item(self, value: str) -> Locator:
         return self._menu.locator(f"div[data-value='{value}']")
@@ -24,3 +25,6 @@ class SearchDropdown:
 
     def tag_is_displayed(self, value: str) -> None:
         expect(self.page.locator(f"input[name='{self.field_name}']~a[data-value='{value}']")).to_be_visible()
+
+    def text_in_input_is_displayed(self, value: str) -> None:
+        expect(self._text_in_input).to_have_text(value)
