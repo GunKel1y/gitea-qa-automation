@@ -234,11 +234,16 @@ def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
 
-def test_create_repo_with_custom_default_branch(authenticated_user_page: Page, test_user):
+@pytest.mark.parametrize("input_branch, expected_branch",
+    [
+        pytest.param("tests-master", "tests-master", id="custom_branch"),
+        pytest.param("", "main", id="empty_field_in_default_branch_field"),
+    ]
+)
+def test_create_repo_with_custom_default_branch(authenticated_user_page: Page, test_user, input_branch, expected_branch):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
     repo_name = random_repo_name()
-    branch_name = "tests-master"
 
     create_repo_page.open()
     create_repo_page.repo_name_field_is_displayed()
@@ -249,13 +254,13 @@ def test_create_repo_with_custom_default_branch(authenticated_user_page: Page, t
     create_repo_page.verify_checkbox_activated_initialization_repo()
 
     create_repo_page.default_branch_input_is_displayed()
-    create_repo_page.fill_default_branch_field(branch_name)
-    create_repo_page.check_value_in_default_branch_field(branch_name)
+    create_repo_page.fill_default_branch_field(input_branch)
+    create_repo_page.check_value_in_default_branch_field(input_branch)
 
     create_repo_page.click_repo_create_button()
     repo_page.check_url(f"{os.getenv("BASE_URL_UI")}/{test_user["login"]}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.branch_dropdown_button_is_displayed()
-    repo_page.check_branch_dropdown_button_text(branch_name)
+    repo_page.check_branch_dropdown_button_text(expected_branch)
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
