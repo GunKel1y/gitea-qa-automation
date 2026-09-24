@@ -17,14 +17,5 @@ class SearchDropdown:
     def open(self) -> None:
         self._input.click()
 
-    def menu_is_displayed(self) -> None:
-        expect(self._menu).to_be_visible()
-
     def select(self, value: str) -> None:
         self._item(value).click()
-
-    def tag_is_displayed(self, value: str) -> None:
-        expect(self.page.locator(f"input[name='{self.field_name}']~a[data-value='{value}']")).to_be_visible()
-
-    def text_in_input_is_displayed(self, value: str) -> None:
-        expect(self._text_in_input).to_have_text(value)
