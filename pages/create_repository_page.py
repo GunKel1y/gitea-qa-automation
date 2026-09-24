@@ -20,6 +20,7 @@ class CreateRepositoryPage(BasePage):
         self.gitignore_dropdown = SearchDropdown(page, "gitignores")
         self.license_dropdown = SearchDropdown(page, "license")
         self._full_main_content = page.locator("div.full.height")
+        self._default_branch_input = page.locator("#default_branch")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")
@@ -59,3 +60,12 @@ class CreateRepositoryPage(BasePage):
 
     def press_esc(self):
         self._full_main_content.press("Escape")
+
+    def default_branch_input_is_displayed(self) -> None:
+        expect(self._default_branch_input).to_be_visible()
+
+    def fill_default_branch_field(self, value: str) -> None:
+        self._default_branch_input.fill(value)
+
+    def check_value_in_default_branch_field(self, value: str) -> None:
+        expect(self._default_branch_input).to_have_value(value)
