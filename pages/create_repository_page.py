@@ -69,3 +69,6 @@ class CreateRepositoryPage(BasePage):
 
     def check_value_in_default_branch_field(self, value: str) -> None:
         expect(self._default_branch_input).to_have_value(value)
+
+    def clear_default_branch_field(self):
+        self._default_branch_input.clear()
