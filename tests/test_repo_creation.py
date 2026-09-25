@@ -212,3 +212,20 @@ def test_create_repo_default_branch(authenticated_user_page: Page, test_user, in
     repo_page.check_branch_dropdown_button_text(expected_branch)
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
+
+def test_create_repo_in_organization(authenticated_user_page: Page, created_public_organization_by_user):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = random_repo_name()
+    org_name = created_public_organization_by_user["name"]
+
+    create_repo_page.open()
+
+    create_repo_page.owner_field_click()
+    create_repo_page.select_owner(org_name)
+
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.click_repo_create_button()
+
+    repo_page.check_url(f"/{org_name}/{repo_name}")
+    repo_page.repo_name_in_header_is_displayed(username=org_name, repo_name=repo_name)
