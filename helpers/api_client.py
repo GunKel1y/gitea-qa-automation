@@ -43,12 +43,38 @@ def delete_repo(*, owner: str, repo_name: str) -> req.Response:
         headers=HEADERS
     )
 
-def create_organization(*, username: str, visibility: str) -> req.Response:
+def create_user_token(*, username: str, password: str, scopes: list[str], token_name: str = "test-token") -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/users/{username}/tokens",
+        auth=(username, password),
+        json={
+            "name": token_name,
+            "scopes": scopes
+        }
+    )
+
+def create_organization(*, org_name: str, visibility: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/orgs",
         headers=HEADERS,
         json={
-            "username": username,
+            "username": org_name,
+            "visibility": visibility
+        }
+    )
+
+def delete_organization(org_name: str) -> req.Response:
+    return req.delete(
+        f"{BASE_URL_API}/orgs/{org_name}",
+        headers=HEADERS
+    )
+
+def create_organization_by_user(*, org_name: str, visibility: str, user_token: str) -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/orgs",
+        headers={"Authorization": f"token {user_token}"},
+        json={
+            "username": org_name,
             "visibility": visibility
         }
     )
