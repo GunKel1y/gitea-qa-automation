@@ -54,3 +54,9 @@ class CreateRepositoryPage(BasePage):
 
     def select_owner(self, owner: str) -> None:
         self._owner_menu_item(owner).click()
+
+    def owner_is_selectable(self, owner: str) -> None:
+        expect(self._owner_menu_item(owner)).to_be_visible()
+
+    def owner_is_not_selectable(self, owner: str) -> None:
+        expect(self._owner_menu_item(owner)).not_to_be_visible()
