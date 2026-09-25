@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 
 from playwright.sync_api import Page, Browser
 
-from helpers.api_client import create_user, delete_user, create_repo, delete_repo
+from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
+    delete_organization, create_organization_by_user, create_user_token
 from helpers.test_data import random_login, random_password, random_email, random_repo_name
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -80,3 +81,22 @@ def created_private_repo(test_user):
     yield {"repo_name": repo_name}
 
     delete_repo(owner=test_user["login"], repo_name=repo_name)
+
+@pytest.fixture()
+def created_public_organization_by_user(test_user):
+    org_name = random_login()
+
+    token_resp = create_user_token(
+        username=test_user["login"],
+        password=test_user["password"],
+        scopes=["write:organization"]
+    )
+    assert token_resp.ok, f"Ошибка создания токена: {token_resp.status_code} {token_resp.text}"
+    user_token = token_resp.json()["sha1"]
+
+    org_resp = create_organization_by_user(org_name=org_name, visibility="public", user_token=user_token)
+    assert org_resp.ok, f"Ошибка создания организации: {org_resp.status_code} {org_resp.text}"
+
+    yield {"name": org_name}
+
+    delete_organization(org_name)
