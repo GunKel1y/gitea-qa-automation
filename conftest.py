@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from playwright.sync_api import Page, Browser
 
 from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
-    delete_organization, create_organization_by_user, create_user_token
+    delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member
 from helpers.test_data import random_login, random_password, random_email, random_repo_name
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -96,6 +96,29 @@ def created_public_organization_by_user(test_user):
 
     org_resp = create_organization_by_user(org_name=org_name, visibility="public", user_token=user_token)
     assert org_resp.ok, f"Ошибка создания организации: {org_resp.status_code} {org_resp.text}"
+
+    yield {"name": org_name}
+
+    delete_organization(org_name)
+
+@pytest.fixture()
+def created_organization_without_creation_rights(test_user):
+    org_name = random_login()
+
+    org_resp = create_organization(org_name=org_name, visibility="public")
+    assert org_resp.ok, f"Ошибка создания организации: {org_resp.status_code} {org_resp.text}"
+
+    team_resp = create_team(
+        org_name=org_name,
+        team_name="no-repo-create",
+        permission="read",
+        can_create_org_repo=False,
+    )
+    assert team_resp.ok, f"Ошибка создания команды: {team_resp.status_code} {team_resp.text}"
+    team_id = team_resp.json()["id"]
+
+    member_resp = add_team_member(team_id=team_id, username=test_user["login"])
+    assert member_resp.ok, f"Ошибка добавления участника в команду: {member_resp.status_code} {member_resp.text}"
 
     yield {"name": org_name}
 
