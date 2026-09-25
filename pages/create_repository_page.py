@@ -2,7 +2,7 @@ import os
 
 from components.search_dropdown import SearchDropdown
 from pages.base_page import BasePage
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, expect, Locator
 
 
 class CreateRepositoryPage(BasePage):
@@ -20,6 +20,10 @@ class CreateRepositoryPage(BasePage):
         self.license_dropdown = SearchDropdown(page, "license")
         self._full_main_content = page.locator("div.full.height")
         self._default_branch_input = page.locator("#default_branch")
+        self._owner_field = page.locator("#repo_owner_dropdown")
+
+    def _owner_menu_item(self, owner: str) -> Locator:
+        return self.page.locator(f"#repo_owner_dropdown>div.menu>div[title='{owner}']")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")
@@ -44,3 +48,9 @@ class CreateRepositoryPage(BasePage):
 
     def fill_default_branch_field(self, value: str) -> None:
         self._default_branch_input.fill(value)
+
+    def owner_field_click(self) -> None:
+        self._owner_field.click()
+
+    def select_owner(self, owner: str) -> None:
+        self._owner_menu_item(owner).click()
