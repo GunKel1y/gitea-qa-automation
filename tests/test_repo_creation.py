@@ -229,3 +229,17 @@ def test_create_repo_in_organization(authenticated_user_page: Page, created_publ
 
     repo_page.check_url(f"/{org_name}/{repo_name}")
     repo_page.repo_name_in_header_is_displayed(username=org_name, repo_name=repo_name)
+
+def test_repo_create_without_creation_rights(
+        authenticated_user_page: Page,
+        created_organization_without_creation_rights,
+        test_user
+):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    org_name = created_organization_without_creation_rights["name"]
+
+    create_repo_page.open()
+
+    create_repo_page.owner_field_click()
+    create_repo_page.owner_is_selectable(test_user["login"])
+    create_repo_page.owner_is_not_selectable(org_name)
