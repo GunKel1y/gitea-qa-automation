@@ -42,3 +42,58 @@ def delete_repo(*, owner: str, repo_name: str) -> req.Response:
         f"{BASE_URL_API}/repos/{owner}/{repo_name}",
         headers=HEADERS
     )
+
+def create_user_token(*, username: str, password: str, scopes: list[str], token_name: str = "test-token") -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/users/{username}/tokens",
+        auth=(username, password),
+        json={
+            "name": token_name,
+            "scopes": scopes
+        }
+    )
+
+def create_organization(*, org_name: str, visibility: str) -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/orgs",
+        headers=HEADERS,
+        json={
+            "username": org_name,
+            "visibility": visibility
+        }
+    )
+
+def delete_organization(org_name: str) -> req.Response:
+    return req.delete(
+        f"{BASE_URL_API}/orgs/{org_name}",
+        headers=HEADERS
+    )
+
+def create_organization_by_user(*, org_name: str, visibility: str, user_token: str) -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/orgs",
+        headers={"Authorization": f"token {user_token}"},
+        json={
+            "username": org_name,
+            "visibility": visibility
+        }
+    )
+
+def create_team(*, org_name: str, team_name: str, permission: str, can_create_org_repo: bool,
+                 units: list[str] | None = None) -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/orgs/{org_name}/teams",
+        headers=HEADERS,
+        json={
+            "name": team_name,
+            "permission": permission,
+            "can_create_org_repo": can_create_org_repo,
+            "units": units or ["repo.code"],
+        }
+    )
+
+def add_team_member(*, team_id: int, username: str) -> req.Response:
+    return req.put(
+        f"{BASE_URL_API}/teams/{team_id}/members/{username}",
+        headers=HEADERS
+    )
