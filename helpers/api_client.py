@@ -78,3 +78,22 @@ def create_organization_by_user(*, org_name: str, visibility: str, user_token: s
             "visibility": visibility
         }
     )
+
+def create_team(*, org_name: str, team_name: str, permission: str, can_create_org_repo: bool,
+                 units: list[str] | None = None) -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/orgs/{org_name}/teams",
+        headers=HEADERS,
+        json={
+            "name": team_name,
+            "permission": permission,
+            "can_create_org_repo": can_create_org_repo,
+            "units": units or ["repo.code"],
+        }
+    )
+
+def add_team_member(*, team_id: int, username: str) -> req.Response:
+    return req.put(
+        f"{BASE_URL_API}/teams/{team_id}/members/{username}",
+        headers=HEADERS
+    )
