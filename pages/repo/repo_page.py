@@ -1,10 +1,12 @@
 import os
 
-from pages.base_page import BasePage
+from components.repo_header import RepoHeader
 from playwright.sync_api import Page, expect, Locator
 
+from pages.repo.base_repo_page import BaseRepoPage
 
-class RepoPage(BasePage):
+
+class RepoPage(BaseRepoPage):
 
     def __init__(self, page: Page):
         super().__init__(page)
@@ -13,18 +15,13 @@ class RepoPage(BasePage):
         self._readme_content = page.locator("div#readme")
         self._branch_dropdown_button = page.locator("div.custom.branch-selector-dropdown")
         self._branch_text_in_dropdown = page.locator("span.gt-ellipsis>strong.gt-ellipsis")
-
-    def _repo_name_in_header(self, *, username: str, repo_name: str) -> Locator:
-        return self.page.locator(f"a.muted[href='/{username}/{repo_name}']")
+        self.repo_header = RepoHeader(page)
 
     def open(self, *, username: str, repo_name: str) -> None:
         self.page.goto(f"{os.getenv('BASE_URL_UI')}/{username}/{repo_name}")
 
     def empty_repo_guide_is_displayed(self) -> None:
         expect(self._empty_repo_guide).to_be_visible()
-
-    def repo_name_in_header_is_displayed(self, *, username: str, repo_name: str) -> None:
-        expect(self._repo_name_in_header(username=username, repo_name=repo_name)).to_be_visible()
 
     def privacy_status_is_displayed(self):
         expect(self._privacy_status).to_be_visible()
