@@ -97,3 +97,19 @@ def add_team_member(*, team_id: int, username: str) -> req.Response:
         f"{BASE_URL_API}/teams/{team_id}/members/{username}",
         headers=HEADERS
     )
+
+def create_issue_repo(*, owner_repo: str, repo_name: str, title: str, closed: bool) -> req.Response:
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues",
+        headers=HEADERS,
+        json={
+            "title": title,
+            "closed": closed
+        }
+    )
+
+def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int):
+    return req.delete(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}",
+        headers=HEADERS
+    )
