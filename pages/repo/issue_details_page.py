@@ -1,3 +1,4 @@
+import os
 import re
 
 from playwright.sync_api import Page, expect
@@ -15,6 +16,11 @@ class IssueDetailsPage(BaseRepoPage):
         self._first_timeline_comment = page.locator(
             "div.timeline-item.first>div.comment-container>div.comment-body>div.render-content.markup"
         )
+        self._switch_status_button = page.locator("button#status-button")
+        self._switch_status_button_test = page.locator("button#status-button>span.status-button-text")
+
+    def open(self, *, repo_owner: str, repo_name: str, issue_index: int) -> None:
+        self.page.goto(f"{os.getenv("BASE_URL_UI")}/{repo_owner}/{repo_name}/issues/{issue_index}")
 
     def get_issue_id(self) -> str:
         return self._issue_id.inner_text()
@@ -30,3 +36,9 @@ class IssueDetailsPage(BaseRepoPage):
 
     def check_first_comment_text(self, comment_text: str) -> None:
         expect(self._first_timeline_comment).to_have_text(comment_text)
+
+    def switch_status_button_click(self) -> None:
+        self._switch_status_button.click()
+
+    def check_switch_status_button_text(self, value: str) -> None:
+        expect(self._switch_status_button).to_have_text(value)
