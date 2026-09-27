@@ -46,3 +46,16 @@ def test_add_issue_with_comment(authenticated_user_page: Page, created_public_re
     issue_id = issue_page.get_issue_id()
     issue_page.check_issue_title_value(issue_name + " " + issue_id)
     issue_page.check_first_comment_text(comment_text)
+
+def test_closing_issue(authenticated_user_page, test_user, created_public_repo, created_repo_issue):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.switch_status_button_click()
+    issue_page.check_issue_status_label_text("Закрыто")
+    issue_page.check_switch_status_button_text("Открыть снова")
