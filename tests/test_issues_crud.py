@@ -47,7 +47,19 @@ def test_add_issue_with_comment(authenticated_user_page: Page, created_public_re
     issue_page.check_issue_title_value(issue_name + " " + issue_id)
     issue_page.check_first_comment_text(comment_text)
 
-def test_closing_issue(authenticated_user_page, test_user, created_public_repo, created_repo_issue):
+@pytest.mark.parametrize("issue_status, switch_button_text", [
+    pytest.param("Закрыто", "Открыть снова", id="closing"),
+    pytest.param("Открыто", "Закрыть задачу", id="reopen")
+]
+)
+def test_switch_issue_status(
+        authenticated_user_page,
+        test_user,
+        created_public_repo,
+        created_repo_issue,
+        issue_status,
+        switch_button_text
+):
     issue_page = IssueDetailsPage(authenticated_user_page)
 
     issue_page.open(
@@ -57,5 +69,5 @@ def test_closing_issue(authenticated_user_page, test_user, created_public_repo, 
     )
 
     issue_page.switch_status_button_click()
-    issue_page.check_issue_status_label_text("Закрыто")
-    issue_page.check_switch_status_button_text("Открыть снова")
+    issue_page.check_issue_status_label_text(issue_status)
+    issue_page.check_switch_status_button_text(switch_button_text)
