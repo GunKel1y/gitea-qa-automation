@@ -128,11 +128,13 @@ def created_organization_without_creation_rights(test_user):
 @pytest.fixture()
 def created_repo_issue(created_public_repo, test_user):
     issue_name = random_login()
+    issue_comment = random_login()
     create_issue_response = create_issue_repo(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         title=issue_name,
-        closed=False
+        closed=False,
+        comment=issue_comment
     )
     issue_index = create_issue_response.json()["number"]
 

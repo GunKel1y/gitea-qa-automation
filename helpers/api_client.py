@@ -98,13 +98,14 @@ def add_team_member(*, team_id: int, username: str) -> req.Response:
         headers=HEADERS
     )
 
-def create_issue_repo(*, owner_repo: str, repo_name: str, title: str, closed: bool) -> req.Response:
+def create_issue_repo(*, owner_repo: str, repo_name: str, title: str, closed: bool, comment: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues",
         headers=HEADERS,
         json={
             "title": title,
-            "closed": closed
+            "closed": closed,
+            "body": comment
         }
     )
 
