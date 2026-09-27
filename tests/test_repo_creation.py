@@ -3,10 +3,10 @@ from playwright.sync_api import Page
 
 from helpers.test_data import random_repo_name
 
-from pages.create_repository_page import CreateRepositoryPage
+from pages.repo.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
 from pages.not_found_error_page import NotFoundErrorPage
-from pages.repo_page import RepoPage
+from pages.repo.repo_page import RepoPage
 
 @pytest.mark.parametrize("repo_name, expected_name", [
     pytest.param("a", "a", id="min"),
@@ -24,7 +24,7 @@ def test_name_validation(authenticated_user_page: Page, test_user, repo_name, ex
     create_repo_page.fill_repo_name_field(repo_name)
     create_repo_page.click_repo_create_button()
     repo_page.check_url(f"/{test_user['login']}/{expected_name}")
-    repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=expected_name)
+    repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=expected_name)
     repo_page.empty_repo_guide_is_displayed()
 
 @pytest.mark.parametrize("input_name", [
@@ -70,7 +70,7 @@ def test_create_public_repo(authenticated_user_page: Page, test_user):
     create_repo_page.fill_repo_name_field(repo_name)
 
     create_repo_page.click_repo_create_button()
-    repo_page.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+    repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
     repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
 
 def test_create_private_repo(authenticated_user_page: Page, test_user):
@@ -85,7 +85,7 @@ def test_create_private_repo(authenticated_user_page: Page, test_user):
     create_repo_page.select_checkbox_private_repo()
 
     create_repo_page.click_repo_create_button()
-    repo_page.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+    repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
     repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
 
     repo_page.privacy_status_is_displayed()
@@ -114,7 +114,7 @@ def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
 
     create_repo_page.click_repo_create_button()
     repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
-    repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+    repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
 
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
@@ -135,7 +135,7 @@ def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Pag
 
     create_repo_page.click_repo_create_button()
     repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
-    repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+    repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.specified_file_in_list(".gitignore")
     repo_page.specified_file_in_list("README.md")
 
@@ -157,7 +157,7 @@ def test_create_repo_with_license_and_readme_file(authenticated_user_page: Page,
 
     create_repo_page.click_repo_create_button()
     repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
-    repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+    repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.specified_file_in_list("LICENSE")
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
@@ -181,7 +181,7 @@ def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_
 
     create_repo_page.click_repo_create_button()
     repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
-    repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+    repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.specified_file_in_list("LICENSE")
     repo_page.specified_file_in_list(".gitignore")
     repo_page.specified_file_in_list("README.md")
@@ -207,7 +207,7 @@ def test_create_repo_default_branch(authenticated_user_page: Page, test_user, in
 
     create_repo_page.click_repo_create_button()
     repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
-    repo_page.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+    repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
     repo_page.branch_dropdown_button_is_displayed()
     repo_page.check_branch_dropdown_button_text(expected_branch)
     repo_page.specified_file_in_list("README.md")
@@ -228,7 +228,7 @@ def test_create_repo_in_organization(authenticated_user_page: Page, created_publ
     create_repo_page.click_repo_create_button()
 
     repo_page.check_url(f"/{org_name}/{repo_name}")
-    repo_page.repo_name_in_header_is_displayed(username=org_name, repo_name=repo_name)
+    repo_page.repo_header.repo_name_in_header_is_displayed(username=org_name, repo_name=repo_name)
 
 def test_repo_create_without_creation_rights(
         authenticated_user_page: Page,

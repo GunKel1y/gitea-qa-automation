@@ -1,11 +1,12 @@
 import os
 
 from components.search_dropdown import SearchDropdown
-from pages.base_page import BasePage
 from playwright.sync_api import Page, expect, Locator
 
+from pages.repo.base_repo_page import BaseRepoPage
 
-class CreateRepositoryPage(BasePage):
+
+class CreateRepositoryPage(BaseRepoPage):
 
     def __init__(self, page: Page):
         super().__init__(page)

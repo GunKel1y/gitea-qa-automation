@@ -1,10 +1,8 @@
-import os
-
 import pytest
 
 from playwright.sync_api import Page
 from pages.auth_page import AuthPage
-from pages.create_repository_page import CreateRepositoryPage
+from pages.repo.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
 
 from helpers.test_data import random_password, random_login
