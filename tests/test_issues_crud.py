@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from playwright.sync_api import Page
@@ -71,3 +73,18 @@ def test_switch_issue_status(
     issue_page.switch_status_button_click()
     issue_page.check_issue_status_label_text(issue_status)
     issue_page.check_switch_status_button_text(switch_button_text)
+
+def test_update_issue_title(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    new_issue_title = random_login()
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.click_update_title_button()
+    issue_page.fill_update_title_field(new_issue_title)
+    issue_page.click_save_new_title_button()
+    issue_page.check_issue_title_value(new_issue_title + " #" + str(created_repo_issue["issue_index"]))
