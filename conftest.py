@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 from playwright.sync_api import Page, Browser
 
 from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
-    delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member
+    delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
+    delete_issue_repo, create_issue_repo
 from helpers.test_data import random_login, random_password, random_email, random_repo_name
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -123,3 +124,22 @@ def created_organization_without_creation_rights(test_user):
     yield {"name": org_name}
 
     delete_organization(org_name)
+
+@pytest.fixture()
+def created_repo_issue(created_public_repo, test_user):
+    issue_name = random_login()
+    create_issue_response = create_issue_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        title=issue_name,
+        closed=False
+    )
+    issue_index = create_issue_response.json()["number"]
+
+    yield {"issue_index": issue_index, "issue_name": issue_name}
+
+    delete_issue_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=issue_index
+    )
