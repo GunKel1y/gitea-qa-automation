@@ -12,6 +12,9 @@ class IssueDetailsPage(BaseRepoPage):
         self._issue_title = page.locator("div.issue-title>h1")
         self._issue_id = page.locator("div.issue-title>h1>span.index")
         self._issue_status_label = page.locator("div.issue-state-label")
+        self._first_timeline_comment = page.locator(
+            "div.timeline-item.first>div.comment-container>div.comment-body>div.render-content.markup"
+        )
 
     def get_issue_id(self) -> str:
         return self._issue_id.inner_text()
@@ -24,3 +27,6 @@ class IssueDetailsPage(BaseRepoPage):
 
     def check_issue_status_label_text(self, status_text: str) -> None:
         expect(self._issue_status_label).to_have_text(status_text)
+
+    def check_first_comment_text(self, comment_text: str) -> None:
+        expect(self._first_timeline_comment).to_have_text(comment_text)
