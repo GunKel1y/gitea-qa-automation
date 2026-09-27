@@ -88,3 +88,20 @@ def test_update_issue_title(authenticated_user_page: Page, created_public_repo, 
     issue_page.fill_update_title_field(new_issue_title)
     issue_page.click_save_new_title_button()
     issue_page.check_issue_title_value(new_issue_title + " #" + str(created_repo_issue["issue_index"]))
+
+def test_update_issue_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    new_issue_comment = random_login()
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.click_first_comment_context_dropdown()
+    issue_page.click_edit_button_in_first_comment_dropdown_menu()
+    issue_page.fill_edit_comment_field_in_first_comment(new_issue_comment)
+    issue_page.click_save_new_comment_button()
+
+    issue_page.check_first_comment_text(new_issue_comment)
