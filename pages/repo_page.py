@@ -26,7 +26,7 @@ class RepoPage(BasePage):
     def repo_name_in_header_is_displayed(self, *, username: str, repo_name: str) -> None:
         expect(self._repo_name_in_header(username=username, repo_name=repo_name)).to_be_visible()
 
-    def privacy_status_is_displayed(self):
+    def privacy_status_is_displayed(self) -> None:
         expect(self._privacy_status).to_be_visible()
 
     def readme_content_is_displayed(self) -> None:
