@@ -22,6 +22,18 @@ class IssueDetailsPage(BaseRepoPage):
         self._update_title_field = page.locator("form#issue-title-editor>div>input[name='title']")
         self._save_new_title_button = page.locator("div.issue-title-buttons>button[type='submit']")
 
+        self._first_comment_container = page.locator("div.timeline-item.first")
+        self._first_comment_context_dropdown = self._first_comment_container.locator("div.context-dropdown")
+        self._edit_button_in_first_comment_dropdown_menu = self._first_comment_container.locator(
+            "div.menu div.edit-content"
+        )
+        self._edit_comment_field_in_first_comment = self._first_comment_container.locator(
+            "div[role='article'] div[data-tab-panel='markdown-writer'] textarea.markdown-text-editor"
+        )
+        self._save_new_comment_button = self._first_comment_container.locator(
+            "div.flex-text-block>button[type='submit']"
+        )
+
     def open(self, *, repo_owner: str, repo_name: str, issue_index: int) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/{repo_owner}/{repo_name}/issues/{issue_index}")
 
@@ -54,3 +66,17 @@ class IssueDetailsPage(BaseRepoPage):
 
     def click_save_new_title_button(self):
         self._save_new_title_button.click()
+
+    def click_first_comment_context_dropdown(self) -> None:
+        self._first_comment_context_dropdown.click()
+
+    def click_edit_button_in_first_comment_dropdown_menu(self) -> None:
+        self._edit_button_in_first_comment_dropdown_menu.click()
+        expect(self._edit_comment_field_in_first_comment).to_be_visible()
+        expect(self._edit_comment_field_in_first_comment).not_to_have_value("")
+
+    def fill_edit_comment_field_in_first_comment(self, new_comment_text: str) -> None:
+        self._edit_comment_field_in_first_comment.fill(new_comment_text)
+
+    def click_save_new_comment_button(self) -> None:
+        self._save_new_comment_button.click()
