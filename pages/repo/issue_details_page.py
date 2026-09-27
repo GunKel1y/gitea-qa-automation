@@ -18,6 +18,9 @@ class IssueDetailsPage(BaseRepoPage):
         )
         self._switch_status_button = page.locator("button#status-button")
         self._switch_status_button_test = page.locator("button#status-button>span.status-button-text")
+        self._update_title_button = page.locator("button#issue-title-edit-show")
+        self._update_title_field = page.locator("form#issue-title-editor>div>input[name='title']")
+        self._save_new_title_button = page.locator("div.issue-title-buttons>button[type='submit']")
 
     def open(self, *, repo_owner: str, repo_name: str, issue_index: int) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/{repo_owner}/{repo_name}/issues/{issue_index}")
@@ -42,3 +45,12 @@ class IssueDetailsPage(BaseRepoPage):
 
     def check_switch_status_button_text(self, value: str) -> None:
         expect(self._switch_status_button).to_have_text(value)
+
+    def click_update_title_button(self):
+        self._update_title_button.click()
+
+    def fill_update_title_field(self, new_issue_title: str):
+        self._update_title_field.fill(new_issue_title)
+
+    def click_save_new_title_button(self):
+        self._save_new_title_button.click()
