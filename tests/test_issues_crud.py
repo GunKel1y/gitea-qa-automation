@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from playwright.sync_api import Page
@@ -47,7 +45,7 @@ def test_add_issue_with_comment(authenticated_user_page: Page, created_public_re
 
     issue_id = issue_page.get_issue_id()
     issue_page.check_issue_title_value(issue_name + " " + issue_id)
-    issue_page.check_first_comment_text(comment_text)
+    issue_page.first_comment().check_text(comment_text)
 
 @pytest.mark.parametrize("issue_status, switch_button_text", [
     pytest.param("Закрыто", "Открыть снова", id="closing"),
@@ -99,9 +97,9 @@ def test_update_issue_comment(authenticated_user_page: Page, created_public_repo
         issue_index=created_repo_issue["issue_index"]
     )
 
-    issue_page.click_first_comment_context_dropdown()
-    issue_page.click_edit_button_in_first_comment_dropdown_menu()
-    issue_page.fill_edit_comment_field_in_first_comment(new_issue_comment)
-    issue_page.click_save_new_comment_button()
+    issue_page.first_comment().click_context_dropdown()
+    issue_page.first_comment().click_edit_item_in_menu()
+    issue_page.first_comment().fill_edit_input(new_issue_comment)
+    issue_page.first_comment().click_edit_save_button()
 
-    issue_page.check_first_comment_text(new_issue_comment)
+    issue_page.first_comment().check_text(new_issue_comment)
