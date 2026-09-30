@@ -103,3 +103,18 @@ def test_update_issue_comment(authenticated_user_page: Page, created_public_repo
     issue_page.first_comment().click_edit_save_button()
 
     issue_page.first_comment().check_text(new_issue_comment)
+
+def test_adding_issue_label(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    issue_label_text = "Kind/Bug"
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.click_labels_dropdown()
+    issue_page.click_labels_item(issue_label_text)
+    issue_page.click_on_empty_space()
+    issue_page.check_tag_in_labels_list(issue_label_text)
