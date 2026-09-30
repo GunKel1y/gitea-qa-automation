@@ -104,9 +104,14 @@ def test_update_issue_comment(authenticated_user_page: Page, created_public_repo
 
     issue_page.first_comment().check_text(new_issue_comment)
 
-def test_adding_issue_label(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
+def test_adding_issue_label(
+        authenticated_user_page: Page,
+        created_public_repo,
+        created_repo_issue,
+        created_label_on_issue,
+        test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
-    issue_label_text = "Kind/Bug"
+    issue_label_text = created_label_on_issue["label_name"]
 
     issue_page.open(
         repo_owner=test_user["login"],
