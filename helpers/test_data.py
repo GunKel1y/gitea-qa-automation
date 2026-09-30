@@ -17,3 +17,6 @@ def password_with_length(length: int) -> str:
 
 def random_repo_name() -> str:
     return f'repo-{str(uuid4())[:5]}_{str(uuid4())[:5]}'
+
+def get_random_color() -> str:
+    return f"#{random.randint(0, 0xFFFFFF):06x}"
