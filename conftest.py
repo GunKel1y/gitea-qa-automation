@@ -183,3 +183,17 @@ def created_repo_issue_with_label(created_public_repo, test_user):
         repo_name=created_public_repo["repo_name"],
         issue_index=issue_index
     )
+
+@pytest.fixture()
+def created_label_on_issue(created_public_repo, test_user):
+    label_name = random_login()
+    label_color = get_random_color()
+
+    create_label_issue(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        label_name=label_name,
+        label_color=label_color
+    )
+
+    yield {"label_name": label_name}
