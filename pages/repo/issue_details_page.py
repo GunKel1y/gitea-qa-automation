@@ -77,3 +77,6 @@ class IssueDetailsPage(BaseRepoPage):
 
     def check_tag_in_labels_list(self, label_value: str) -> None:
         expect(self._labels_list_tag(label_value)).to_be_visible()
+
+    def check_tag_absence_in_labels_list(self, label_value: str) -> None:
+        expect(self._labels_list_tag(label_value)).not_to_be_visible()
