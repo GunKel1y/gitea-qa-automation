@@ -118,3 +118,23 @@ def test_adding_issue_label(authenticated_user_page: Page, created_public_repo, 
     issue_page.click_labels_item(issue_label_text)
     issue_page.click_on_empty_space()
     issue_page.check_tag_in_labels_list(issue_label_text)
+
+def test_removing_label_from_issue(
+        authenticated_user_page: Page,
+        created_public_repo,
+        created_repo_issue_with_label,
+        test_user
+):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    label_name = created_repo_issue_with_label["label_name"]
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue_with_label["issue_index"]
+    )
+
+    issue_page.click_labels_dropdown()
+    issue_page.click_labels_item(label_name)
+    issue_page.click_on_empty_space()
+    issue_page.check_tag_absence_in_labels_list(label_name)
