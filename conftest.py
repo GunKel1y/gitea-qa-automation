@@ -68,7 +68,7 @@ def delete_user_after_registration(page: Page):
 @pytest.fixture()
 def created_public_repo(test_user):
     repo_name = random_repo_name()
-    create_repo(owner=test_user["login"], repo_name=repo_name, private=False)
+    create_repo(owner=test_user["login"], repo_name=repo_name, private=False, issue_labels="Advanced")
 
     yield {"repo_name": repo_name}
 
@@ -77,7 +77,7 @@ def created_public_repo(test_user):
 @pytest.fixture()
 def created_private_repo(test_user):
     repo_name = random_repo_name()
-    create_repo(owner=test_user["login"], repo_name=repo_name, private=True)
+    create_repo(owner=test_user["login"], repo_name=repo_name, private=True, issue_labels="Advanced")
 
     yield {"repo_name": repo_name}
 
