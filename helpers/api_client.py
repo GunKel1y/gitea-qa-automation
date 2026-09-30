@@ -114,3 +114,22 @@ def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int):
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}",
         headers=HEADERS
     )
+
+def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, label_color: str):
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/labels",
+        headers=HEADERS,
+        json = {
+            "name": label_name,
+            "color": label_color
+        }
+    )
+
+def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labels: list[str]):
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}/labels",
+        headers=HEADERS,
+        json={
+            "labels": labels
+        }
+    )
