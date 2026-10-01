@@ -119,10 +119,10 @@ def test_adding_issue_label(
         issue_index=created_repo_issue["issue_index"]
     )
 
-    issue_page.click_labels_dropdown()
-    issue_page.click_labels_item(issue_label_text)
-    issue_page.click_on_empty_space()
-    issue_page.check_tag_in_labels_list(issue_label_text)
+    issue_page.labels.open()
+    issue_page.labels.select_item(issue_label_text)
+    issue_page.labels.close()
+    issue_page.labels.check_item_in_list(issue_label_text)
 
 def test_removing_label_from_issue(
         authenticated_user_page: Page,
@@ -139,7 +139,8 @@ def test_removing_label_from_issue(
         issue_index=created_repo_issue_with_label["issue_index"]
     )
 
-    issue_page.click_labels_dropdown()
-    issue_page.click_labels_item(label_name)
-    issue_page.click_on_empty_space()
-    issue_page.check_tag_absence_in_labels_list(label_name)
+    issue_page.labels.open()
+    issue_page.labels.select_item(label_name)
+    issue_page.labels.close()
+    issue_page.labels.check_item_absence_in_list(label_name)
+
