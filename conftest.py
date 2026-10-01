@@ -8,7 +8,7 @@ from playwright.sync_api import Page, Browser
 
 from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
     delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
-    delete_issue_repo, create_issue_repo, create_label_issue, add_label_on_repo
+    delete_issue_repo, create_issue_repo, create_label_issue, add_label_on_repo, create_milestone
 from helpers.test_data import random_login, random_password, random_email, random_repo_name, get_random_color
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -197,3 +197,15 @@ def created_label_on_issue(created_public_repo, test_user):
     )
 
     yield {"label_name": label_name}
+
+@pytest.fixture()
+def created_milestone(created_public_repo, test_user):
+    milestone_name = random_login()
+
+    create_milestone(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        milestone_name=milestone_name
+    )
+
+    yield {"milestone_name": milestone_name}
