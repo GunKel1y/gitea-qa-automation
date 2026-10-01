@@ -20,6 +20,7 @@ class IssueDetailsPage(BaseRepoPage):
         self._update_title_field = page.locator("form#issue-title-editor>div>input[name='title']")
         self._save_new_title_button = page.locator("div.issue-title-buttons>button[type='submit']")
         self.labels = IssueMetadata(page=page, metadata_name='labels')
+        self.assignees = IssueMetadata(page=page, metadata_name='assignee')
 
     def first_comment(self) -> CommentForm:
         return CommentForm(self.page.locator("div.timeline-item.comment.first"))
