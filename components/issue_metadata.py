@@ -31,3 +31,6 @@ class IssueMetadata:
 
     def check_item_absence_in_list(self, item_name: str) -> None:
         expect(self._item_in_list_metadata(item_name)).not_to_be_visible()
+
+    def close(self) -> None:
+        self.page.click("body")
