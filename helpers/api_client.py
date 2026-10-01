@@ -133,3 +133,12 @@ def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labe
             "labels": labels
         }
     )
+
+def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str):
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/milestones",
+        headers=HEADERS,
+        json={
+            "title": milestone_name
+        }
+    )
