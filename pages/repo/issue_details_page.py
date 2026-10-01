@@ -56,18 +56,3 @@ class IssueDetailsPage(BaseRepoPage):
 
     def click_save_new_title_button(self):
         self._save_new_title_button.click()
-
-    # def click_labels_dropdown(self) -> None:
-    #     self._labels_dropdown.click()
-
-    # def click_labels_item(self, label_value: str) -> None:
-    #     self._labels_item(label_value).click()
-
-    def click_on_empty_space(self) -> None:
-        self.page.click("body")
-
-    # def check_tag_in_labels_list(self, label_value: str) -> None:
-    #     expect(self._labels_list_tag(label_value)).to_be_visible()
-    #
-    # def check_tag_absence_in_labels_list(self, label_value: str) -> None:
-    #     expect(self._labels_list_tag(label_value)).not_to_be_visible()
