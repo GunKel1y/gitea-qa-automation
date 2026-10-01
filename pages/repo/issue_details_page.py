@@ -3,6 +3,7 @@ import os
 from playwright.sync_api import Page, expect, Locator
 
 from components.comment_form import CommentForm
+from components.issue_metadata import IssueMetadata
 from pages.repo.base_repo_page import BaseRepoPage
 
 
@@ -18,17 +19,7 @@ class IssueDetailsPage(BaseRepoPage):
         self._update_title_button = page.locator("button#issue-title-edit-show")
         self._update_title_field = page.locator("form#issue-title-editor>div>input[name='title']")
         self._save_new_title_button = page.locator("div.issue-title-buttons>button[type='submit']")
-        self._labels_dropdown = page.locator(
-            "//div[contains(@data-update-url, 'labels')]/div[contains(@class, 'dropdown')]"
-        )
-
-    def _labels_list_tag(self, label_value: str) -> Locator:
-        return self.page.locator(f"//div[contains(@class, 'labels-list')]/a[contains(., '{label_value}')]")
-
-    def _labels_item(self, label_value: str) -> Locator:
-        return self.page.locator(
-            f"//div[@class='scrolling menu']/a[contains(@class, 'item') and contains(., '{label_value}')]"
-        )
+        self.labels = IssueMetadata(page=page, metadata_name='labels')
 
     def first_comment(self) -> CommentForm:
         return CommentForm(self.page.locator("div.timeline-item.comment.first"))
@@ -66,17 +57,17 @@ class IssueDetailsPage(BaseRepoPage):
     def click_save_new_title_button(self):
         self._save_new_title_button.click()
 
-    def click_labels_dropdown(self) -> None:
-        self._labels_dropdown.click()
+    # def click_labels_dropdown(self) -> None:
+    #     self._labels_dropdown.click()
 
-    def click_labels_item(self, label_value: str) -> None:
-        self._labels_item(label_value).click()
+    # def click_labels_item(self, label_value: str) -> None:
+    #     self._labels_item(label_value).click()
 
     def click_on_empty_space(self) -> None:
         self.page.click("body")
 
-    def check_tag_in_labels_list(self, label_value: str) -> None:
-        expect(self._labels_list_tag(label_value)).to_be_visible()
-
-    def check_tag_absence_in_labels_list(self, label_value: str) -> None:
-        expect(self._labels_list_tag(label_value)).not_to_be_visible()
+    # def check_tag_in_labels_list(self, label_value: str) -> None:
+    #     expect(self._labels_list_tag(label_value)).to_be_visible()
+    #
+    # def check_tag_absence_in_labels_list(self, label_value: str) -> None:
+    #     expect(self._labels_list_tag(label_value)).not_to_be_visible()
