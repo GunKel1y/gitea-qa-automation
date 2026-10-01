@@ -144,3 +144,21 @@ def test_removing_label_from_issue(
     issue_page.labels.close()
     issue_page.labels.check_item_absence_in_list(label_name)
 
+def test_adding_issue_assignee(
+        authenticated_user_page: Page,
+        created_public_repo,
+        created_repo_issue,
+        test_user
+):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.assignees.open()
+    issue_page.assignees.select_item(test_user["login"])
+    issue_page.assignees.close()
+    issue_page.assignees.check_item_in_list(test_user["login"])
