@@ -162,3 +162,24 @@ def test_adding_issue_assignee(
     issue_page.assignees.select_item(test_user["login"])
     issue_page.assignees.close()
     issue_page.assignees.check_item_in_list(test_user["login"])
+
+def test_issue_linking_with_milestone(
+        authenticated_user_page: Page,
+        created_public_repo,
+        created_repo_issue,
+        created_milestone,
+        test_user
+):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    milestone_name = created_milestone["milestone_name"]
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.milestones.open()
+    issue_page.milestones.select_item(milestone_name)
+    issue_page.milestones.close()
+    issue_page.milestones.check_item_in_list(milestone_name)
