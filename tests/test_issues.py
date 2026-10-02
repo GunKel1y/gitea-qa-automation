@@ -183,3 +183,17 @@ def test_issue_linking_with_milestone(
     issue_page.milestones.select_item(milestone_name)
     issue_page.milestones.close()
     issue_page.milestones.check_item_in_list(milestone_name)
+
+def test_adding_timeline_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    comment_text = unique_name(prefix='comment')
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.new_comment_form().fill_input(comment_text)
+    issue_page.new_comment_form().click_comment_button()
+    issue_page.comment_by_text(comment_text).check_visible()
