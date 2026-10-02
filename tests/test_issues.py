@@ -12,7 +12,7 @@ def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_publ
     repo_issues_page = RepoIssuesPage(authenticated_user_page)
     new_issues_page = NewIssuesPage(authenticated_user_page)
     issue_page = IssueDetailsPage(authenticated_user_page)
-    issue_name = unique_name(prefix='user')
+    issue_name = unique_name(prefix='issue')
 
     repo_issues_page.open(username=test_user["login"], repo_name=created_public_repo["repo_name"])
     repo_issues_page.click_new_issues_button()
@@ -26,12 +26,12 @@ def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_publ
     issue_id = issue_page.get_issue_id()
     issue_page.check_issue_title_value(issue_name + " " + issue_id)
 
-def test_add_issue_with_comment(authenticated_user_page: Page, created_public_repo, test_user):
+def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_public_repo, test_user):
     repo_issues_page = RepoIssuesPage(authenticated_user_page)
     new_issues_page = NewIssuesPage(authenticated_user_page)
     issue_page = IssueDetailsPage(authenticated_user_page)
-    issue_name = unique_name(prefix='user')
-    comment_text = unique_name(prefix='comment-issue')
+    issue_name = unique_name(prefix='issue')
+    comment_text = unique_name(prefix='comment')
 
     repo_issues_page.open(username=test_user["login"], repo_name=created_public_repo["repo_name"])
     repo_issues_page.click_new_issues_button()
@@ -74,7 +74,7 @@ def test_switch_issue_status(
 
 def test_update_issue_title(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
-    new_issue_title = unique_name(prefix='user')
+    new_issue_title = unique_name(prefix='issue')
 
     issue_page.open(
         repo_owner=test_user["login"],
@@ -87,9 +87,9 @@ def test_update_issue_title(authenticated_user_page: Page, created_public_repo, 
     issue_page.click_save_new_title_button()
     issue_page.check_issue_title_value(new_issue_title + " #" + str(created_repo_issue["issue_index"]))
 
-def test_update_issue_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
+def test_update_issue_pinned_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
-    new_issue_comment = unique_name(prefix='user')
+    new_issue_comment = unique_name(prefix='comment')
 
     issue_page.open(
         repo_owner=test_user["login"],
