@@ -99,7 +99,7 @@ def test_update_issue_pinned_comment(authenticated_user_page: Page, created_publ
 
     issue_page.first_comment().click_context_dropdown()
     issue_page.first_comment().click_edit_item_in_menu()
-    issue_page.first_comment().fill_edit_input(new_issue_comment)
+    issue_page.first_comment().fill_input(new_issue_comment)
     issue_page.first_comment().click_edit_save_button()
 
     issue_page.first_comment().check_text(new_issue_comment)
