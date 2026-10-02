@@ -30,11 +30,11 @@ def delete_user(username: str) -> req.Response:
         params={"purge": "true"}
     )
 
-def create_repo(*, owner: str, repo_name: str, private: bool) -> req.Response:
+def create_repo(*, owner: str, repo_name: str, private: bool, issue_labels: str = None) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/admin/users/{owner}/repos",
         headers=HEADERS,
-        json={"name": repo_name, "private": private}
+        json={"name": repo_name, "private": private, "issue_labels": issue_labels}
     )
 
 def delete_repo(*, owner: str, repo_name: str) -> req.Response:
@@ -113,4 +113,32 @@ def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int):
     return req.delete(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}",
         headers=HEADERS
+    )
+
+def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, label_color: str):
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/labels",
+        headers=HEADERS,
+        json = {
+            "name": label_name,
+            "color": label_color
+        }
+    )
+
+def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labels: list[str]):
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}/labels",
+        headers=HEADERS,
+        json={
+            "labels": labels
+        }
+    )
+
+def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str):
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/milestones",
+        headers=HEADERS,
+        json={
+            "title": milestone_name
+        }
     )

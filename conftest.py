@@ -8,8 +8,8 @@ from playwright.sync_api import Page, Browser
 
 from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
     delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
-    delete_issue_repo, create_issue_repo
-from helpers.test_data import random_password, random_email, unique_name
+    delete_issue_repo, create_issue_repo, create_milestone, create_label_issue, add_label_on_repo
+from helpers.test_data import random_password, random_email, unique_name, get_random_color
 
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -146,3 +146,66 @@ def created_repo_issue(created_public_repo, test_user):
         repo_name=created_public_repo["repo_name"],
         issue_index=issue_index
     )
+
+@pytest.fixture()
+def created_repo_issue_with_label(created_public_repo, test_user):
+    issue_name = unique_name(prefix='issue')
+    issue_comment = unique_name(prefix='comment')
+    create_issue_response = create_issue_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        title=issue_name,
+        closed=False,
+        comment=issue_comment
+    )
+    issue_index = create_issue_response.json()["number"]
+    issue_id = create_issue_response.json()["id"]
+
+    label_name = unique_name(prefix='label')
+    label_color = get_random_color()
+    create_label_issue(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        label_name=label_name,
+        label_color=label_color
+    )
+    add_label_on_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=issue_index,
+        labels=[label_name]
+    )
+
+    yield {"issue_id": issue_id, "issue_index": issue_index, "issue_name": issue_name, "label_name": label_name}
+
+    delete_issue_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=issue_index
+    )
+
+@pytest.fixture()
+def created_label_on_issue(created_public_repo, test_user):
+    label_name = unique_name(prefix='label')
+    label_color = get_random_color()
+
+    create_label_issue(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        label_name=label_name,
+        label_color=label_color
+    )
+
+    yield {"label_name": label_name}
+
+@pytest.fixture()
+def created_milestone(created_public_repo, test_user):
+    milestone_name = unique_name(prefix='milestone')
+
+    create_milestone(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        milestone_name=milestone_name
+    )
+
+    yield {"milestone_name": milestone_name}
