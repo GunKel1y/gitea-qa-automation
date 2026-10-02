@@ -2,7 +2,7 @@ import random
 import string
 from uuid import uuid4
 
-def unique_name(prefix: str = "test", length: int = 8) -> str:
+def unique_name(*, prefix: str = "test", length: int = 8) -> str:
     return f"{prefix}_{uuid4().hex[:length]}"
 
 def random_password() -> str:

@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import Page
 
-from helpers.test_data import random_repo_name
+from helpers.test_data import unique_name
 
 from pages.repo.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
@@ -63,7 +63,7 @@ def test_create_repo_with_duplicate_name(authenticated_user_page: Page, created_
 def test_create_public_repo(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = random_repo_name()
+    repo_name = unique_name(prefix='repo')
 
     create_repo_page.open()
 
@@ -76,7 +76,7 @@ def test_create_public_repo(authenticated_user_page: Page, test_user):
 def test_create_private_repo(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = random_repo_name()
+    repo_name = unique_name(prefix='repo')
 
     create_repo_page.open()
 
@@ -105,7 +105,7 @@ def test_private_repo_is_inaccessible_to_another_user(
 def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = random_repo_name()
+    repo_name = unique_name(prefix='user')
 
     create_repo_page.open()
     create_repo_page.fill_repo_name_field(repo_name)
@@ -122,7 +122,7 @@ def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
 def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = random_repo_name()
+    repo_name = unique_name(prefix='repo')
 
     create_repo_page.open()
     create_repo_page.fill_repo_name_field(repo_name)
@@ -144,7 +144,7 @@ def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Pag
 def test_create_repo_with_license_and_readme_file(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = random_repo_name()
+    repo_name = unique_name(prefix='repo')
 
     create_repo_page.open()
     create_repo_page.fill_repo_name_field(repo_name)
@@ -165,7 +165,7 @@ def test_create_repo_with_license_and_readme_file(authenticated_user_page: Page,
 def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = random_repo_name()
+    repo_name = unique_name(prefix='repo')
 
     create_repo_page.open()
     create_repo_page.fill_repo_name_field(repo_name)
@@ -196,7 +196,7 @@ def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_
 def test_create_repo_default_branch(authenticated_user_page: Page, test_user, input_branch, expected_branch):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = random_repo_name()
+    repo_name = unique_name(prefix='repo')
 
     create_repo_page.open()
     create_repo_page.fill_repo_name_field(repo_name)
@@ -216,7 +216,7 @@ def test_create_repo_default_branch(authenticated_user_page: Page, test_user, in
 def test_create_repo_in_organization(authenticated_user_page: Page, created_public_organization_by_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = random_repo_name()
+    repo_name = unique_name(prefix='repo')
     org_name = created_public_organization_by_user["name"]
 
     create_repo_page.open()
