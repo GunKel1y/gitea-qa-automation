@@ -5,7 +5,7 @@ from pages.auth_page import AuthPage
 from pages.repo.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
 
-from helpers.test_data import random_password, random_login
+from helpers.test_data import random_password, unique_name
 
 
 def test_login_with_valid_creds(page: Page, test_user):
@@ -31,7 +31,7 @@ def test_login_with_invalid_creds(page: Page, test_user, case):
     if case == "invalid_password":
         person_login, person_password = test_user["login"], test_user["password"] + "invalid"
     else:
-        person_login, person_password = random_login(), random_password()
+        person_login, person_password = unique_name(prefix='user'), random_password()
 
     auth_page.fill_username(person_login)
     auth_page.fill_password(person_password)

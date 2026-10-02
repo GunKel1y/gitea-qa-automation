@@ -5,20 +5,20 @@ from playwright.sync_api import Page
 from pages.registration_page import RegisterPage
 from pages.dashboard_page import DashboardPage
 
-from helpers.test_data import random_email, random_password, random_login, password_with_length
+from helpers.test_data import random_email, random_password, password_with_length, unique_name
 
 
 @pytest.mark.parametrize("invalid_email", [
-    pytest.param(random_login(), id="no_symbol"),
-    pytest.param(f"{random_login()}@", id="no_domain"),
-    pytest.param(f"@{random_login()}.com", id="no_local"),
+    pytest.param('', id="no_symbol"),
+    pytest.param(f"{unique_name()}@", id="no_domain"),
+    pytest.param(f"@{unique_name()}.com", id="no_local"),
 ])
 def test_registration_with_invalid_email_format(page: Page, invalid_email):
     registration_page = RegisterPage(page)
     person_password = random_password()
 
     registration_page.open()
-    registration_page.fill_username(random_login())
+    registration_page.fill_username(unique_name(prefix='user'))
     registration_page.fill_email(invalid_email)
     registration_page.fill_password(person_password)
     registration_page.fill_doublecheck_password(person_password)
@@ -50,7 +50,7 @@ def test_register_with_valid_creds(page: Page, delete_user_after_registration):
 ])
 def test_registration_with_taken_login_or_email(page: Page, test_user, taken_field, expected_error):
     registration_page = RegisterPage(page)
-    new_user = {"login": random_login(), "email": random_email(), "password": random_password()}
+    new_user = {"login": unique_name(prefix='user'), "email": random_email(), "password": random_password()}
     new_user[taken_field] = test_user[taken_field]
 
     registration_page.open()
@@ -75,7 +75,7 @@ def test_registration_with_invalid_password(page: Page, password, confirm, expec
     registration_page = RegisterPage(page)
 
     registration_page.open()
-    registration_page.fill_username(random_login())
+    registration_page.fill_username(unique_name(prefix='user'))
     registration_page.fill_email(random_email())
     registration_page.fill_password(password)
     registration_page.fill_doublecheck_password(confirm)

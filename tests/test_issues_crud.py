@@ -2,7 +2,7 @@ import pytest
 
 from playwright.sync_api import Page
 
-from helpers.test_data import random_login
+from helpers.test_data import unique_name
 from pages.repo.issue_details_page import IssueDetailsPage
 from pages.repo.new_issues_page import NewIssuesPage
 from pages.repo.repo_issues_page import RepoIssuesPage
@@ -12,7 +12,7 @@ def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_publ
     repo_issues_page = RepoIssuesPage(authenticated_user_page)
     new_issues_page = NewIssuesPage(authenticated_user_page)
     issue_page = IssueDetailsPage(authenticated_user_page)
-    issue_name = random_login()
+    issue_name = unique_name(prefix='user')
 
     repo_issues_page.open(username=test_user["login"], repo_name=created_public_repo["repo_name"])
     repo_issues_page.click_new_issues_button()
@@ -30,8 +30,8 @@ def test_add_issue_with_comment(authenticated_user_page: Page, created_public_re
     repo_issues_page = RepoIssuesPage(authenticated_user_page)
     new_issues_page = NewIssuesPage(authenticated_user_page)
     issue_page = IssueDetailsPage(authenticated_user_page)
-    issue_name = random_login()
-    comment_text = random_login()
+    issue_name = unique_name(prefix='user')
+    comment_text = unique_name(prefix='comment-issue')
 
     repo_issues_page.open(username=test_user["login"], repo_name=created_public_repo["repo_name"])
     repo_issues_page.click_new_issues_button()
@@ -74,7 +74,7 @@ def test_switch_issue_status(
 
 def test_update_issue_title(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
-    new_issue_title = random_login()
+    new_issue_title = unique_name(prefix='user')
 
     issue_page.open(
         repo_owner=test_user["login"],
@@ -89,7 +89,7 @@ def test_update_issue_title(authenticated_user_page: Page, created_public_repo, 
 
 def test_update_issue_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
-    new_issue_comment = random_login()
+    new_issue_comment = unique_name(prefix='user')
 
     issue_page.open(
         repo_owner=test_user["login"],
