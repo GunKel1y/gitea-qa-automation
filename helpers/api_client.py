@@ -142,3 +142,18 @@ def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str):
             "title": milestone_name
         }
     )
+
+def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int, comment: str):
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}/comments",
+        headers = HEADERS,
+        json = {
+            "body": comment
+        }
+    )
+
+def delete_timeline_comment(*, owner_repo: str, repo_name: str, comment_id: int):
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/comments/{comment_id}",
+        headers=HEADERS
+    )
