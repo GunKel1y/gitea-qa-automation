@@ -29,6 +29,9 @@ class IssueDetailsPage(BaseRepoPage):
     def comment_by_id(self, comment_id: int) -> CommentForm:
         return CommentForm(self.page.locator(f"#issuecomment-{comment_id}"))
 
+    def comment_by_text(self, comment_text: str) -> CommentForm:
+        return CommentForm(self.page.locator("div.timeline-item.comment:not(.form)").filter(has_text=comment_text))
+
     def open(self, *, repo_owner: str, repo_name: str, issue_index: int) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/{repo_owner}/{repo_name}/issues/{issue_index}")
 
@@ -58,3 +61,6 @@ class IssueDetailsPage(BaseRepoPage):
 
     def click_save_new_title_button(self):
         self._save_new_title_button.click()
+
+    def new_comment_form(self) -> CommentForm:
+        return CommentForm(self.page.locator("div.timeline-item.comment.form"))
