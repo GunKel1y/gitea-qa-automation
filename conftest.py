@@ -220,7 +220,6 @@ def created_timeline_comment(created_public_repo, test_user, created_repo_issue)
         issue_index=created_repo_issue["issue_index"],
         comment=comment
     )
-    print(create_comment_response.json())
     comment_id = create_comment_response.json()["id"]
 
     yield {"comment_id": comment_id, "comment_name": comment}
