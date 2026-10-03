@@ -2,6 +2,7 @@ import pytest
 
 from playwright.sync_api import Page
 
+from components.comment_form import CommentForm
 from helpers.test_data import unique_name
 from pages.repo.issue_details_page import IssueDetailsPage
 from pages.repo.new_issues_page import NewIssuesPage
@@ -219,3 +220,31 @@ def test_update_timeline_comment(
     issue_page.comment_by_id(comment_id).fill_input(update_comment_text)
     issue_page.comment_by_id(comment_id).click_edit_save_button()
     issue_page.comment_by_id(comment_id).check_text(update_comment_text)
+
+@pytest.mark.parametrize("confirm, check_result", [
+    pytest.param(True, CommentForm.check_absence, id="confirm_delete"),
+    pytest.param(False, CommentForm.check_visible, id="cancel_delete"),
+]
+)
+def test_delete_timeline_comment(
+        authenticated_user_page: Page,
+        created_public_repo,
+        created_repo_issue,
+        created_timeline_comment,
+        test_user,
+        confirm,
+        check_result
+):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    comment_id=created_timeline_comment["comment_id"]
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    comment = issue_page.comment_by_id(comment_id)
+    comment.click_context_dropdown()
+    comment.click_delete_item_in_menu(confirm=confirm)
+    check_result(comment)
