@@ -248,3 +248,26 @@ def test_delete_timeline_comment(
     comment.click_context_dropdown()
     comment.click_delete_item_in_menu(confirm=confirm)
     check_result(comment)
+
+def test_adding_timeline_comment_with_closed_issue_status(
+        authenticated_user_page: Page,
+        created_public_repo,
+        created_repo_issue,
+        test_user):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    comment_text = unique_name(prefix='comment')
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.switch_status_button_click()
+    issue_page.check_issue_status_label_text("Закрыто")
+
+    issue_page.new_comment_form().fill_input(comment_text)
+    issue_page.new_comment_form().click_comment_button()
+    issue_page.comment_by_text(comment_text).check_visible()
+    issue_page.comment_by_text(comment_text).check_text(comment_text)
+    issue_page.check_issue_status_label_text("Закрыто")
