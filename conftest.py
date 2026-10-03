@@ -8,7 +8,8 @@ from playwright.sync_api import Page, Browser
 
 from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
     delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
-    delete_issue_repo, create_issue_repo, create_milestone, create_label_issue, add_label_on_repo
+    delete_issue_repo, create_issue_repo, create_milestone, create_label_issue, add_label_on_repo, \
+    create_timeline_comment, delete_timeline_comment
 from helpers.test_data import random_password, random_email, unique_name, get_random_color
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -209,3 +210,23 @@ def created_milestone(created_public_repo, test_user):
     )
 
     yield {"milestone_name": milestone_name}
+
+@pytest.fixture()
+def created_timeline_comment(created_public_repo, test_user, created_repo_issue):
+    comment = unique_name(prefix='comment')
+    create_comment_response = create_timeline_comment(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"],
+        comment=comment
+    )
+    print(create_comment_response.json())
+    comment_id = create_comment_response.json()["id"]
+
+    yield {"comment_id": comment_id, "comment_name": comment}
+
+    delete_timeline_comment(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        comment_id=comment_id
+    )

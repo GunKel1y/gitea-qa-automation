@@ -197,3 +197,25 @@ def test_adding_timeline_comment(authenticated_user_page: Page, created_public_r
     issue_page.new_comment_form().fill_input(comment_text)
     issue_page.new_comment_form().click_comment_button()
     issue_page.comment_by_text(comment_text).check_visible()
+
+def test_update_timeline_comment(
+        authenticated_user_page: Page,
+        created_public_repo,
+        created_repo_issue,
+        created_timeline_comment,
+        test_user):
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    update_comment_text = unique_name(prefix='comment')
+    comment_id=created_timeline_comment["comment_id"]
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.comment_by_id(comment_id).click_context_dropdown()
+    issue_page.comment_by_id(comment_id).click_edit_item_in_menu()
+    issue_page.comment_by_id(comment_id).fill_input(update_comment_text)
+    issue_page.comment_by_id(comment_id).click_edit_save_button()
+    issue_page.comment_by_id(comment_id).check_text(update_comment_text)
