@@ -7,11 +7,12 @@ from pages.dashboard_page import DashboardPage
 
 from helpers.test_data import random_email, random_password, password_with_length, unique_name
 
-
+@pytest.mark.p2
 @pytest.mark.parametrize("invalid_email", [
-    pytest.param('', id="no_symbol"),
+    pytest.param('', id="empty_value"),
+    pytest.param(unique_name(), id="no_symbol"),
     pytest.param(f"{unique_name()}@", id="no_domain"),
-    pytest.param(f"@{unique_name()}.com", id="no_local"),
+    pytest.param(f"@{unique_name()}.com", id="no_local")
 ])
 def test_registration_with_invalid_email_format(page: Page, invalid_email):
     registration_page = RegisterPage(page)
