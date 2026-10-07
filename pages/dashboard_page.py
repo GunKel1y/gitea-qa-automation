@@ -9,6 +9,8 @@ class DashboardPage(BasePage):
         super().__init__(page)
         self._dashboard = page.locator("div.dashboard[role='main']")
         self._success_registration_banner  = page.locator('div.positive.message')
+        self._switch_user_button = page.locator("div.secondary div.dropdown[role='menu']>span")
+        self._switch_user_image = self._switch_user_button.locator("img")
 
     def open(self) -> None:
         self.page.goto(os.getenv("BASE_URL_UI"))
@@ -18,3 +20,9 @@ class DashboardPage(BasePage):
 
     def check_success_registration_banner_text(self, expected: str) -> None:
         expect(self._success_registration_banner).to_have_text(expected)
+
+    def switch_user_button_is_displayed(self) -> None:
+        expect(self._switch_user_button).to_be_visible()
+
+    def switch_user_image_is_displayed(self) -> None:
+        expect(self._switch_user_image).to_be_visible()

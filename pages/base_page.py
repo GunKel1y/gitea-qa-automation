@@ -17,3 +17,6 @@ class BasePage:
 
     def error_message_has_text(self, text: str) -> None:
         expect(self._error_message).to_have_text(text)
+
+    def open_user_settings(self) -> None:
+        self.page.goto(f"{os.getenv("BASE_URL_UI")}/user/settings")
