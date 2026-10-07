@@ -18,6 +18,9 @@ class GlobalHeader:
     def registration_button_is_displayed(self) -> None:
         expect(self._registration_button).to_be_visible()
 
+    def profile_menu_button_is_displayed(self) -> None:
+        expect(self._profile_and_settings_menu_button).to_be_visible()
+
     def click_profile_menu_button(self) -> None:
         self._profile_and_settings_menu_button.click()
 
