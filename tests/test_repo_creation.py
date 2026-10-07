@@ -9,12 +9,12 @@ from pages.not_found_error_page import NotFoundErrorPage
 from pages.repo.repo_page import RepoPage
 
 @pytest.mark.parametrize("repo_name, expected_name", [
-    pytest.param("a", "a", id="min"),
-    pytest.param("a" * 100, "a" * 100, id="max"),
-    pytest.param("a" * 101, "a" * 100, id="over_max_truncated"),
-    pytest.param("a b", "a-b", id="with_space"),
-    pytest.param("a/b", "a-b", id="with_slash"),
-    pytest.param("test-⭐", "test--", id="emoji"),
+    pytest.param("a", "a", id="min", marks=pytest.mark.p3),
+    pytest.param("a" * 100, "a" * 100, id="max", marks=pytest.mark.p3),
+    pytest.param("a" * 101, "a" * 100, id="over_max_truncated", marks=pytest.mark.p3),
+    pytest.param("a b", "a-b", id="with_space", marks=pytest.mark.p3),
+    pytest.param("a/b", "a-b", id="with_slash", marks=pytest.mark.p3),
+    pytest.param("test-⭐", "test--", id="emoji", marks=pytest.mark.p2),
 ])
 def test_name_validation(authenticated_user_page: Page, test_user, repo_name, expected_name):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
@@ -28,9 +28,9 @@ def test_name_validation(authenticated_user_page: Page, test_user, repo_name, ex
     repo_page.empty_repo_guide_is_displayed()
 
 @pytest.mark.parametrize("input_name", [
-    pytest.param("", id="empty_name"),
-    pytest.param("..", id="with_double_dot"),
-    pytest.param("⭐", id="emoji")
+    pytest.param("", id="empty_name", marks=pytest.mark.p2),
+    pytest.param("..", id="with_double_dot", marks=pytest.mark.p2),
+    pytest.param("⭐", id="emoji", marks=pytest.mark.p2)
 ])
 def test_name_validation_no_repo_create(authenticated_user_page: Page, input_name):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
@@ -45,6 +45,7 @@ def test_name_validation_no_repo_create(authenticated_user_page: Page, input_nam
     create_repo_page.check_url("/repo/create")
     create_repo_page.create_repo_form_is_displayed()
 
+@pytest.mark.p2
 def test_create_repo_with_duplicate_name(authenticated_user_page: Page, created_public_repo):
     dashboard_page = DashboardPage(authenticated_user_page)
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
@@ -60,6 +61,7 @@ def test_create_repo_with_duplicate_name(authenticated_user_page: Page, created_
 
     create_repo_page.error_message_has_text("Название репозитория уже используется.")
 
+@pytest.mark.p0
 def test_create_public_repo(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -73,6 +75,7 @@ def test_create_public_repo(authenticated_user_page: Page, test_user):
     repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
     repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
 
+@pytest.mark.p1
 def test_create_private_repo(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -90,6 +93,7 @@ def test_create_private_repo(authenticated_user_page: Page, test_user):
 
     repo_page.privacy_status_is_displayed()
 
+@pytest.mark.p1
 def test_private_repo_is_inaccessible_to_another_user(
         authenticated_second_user_page: Page, created_private_repo, test_user
 ):
@@ -102,6 +106,7 @@ def test_private_repo_is_inaccessible_to_another_user(
         "Либо страница, которую вы пытаетесь открыть, не существует, либо у вас недостаточно прав для ее просмотра."
     )
 
+@pytest.mark.p1
 def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -119,6 +124,7 @@ def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
 
+@pytest.mark.p1
 def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -141,6 +147,7 @@ def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Pag
 
     repo_page.readme_content_is_displayed()
 
+@pytest.mark.p1
 def test_create_repo_with_license_and_readme_file(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -162,6 +169,7 @@ def test_create_repo_with_license_and_readme_file(authenticated_user_page: Page,
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
 
+@pytest.mark.p1
 def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -187,12 +195,10 @@ def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
 
-@pytest.mark.parametrize("input_branch, expected_branch",
-    [
-        pytest.param("tests-master", "tests-master", id="custom_branch"),
-        pytest.param("", "main", id="empty_field_in_default_branch_field"),
-    ]
-)
+@pytest.mark.parametrize("input_branch, expected_branch", [
+    pytest.param("tests-master", "tests-master", id="custom_branch", marks=pytest.mark.p1),
+    pytest.param("", "main", id="empty_field_in_default_branch_field", marks=pytest.mark.p3)
+])
 def test_create_repo_default_branch(authenticated_user_page: Page, test_user, input_branch, expected_branch):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -213,6 +219,7 @@ def test_create_repo_default_branch(authenticated_user_page: Page, test_user, in
     repo_page.specified_file_in_list("README.md")
     repo_page.readme_content_is_displayed()
 
+@pytest.mark.p1
 def test_create_repo_in_organization(authenticated_user_page: Page, created_public_organization_by_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -230,6 +237,7 @@ def test_create_repo_in_organization(authenticated_user_page: Page, created_publ
     repo_page.check_url(f"/{org_name}/{repo_name}")
     repo_page.repo_header.repo_name_in_header_is_displayed(username=org_name, repo_name=repo_name)
 
+@pytest.mark.p2
 def test_repo_create_without_creation_rights(
         authenticated_user_page: Page,
         created_organization_without_creation_rights,

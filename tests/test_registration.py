@@ -27,6 +27,7 @@ def test_registration_with_invalid_email_format(page: Page, invalid_email):
 
     registration_page.check_url("/user/sign_up")
 
+@pytest.mark.p1
 def test_register_with_valid_creds(page: Page, delete_user_after_registration):
     register_page = RegisterPage(page)
     dashboard_page = DashboardPage(page)
@@ -45,8 +46,13 @@ def test_register_with_valid_creds(page: Page, delete_user_after_registration):
     dashboard_page.check_url('/')
 
 @pytest.mark.parametrize("taken_field, expected_error", [
-    pytest.param("login", "Имя пользователя уже занято.", id="in_use_username"),
-    pytest.param("email", "Этот адрес электронной почты уже используется.", id="in_use_email"),
+    pytest.param("login", "Имя пользователя уже занято.", id="in_use_username", marks=pytest.mark.p2),
+    pytest.param(
+        "email",
+        "Этот адрес электронной почты уже используется.",
+        id="in_use_email",
+        marks=pytest.mark.p3
+    ),
 ])
 def test_registration_with_taken_login_or_email(page: Page, test_user, taken_field, expected_error):
     registration_page = RegisterPage(page)
@@ -66,10 +72,21 @@ def test_registration_with_taken_login_or_email(page: Page, test_user, taken_fie
 SHORT_PASSWORD = password_with_length(7)
 LONG_PASSWORD = password_with_length(256)
 
+@pytest.mark.p2
 @pytest.mark.parametrize("password, confirm, expected_error", [
     pytest.param(random_password(), random_password(), "Пароли не совпадают.", id="failed_confirm_pass"),
-    pytest.param(SHORT_PASSWORD, SHORT_PASSWORD, "Пароль не может быть короче 8 символов.", id="min_length_pass"),
-    pytest.param(LONG_PASSWORD, LONG_PASSWORD, "Пароль должен содержать максимум 255 символов.", id="max_length_pass"),
+    pytest.param(
+        SHORT_PASSWORD,
+        SHORT_PASSWORD,
+        "Пароль не может быть короче 8 символов.",
+        id="min_length_pass"
+    ),
+    pytest.param(
+        LONG_PASSWORD,
+        LONG_PASSWORD,
+        "Пароль должен содержать максимум 255 символов.",
+        id="max_length_pass"
+    ),
 ])
 def test_registration_with_invalid_password(page: Page, password, confirm, expected_error):
     registration_page = RegisterPage(page)

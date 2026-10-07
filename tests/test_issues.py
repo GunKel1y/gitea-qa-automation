@@ -8,7 +8,7 @@ from pages.repo.issue_details_page import IssueDetailsPage
 from pages.repo.new_issues_page import NewIssuesPage
 from pages.repo.repo_issues_page import RepoIssuesPage
 
-
+@pytest.mark.p0
 def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_public_repo, test_user):
     repo_issues_page = RepoIssuesPage(authenticated_user_page)
     new_issues_page = NewIssuesPage(authenticated_user_page)
@@ -27,6 +27,7 @@ def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_publ
     issue_id = issue_page.get_issue_id()
     issue_page.check_issue_title_value(issue_name + " " + issue_id)
 
+@pytest.mark.p1
 def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_public_repo, test_user):
     repo_issues_page = RepoIssuesPage(authenticated_user_page)
     new_issues_page = NewIssuesPage(authenticated_user_page)
@@ -49,10 +50,9 @@ def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_pu
     issue_page.first_comment().check_text(comment_text)
 
 @pytest.mark.parametrize("issue_status, switch_button_text", [
-    pytest.param("Закрыто", "Открыть снова", id="closing"),
-    pytest.param("Открыто", "Закрыть задачу", id="reopen")
-]
-)
+    pytest.param("Закрыто", "Открыть снова", id="closing", marks=pytest.mark.p0),
+    pytest.param("Открыто", "Закрыть задачу", id="reopen", marks=pytest.mark.p1)
+])
 def test_switch_issue_status(
         authenticated_user_page,
         test_user,
@@ -73,6 +73,7 @@ def test_switch_issue_status(
     issue_page.check_issue_status_label_text(issue_status)
     issue_page.check_switch_status_button_text(switch_button_text)
 
+@pytest.mark.p1
 def test_update_issue_title(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
     new_issue_title = unique_name(prefix='issue')
@@ -88,6 +89,7 @@ def test_update_issue_title(authenticated_user_page: Page, created_public_repo, 
     issue_page.click_save_new_title_button()
     issue_page.check_issue_title_value(new_issue_title + " #" + str(created_repo_issue["issue_index"]))
 
+@pytest.mark.p1
 def test_update_issue_pinned_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
     new_issue_comment = unique_name(prefix='comment')
@@ -105,6 +107,7 @@ def test_update_issue_pinned_comment(authenticated_user_page: Page, created_publ
 
     issue_page.first_comment().check_text(new_issue_comment)
 
+@pytest.mark.p1
 def test_adding_issue_label(
         authenticated_user_page: Page,
         created_public_repo,
@@ -125,6 +128,7 @@ def test_adding_issue_label(
     issue_page.labels.close()
     issue_page.labels.check_item_in_list(issue_label_text)
 
+@pytest.mark.p1
 def test_removing_label_from_issue(
         authenticated_user_page: Page,
         created_public_repo,
@@ -145,6 +149,7 @@ def test_removing_label_from_issue(
     issue_page.labels.close()
     issue_page.labels.check_item_absence_in_list(label_name)
 
+@pytest.mark.p1
 def test_adding_issue_assignee(
         authenticated_user_page: Page,
         created_public_repo,
@@ -164,6 +169,7 @@ def test_adding_issue_assignee(
     issue_page.assignees.close()
     issue_page.assignees.check_item_in_list(test_user["login"])
 
+@pytest.mark.p1
 def test_issue_linking_with_milestone(
         authenticated_user_page: Page,
         created_public_repo,
@@ -185,6 +191,7 @@ def test_issue_linking_with_milestone(
     issue_page.milestones.close()
     issue_page.milestones.check_item_in_list(milestone_name)
 
+@pytest.mark.p1
 def test_adding_timeline_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
     comment_text = unique_name(prefix='comment')
@@ -199,6 +206,7 @@ def test_adding_timeline_comment(authenticated_user_page: Page, created_public_r
     issue_page.new_comment_form().click_comment_button()
     issue_page.comment_by_text(comment_text).check_visible()
 
+@pytest.mark.p1
 def test_update_timeline_comment(
         authenticated_user_page: Page,
         created_public_repo,
@@ -222,10 +230,9 @@ def test_update_timeline_comment(
     issue_page.comment_by_id(comment_id).check_text(update_comment_text)
 
 @pytest.mark.parametrize("confirm, check_result", [
-    pytest.param(True, CommentForm.check_absence, id="confirm_delete"),
-    pytest.param(False, CommentForm.check_visible, id="cancel_delete"),
-]
-)
+    pytest.param(True, CommentForm.check_absence, id="confirm_delete", marks=pytest.mark.p1),
+    pytest.param(False, CommentForm.check_visible, id="cancel_delete", marks=pytest.mark.p1),
+])
 def test_delete_timeline_comment(
         authenticated_user_page: Page,
         created_public_repo,
@@ -249,6 +256,7 @@ def test_delete_timeline_comment(
     comment.click_delete_item_in_menu(confirm=confirm)
     check_result(comment)
 
+@pytest.mark.p1
 def test_adding_timeline_comment_with_closed_issue_status(
         authenticated_user_page: Page,
         created_public_repo,
