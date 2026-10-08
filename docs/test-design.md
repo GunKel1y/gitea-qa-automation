@@ -32,18 +32,18 @@
 
 | Модуль | Автоматизировано | Всего | Покрытие |
 |--------|------------------|-------|----------|
-| Auth | 16 | 27 | 59% |
-| Repository | 22 | 29 | 76% |
-| Issues | 15 | 25 | 60% |
-| Pull Requests | 0 | 15 | 0% |
-| **Итого** | **53** | **96** | **55%** |
+| Auth | 20               | 27 | 74%      |
+| Repository | 23               | 29 | 79%      |
+| Issues | 15               | 25 | 60%      |
+| Pull Requests | 0                | 15 | 0%       |
+| **Итого** | **58**           | **96** | **60%**  |
 
 | Приоритет | Автоматизировано | Всего | Покрытие |
 |-----------|------------------|-------|----------|
-| P0 | 5 | 7 | 71% |
-| P1 | 23 | 32 | 72% |
-| P2 | 16 | 33 | 48% |
-| P3 | 9 | 24 | 38% |
+| P0 | 5                | 7 | 71%      |
+| P1 | 24               | 32 | 75%      |
+| P2 | 16               | 33 | 48%      |
+| P3 | 13               | 24 | 54%      |
 
 ## Матрицы «поле × вид проверки»
 
@@ -83,34 +83,34 @@
 Логин, логаут, регистрация, доступ к защищённым страницам. Кейсов: 27, автоматизировано: 16.
 
 | ID | P | Тип | Название | Предусловия | Шаги | Ожидаемый результат | Авто |
-|----|---|-----|----------|-------------|------|---------------------|------|
-| TC-A-001 | P0 | smoke | **Успешный логин с валидными данными** | Юзер зарегистрирован | 1. Открыть /user/login<br>2. Ввести валидные username и password<br>3. Sign In | Редирект на дашборд, юзер авторизован, элементы шапки (профиль, аватар) отображают авторизованное состояние | да |
-| TC-A-002 | P0 | smoke | **Логаут** | Юзер авторизован | 1. Открыть меню профиля<br>2. Нажать Logout | Сессия завершена, редирект на главную/логин, попытка открыть защищённую страницу ведёт на логин | да |
-| TC-A-010 | P1 | positive | **Успешная регистрация нового юзера** | Username и email свободны | 1. Открыть /user/sign_up<br>2. Заполнить username/email/password/confirm валидными данными<br>3. Register | Юзер создан, авто-логин, редирект на `/`, баннер «Учётная запись успешно создана. Добро пожаловать!» | да |
-| TC-A-011 | P1 | positive | **Доступ к защищённой странице без авторизации отклонён** | Юзер не авторизован | 1. Перейти напрямую на защищённую страницу (в тесте `/repo/create`) | Редирект на `/user/login?redirect_to=%2Frepo%2Fcreate` | да |
-| TC-A-020 | P2 | negative | **Логин с неверным паролем** | Юзер зарегистрирован | 1. Открыть /user/login<br>2. Ввести valid username + неверный password<br>3. Sign In | Ошибка «Неверное имя пользователя или пароль.», форма логина остаётся, URL `/user/login`, юзер не авторизован | да |
-| TC-A-021 | P2 | security | **Логин с несуществующим username** | — | 1. Ввести несуществующий username + любой password<br>2. Sign In | Та же ошибка «Неверное имя пользователя или пароль.», что и в A-020: сообщение не раскрывает, существует ли юзер | да |
-| TC-A-022 | P2 | negative | **Регистрация с уже занятым username** | Username `existing_user` уже занят | 1. Заполнить форму регистрации с этим username<br>2. Register | Ошибка «Имя пользователя уже занято.», URL `/user/sign_up`, юзер не создан | да |
-| TC-A-023 | P2 | negative | **Регистрация с email без `@`** | — | 1. Заполнить форму, email=`notanemail`<br>2. Register | Форма не отправляется, URL остаётся `/user/sign_up`. Браузер показывает нативную подсказку HTML5-валидации (её нет в DOM, текст зависит от браузера и локали) | да |
-| TC-A-024 | P2 | negative | **Регистрация с несовпадающими password/confirm** | — | 1. Заполнить форму, password ≠ confirm password<br>2. Register | Ошибка «Пароли не совпадают.», URL `/user/sign_up` | да |
-| TC-A-025 | P2 | negative | **Регистрация с паролем короче минимальной длины (7 символов при минимуме 8)** | — | 1. Заполнить форму, password из 7 символов, confirm совпадает<br>2. Register | Ошибка «Пароль не может быть короче 8 символов.», URL `/user/sign_up` | да |
-| TC-A-026 | P2 | boundary | **Регистрация с паролем длиннее максимума (256 символов)** | — | 1. Заполнить форму, password из 256 символов, confirm совпадает<br>2. Register | Ошибка «Пароль должен содержать максимум 255 символов.», URL `/user/sign_up` | да |
+|----|---|-----|----------|-------------|------|---------------------|-----|
+| TC-A-001 | P0 | smoke | **Успешный логин с валидными данными** | Юзер зарегистрирован | 1. Открыть /user/login<br>2. Ввести валидные username и password<br>3. Sign In | Редирект на дашборд, юзер авторизован, элементы шапки (профиль, аватар) отображают авторизованное состояние | да  |
+| TC-A-002 | P0 | smoke | **Логаут** | Юзер авторизован | 1. Открыть меню профиля<br>2. Нажать Logout | Сессия завершена, редирект на главную/логин, попытка открыть защищённую страницу ведёт на логин | да  |
+| TC-A-010 | P1 | positive | **Успешная регистрация нового юзера** | Username и email свободны | 1. Открыть /user/sign_up<br>2. Заполнить username/email/password/confirm валидными данными<br>3. Register | Юзер создан, авто-логин, редирект на `/`, баннер «Учётная запись успешно создана. Добро пожаловать!» | да  |
+| TC-A-011 | P1 | positive | **Доступ к защищённой странице без авторизации отклонён** | Юзер не авторизован | 1. Перейти напрямую на защищённую страницу (в тесте `/repo/create`) | Редирект на `/user/login?redirect_to=%2Frepo%2Fcreate` | да  |
+| TC-A-020 | P2 | negative | **Логин с неверным паролем** | Юзер зарегистрирован | 1. Открыть /user/login<br>2. Ввести valid username + неверный password<br>3. Sign In | Ошибка «Неверное имя пользователя или пароль.», форма логина остаётся, URL `/user/login`, юзер не авторизован | да  |
+| TC-A-021 | P2 | security | **Логин с несуществующим username** | — | 1. Ввести несуществующий username + любой password<br>2. Sign In | Та же ошибка «Неверное имя пользователя или пароль.», что и в A-020: сообщение не раскрывает, существует ли юзер | да  |
+| TC-A-022 | P2 | negative | **Регистрация с уже занятым username** | Username `existing_user` уже занят | 1. Заполнить форму регистрации с этим username<br>2. Register | Ошибка «Имя пользователя уже занято.», URL `/user/sign_up`, юзер не создан | да  |
+| TC-A-023 | P2 | negative | **Регистрация с email без `@`** | — | 1. Заполнить форму, email=`notanemail`<br>2. Register | Форма не отправляется, URL остаётся `/user/sign_up`. Браузер показывает нативную подсказку HTML5-валидации (её нет в DOM, текст зависит от браузера и локали) | да  |
+| TC-A-024 | P2 | negative | **Регистрация с несовпадающими password/confirm** | — | 1. Заполнить форму, password ≠ confirm password<br>2. Register | Ошибка «Пароли не совпадают.», URL `/user/sign_up` | да  |
+| TC-A-025 | P2 | negative | **Регистрация с паролем короче минимальной длины (7 символов при минимуме 8)** | — | 1. Заполнить форму, password из 7 символов, confirm совпадает<br>2. Register | Ошибка «Пароль не может быть короче 8 символов.», URL `/user/sign_up` | да  |
+| TC-A-026 | P2 | boundary | **Регистрация с паролем длиннее максимума (256 символов)** | — | 1. Заполнить форму, password из 256 символов, confirm совпадает<br>2. Register | Ошибка «Пароль должен содержать максимум 255 символов.», URL `/user/sign_up` | да  |
 | TC-A-032 | P2 | negative | **Регистрация с пустым username** | — | 1. Заполнить форму, username пустой<br>2. Register | Форма не отправляется, URL `/user/sign_up`. Браузер показывает нативную подсказку о незаполненном поле (её нет в DOM) | нет |
 | TC-A-033 | P2 | negative | **Регистрация с недопустимыми символами в username (пробел, эмодзи, `/`)** | — | 1. Заполнить форму, username с недопустимым символом<br>2. Register | Баннер ошибки формы, URL `/user/sign_up` | нет |
 | TC-A-035 | P2 | negative | **Регистрация с пустым паролем** | — | 1. Заполнить форму, password и confirm пустые<br>2. Register | Форма не отправляется, URL `/user/sign_up`. Браузер показывает нативную подсказку о незаполненном поле (её нет в DOM) | нет |
-| TC-A-036 | P2 | negative | **Регистрация с пустым email** | — | 1. Заполнить форму, email пустой<br>2. Register | Регистрация не проходит, URL `/user/sign_up` | да |
-| TC-A-037 | P2 | negative | **Регистрация с email без домена (`name@`)** | — | 1. Заполнить форму, email=`<имя>@`<br>2. Register | Регистрация не проходит, URL `/user/sign_up` | да |
-| TC-A-038 | P2 | negative | **Регистрация с email без локальной части (`@name.com`)** | — | 1. Заполнить форму, email=`@<имя>.com`<br>2. Register | Регистрация не проходит, URL `/user/sign_up` | да |
-| TC-A-027 | P3 | boundary | **Регистрация с паролем минимальной валидной длины (8 символов)** | — | 1. Заполнить форму, password из 8 символов<br>2. Register | Регистрация успешна (парная граница к A-025) | нет |
-| TC-A-028 | P3 | boundary | **Регистрация с паролем максимальной валидной длины (255 символов)** | — | 1. Заполнить форму, password из 255 символов<br>2. Register | Регистрация успешна (парная граница к A-026) | нет |
-| TC-A-030 | P3 | negative | **Логин с пустыми полями** | — | 1. Оставить username и password пустыми<br>2. Sign In | Форма логина остаётся, URL `/user/login` (форма не сабмитится) | да |
-| TC-A-031 | P3 | negative | **Регистрация с уже используемым email другим юзером** | Email уже используется другим юзером | 1. Заполнить форму с тем же email<br>2. Register | На этом инстансе дубль email отклоняется: «Этот адрес электронной почты уже используется.», URL `/user/sign_up` | да |
+| TC-A-036 | P2 | negative | **Регистрация с пустым email** | — | 1. Заполнить форму, email пустой<br>2. Register | Регистрация не проходит, URL `/user/sign_up` | да  |
+| TC-A-037 | P2 | negative | **Регистрация с email без домена (`name@`)** | — | 1. Заполнить форму, email=`<имя>@`<br>2. Register | Регистрация не проходит, URL `/user/sign_up` | да  |
+| TC-A-038 | P2 | negative | **Регистрация с email без локальной части (`@name.com`)** | — | 1. Заполнить форму, email=`@<имя>.com`<br>2. Register | Регистрация не проходит, URL `/user/sign_up` | да  |
+| TC-A-027 | P3 | boundary | **Регистрация с паролем минимальной валидной длины (8 символов)** | — | 1. Заполнить форму, password из 8 символов<br>2. Register | Регистрация успешна (парная граница к A-025) | да  |
+| TC-A-028 | P3 | boundary | **Регистрация с паролем максимальной валидной длины (255 символов)** | — | 1. Заполнить форму, password из 255 символов<br>2. Register | Регистрация успешна (парная граница к A-026) | да  |
+| TC-A-030 | P3 | negative | **Логин с пустыми полями** | — | 1. Оставить username и password пустыми<br>2. Sign In | Форма логина остаётся, URL `/user/login` (форма не сабмитится) | да  |
+| TC-A-031 | P3 | negative | **Регистрация с уже используемым email другим юзером** | Email уже используется другим юзером | 1. Заполнить форму с тем же email<br>2. Register | На этом инстансе дубль email отклоняется: «Этот адрес электронной почты уже используется.», URL `/user/sign_up` | да  |
 | TC-A-034a | P3 | boundary | **Username из 1 символа (минимального ограничения длины нет)** | — | 1. Заполнить форму, username из 1 символа<br>2. Register | Регистрация успешна | нет |
 | TC-A-034b | P3 | boundary | **Username максимальной длины (40 символов)** | — | 1. Заполнить форму, username из 40 символов<br>2. Register | Регистрация успешна | нет |
 | TC-A-034c | P3 | boundary | **Username длиннее максимума (41 символ)** | — | 1. Заполнить форму, username из 41 символа<br>2. Register | Баннер ошибки формы, URL `/user/sign_up`, юзер не создан | нет |
-| TC-A-039 | P3 | boundary | **Регистрация с email максимальной валидной длины (254 символа)** | — | 1. Заполнить форму, email из 254 символов (валидный формат)<br>2. Register | Регистрация успешна (парная граница к A-040) | нет |
+| TC-A-039 | P3 | boundary | **Регистрация с email максимальной валидной длины (254 символа)** | — | 1. Заполнить форму, email из 254 символов (валидный формат)<br>2. Register | Регистрация успешна (парная граница к A-040) | да  |
 | TC-A-040 | P3 | boundary | **Регистрация с email длиннее максимума (255 символов)** | — | 1. Заполнить форму, email из 255 символов<br>2. Register | Ошибка «Адрес эл. почты должен содержать максимум 254 символов.», URL `/user/sign_up`, юзер не создан | нет |
-| TC-A-041 | P3 | boundary | **Регистрация с минимально короткой записью email (`1@ru`)** | — | 1. Заполнить форму, email=`1@ru`<br>2. Register | Регистрация проходит: минимальной длины email нет | нет |
+| TC-A-041 | P3 | boundary | **Регистрация с минимально короткой записью email (`1@ru`)** | — | 1. Заполнить форму, email=`1@ru`<br>2. Register | Регистрация проходит: минимальной длины email нет | да  |
 
 ## Repository
 
@@ -119,7 +119,7 @@
 | ID | P | Тип | Название | Предусловия | Шаги | Ожидаемый результат | Авто |
 |----|---|-----|----------|-------------|------|---------------------|------|
 | TC-R-001 | P0 | smoke | **Создание репозитория с минимальным набором данных** | Юзер авторизован | 1. New Repository<br>2. Ввести валидное имя<br>3. Create | Репозиторий создан, редирект на `/<owner>/<repo>`, имя репозитория в шапке | да |
-| TC-R-010 | P1 | positive | **Создание публичного репозитория** | Юзер авторизован; есть второй залогиненный пользователь | 1. New Repository<br>2. Оставить Private выключенным<br>3. Create<br>4. Открыть репозиторий вторым залогиненным пользователем | Репозиторий создан как публичный и доступен второму залогиненному пользователю | нет |
+| TC-R-010 | P1 | positive | **Создание публичного репозитория** | Юзер авторизован; есть второй залогиненный пользователь | 1. New Repository<br>2. Оставить Private выключенным<br>3. Create<br>4. Открыть репозиторий вторым залогиненным пользователем | Репозиторий создан как публичный и доступен второму залогиненному пользователю | да |
 | TC-R-011 | P1 | positive | **Создание приватного репозитория** | Юзер авторизован | 1. New Repository<br>2. Включить Private<br>3. Create | Репозиторий создан, статус приватности отображается в шапке | да |
 | TC-R-012 | P1 | security | **Приватный репозиторий недоступен другому юзеру** | Репозиторий создан как private (TC-R-011) | 1. Залогиниться другим юзером<br>2. Перейти по прямой ссылке на репо | «404 Not Found», текст «Либо страница, которую вы пытаетесь открыть, не существует, либо у вас недостаточно прав для ее просмотра.» | да |
 | TC-R-013 | P1 | positive | **Создание репозитория с readme** | Юзер авторизован | 1. New Repository<br>2. Включить "Initialize repository"<br>3. Create | Репозиторий создан, в списке файлов `README.md`, содержимое README отображается | да |
@@ -210,7 +210,7 @@
 |------|----------|
 | TC-A-001 | `tests/test_auth.py::test_login_with_valid_creds` |
 | TC-A-002 | `tests/test_auth.py::test_logout` |
-| TC-A-010 | `tests/test_registration.py::test_register_with_valid_creds` |
+| TC-A-010 | `tests/test_registration.py::test_register_with_valid_creds[unique_creds]` |
 | TC-A-011 | `tests/test_auth.py::test_access_page_without_auth_is_denied` |
 | TC-A-020 | `tests/test_auth.py::test_login_with_invalid_creds[invalid_password]` |
 | TC-A-021 | `tests/test_auth.py::test_login_with_invalid_creds[non_exist_creds]` |
@@ -219,33 +219,38 @@
 | TC-A-024 | `tests/test_registration.py::test_registration_with_invalid_password[failed_confirm_pass]` |
 | TC-A-025 | `tests/test_registration.py::test_registration_with_invalid_password[min_length_pass]` |
 | TC-A-026 | `tests/test_registration.py::test_registration_with_invalid_password[max_length_pass]` |
+| TC-A-027 | `tests/test_registration.py::test_register_with_valid_creds[minimum_password_length]` |
+| TC-A-028 | `tests/test_registration.py::test_register_with_valid_creds[upper_limit_password]` |
 | TC-A-036 | `tests/test_registration.py::test_registration_with_invalid_email_format[empty_value]` |
 | TC-A-037 | `tests/test_registration.py::test_registration_with_invalid_email_format[no_domain]` |
 | TC-A-038 | `tests/test_registration.py::test_registration_with_invalid_email_format[no_local]` |
+| TC-A-039 | `tests/test_registration.py::test_register_with_valid_creds[upper_limit_email]` |
+| TC-A-041 | `tests/test_registration.py::test_register_with_valid_creds[minimum_email_length]` |
 | TC-A-030 | `tests/test_auth.py::test_login_with_empty_fields` |
 | TC-A-031 | `tests/test_registration.py::test_registration_with_taken_login_or_email[in_use_email]` |
-| TC-R-001 | `tests/test_repo_creation.py::test_create_public_repo` |
-| TC-R-011 | `tests/test_repo_creation.py::test_create_private_repo` |
-| TC-R-012 | `tests/test_repo_creation.py::test_private_repo_is_inaccessible_to_another_user` |
-| TC-R-013 | `tests/test_repo_creation.py::test_create_repo_with_readme_file` |
-| TC-R-014 | `tests/test_repo_creation.py::test_create_repo_with_gitignore_and_readme_file` |
-| TC-R-015 | `tests/test_repo_creation.py::test_create_repo_with_license_and_readme_file` |
-| TC-R-016 | `tests/test_repo_creation.py::test_create_repo_with_license_readme_and_gitignore_files` |
-| TC-R-017 | `tests/test_repo_creation.py::test_create_repo_default_branch[custom_branch]` |
-| TC-R-018 | `tests/test_repo_creation.py::test_create_repo_in_organization` |
-| TC-R-020 | `tests/test_repo_creation.py::test_name_validation_no_repo_create[empty_name]` |
-| TC-R-021 | `tests/test_repo_creation.py::test_create_repo_with_duplicate_name` |
-| TC-R-022 | `tests/test_repo_creation.py::test_name_validation_no_repo_create[with_double_dot]` |
-| TC-R-023a | `tests/test_repo_creation.py::test_name_validation[emoji]` |
-| TC-R-023b | `tests/test_repo_creation.py::test_name_validation_no_repo_create[emoji]` |
-| TC-R-024 | `tests/test_repo_creation.py::test_repo_create_without_creation_rights` |
-| TC-R-030 | `tests/test_repo_creation.py::test_name_validation[min]` |
-| TC-R-031 | `tests/test_repo_creation.py::test_name_validation[max]` |
-| TC-R-032 | `tests/test_repo_creation.py::test_name_validation[over_max_truncated]` |
-| TC-R-033 | `tests/test_repo_creation.py::test_name_validation[with_space]` |
-| TC-R-034 | `tests/test_repo_creation.py::test_name_validation[with_slash]` |
-| TC-R-035 | `tests/test_repo_creation.py::test_name_validation[*]` |
-| TC-R-037 | `tests/test_repo_creation.py::test_create_repo_default_branch[empty_field_in_default_branch_field]` |
+| TC-R-001 | `tests/test_repo.py::test_create_public_repo` |
+| TC-R-010 | `tests/test_repo.py::test_public_repo_is_accessible_to_another_user` |
+| TC-R-011 | `tests/test_repo.py::test_create_private_repo` |
+| TC-R-012 | `tests/test_repo.py::test_private_repo_is_inaccessible_to_another_user` |
+| TC-R-013 | `tests/test_repo.py::test_create_repo_with_readme_file` |
+| TC-R-014 | `tests/test_repo.py::test_create_repo_with_gitignore_and_readme_file` |
+| TC-R-015 | `tests/test_repo.py::test_create_repo_with_license_and_readme_file` |
+| TC-R-016 | `tests/test_repo.py::test_create_repo_with_license_readme_and_gitignore_files` |
+| TC-R-017 | `tests/test_repo.py::test_create_repo_default_branch[custom_branch]` |
+| TC-R-018 | `tests/test_repo.py::test_create_repo_in_organization` |
+| TC-R-020 | `tests/test_repo.py::test_name_validation_no_repo_create[empty_name]` |
+| TC-R-021 | `tests/test_repo.py::test_create_repo_with_duplicate_name` |
+| TC-R-022 | `tests/test_repo.py::test_name_validation_no_repo_create[with_double_dot]` |
+| TC-R-023a | `tests/test_repo.py::test_name_validation[emoji]` |
+| TC-R-023b | `tests/test_repo.py::test_name_validation_no_repo_create[emoji]` |
+| TC-R-024 | `tests/test_repo.py::test_repo_create_without_creation_rights` |
+| TC-R-030 | `tests/test_repo.py::test_name_validation[min]` |
+| TC-R-031 | `tests/test_repo.py::test_name_validation[max]` |
+| TC-R-032 | `tests/test_repo.py::test_name_validation[over_max_truncated]` |
+| TC-R-033 | `tests/test_repo.py::test_name_validation[with_space]` |
+| TC-R-034 | `tests/test_repo.py::test_name_validation[with_slash]` |
+| TC-R-035 | `tests/test_repo.py::test_name_validation[*]` |
+| TC-R-037 | `tests/test_repo.py::test_create_repo_default_branch[empty_field_in_default_branch_field]` |
 | TC-I-001 | `tests/test_issues.py::test_add_issue_with_minimal_data` |
 | TC-I-002 | `tests/test_issues.py::test_switch_issue_status[closing]` |
 | TC-I-010 | `tests/test_issues.py::test_add_issue_with_pinned_comment` |
