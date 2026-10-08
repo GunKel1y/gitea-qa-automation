@@ -251,3 +251,15 @@ def test_repo_create_without_creation_rights(
     create_repo_page.owner_field_click()
     create_repo_page.owner_is_selectable(test_user["login"])
     create_repo_page.owner_is_not_selectable(org_name)
+
+@pytest.mark.p1
+def test_public_repo_is_accessible_to_another_user(
+        authenticated_second_user_page: Page, created_public_repo, test_user
+):
+    repo_page = RepoPage(authenticated_second_user_page)
+    user_login = test_user['login']
+    repo_name = created_public_repo['repo_name']
+    repo_page.open(username=user_login, repo_name=repo_name)
+
+    repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=user_login)
+    repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
