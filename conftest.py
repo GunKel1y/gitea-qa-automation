@@ -4,7 +4,7 @@ import pytest
 from pathlib import Path
 from dotenv import load_dotenv
 
-from playwright.sync_api import Page, Browser
+from playwright.sync_api import Browser
 
 from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
     delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
@@ -61,8 +61,13 @@ def authenticated_second_user_page(browser: Browser, browser_context_args, secon
     context.close()
 
 @pytest.fixture()
-def delete_user_after_registration(page: Page):
-    user = {"login": unique_name(prefix='user'), "password": random_password(), "email": random_email()}
+def delete_user_after_registration(request):
+    if getattr(request, "param", None):
+        login, password, email = request.param
+    else:
+        login, password, email = unique_name(prefix='user'), random_password(), random_email()
+
+    user = {"login": login, "password": password, "email": email}
     yield user
     delete_user(user["login"])
 
