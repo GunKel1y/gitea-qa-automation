@@ -14,5 +14,8 @@ def random_email() -> str:
 def password_with_length(length: int) -> str:
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
+def email_with_length(*, length: int, domain: str) -> str:
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length)) + domain
+
 def get_random_color() -> str:
     return f"#{random.randint(0, 0xFFFFFF):06x}"

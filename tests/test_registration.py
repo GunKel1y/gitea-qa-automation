@@ -5,7 +5,8 @@ from playwright.sync_api import Page
 from pages.registration_page import RegisterPage
 from pages.dashboard_page import DashboardPage
 
-from helpers.test_data import random_email, random_password, password_with_length, unique_name
+from helpers.test_data import random_email, random_password, password_with_length, unique_name, email_with_length
+
 
 @pytest.mark.p2
 @pytest.mark.parametrize("invalid_email", [
@@ -28,17 +29,42 @@ def test_registration_with_invalid_email_format(page: Page, invalid_email):
 
     registration_page.check_url("/user/sign_up")
 
-@pytest.mark.p1
+@pytest.mark.parametrize("delete_user_after_registration", [
+    pytest.param(None, id='unique_creds', marks=pytest.mark.p1),
+    pytest.param(
+        (unique_name(prefix='user'), password_with_length(8), random_email()),
+        id='minimum_password_length',
+        marks=pytest.mark.p3
+    ),
+    pytest.param(
+        (unique_name(prefix='user'), password_with_length(255), random_email()),
+        id='upper_limit_password',
+        marks=pytest.mark.p3
+    ),
+    pytest.param(
+        (unique_name(prefix='user'), random_password(), email_with_length(length=246, domain="@test.ru")),
+        id='upper_limit_email',
+        marks=pytest.mark.p3
+    ),
+    pytest.param(
+        (unique_name(prefix='user'), random_password(), email_with_length(length=1, domain="@ru")),
+        id='minimum_email_length',
+        marks=pytest.mark.p3
+    )
+], indirect=["delete_user_after_registration"])
 def test_register_with_valid_creds(page: Page, delete_user_after_registration):
     register_page = RegisterPage(page)
     dashboard_page = DashboardPage(page)
+    username = delete_user_after_registration["login"]
+    email = delete_user_after_registration["email"]
+    password = delete_user_after_registration["password"]
 
     register_page.open()
 
-    register_page.fill_username(delete_user_after_registration["login"])
-    register_page.fill_email(delete_user_after_registration["email"])
-    register_page.fill_password(delete_user_after_registration["password"])
-    register_page.fill_doublecheck_password(delete_user_after_registration["password"])
+    register_page.fill_username(username)
+    register_page.fill_email(email)
+    register_page.fill_password(password)
+    register_page.fill_doublecheck_password(password)
 
     register_page.click_registration_button()
 
