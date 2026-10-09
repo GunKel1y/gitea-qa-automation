@@ -13,7 +13,7 @@ class DashboardPage(BasePage):
         self._switch_user_image = self._switch_user_button.locator("img")
 
     def open(self) -> None:
-        self.page.goto(os.getenv("BASE_URL_UI"))
+        self.page.goto(os.getenv("GITEA_UI_URL"))
 
     def dashboard_is_displayed(self) -> None:
         expect(self._dashboard).to_be_visible()

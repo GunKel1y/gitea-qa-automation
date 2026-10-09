@@ -16,7 +16,7 @@ class RegisterPage(BasePage):
         self._invalid_fields = page.locator(":invalid")
 
     def open(self) -> None:
-        self.page.goto(f"{os.getenv('BASE_URL_UI')}/user/sign_up")
+        self.page.goto(f"{os.getenv('GITEA_UI_URL')}/user/sign_up")
 
     def registration_form_is_displayed(self) -> None:
         expect(self._register_form).to_be_visible()

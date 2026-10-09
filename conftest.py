@@ -17,7 +17,7 @@ load_dotenv(Path(__file__).parent / ".env")
 def _login_context(*, browser, browser_context_args, user):
     context = browser.new_context(**browser_context_args)
     context.add_cookies([{"name": "lang", "value": "ru-RU", "domain": "localhost", "path": "/"}])
-    rspns = context.request.post(f"{os.getenv('BASE_URL_UI')}/user/login", form={
+    rspns = context.request.post(f"{os.getenv('GITEA_UI_URL')}/user/login", form={
         "user_name": user["login"],
         "password": user["password"],
     })

@@ -14,7 +14,7 @@ class AuthPage(BasePage):
         self._login_button = page.locator("button.ui.primary.button")
 
     def open(self) -> None:
-        self.page.goto(f"{os.getenv('BASE_URL_UI')}/user/login")
+        self.page.goto(f"{os.getenv('GITEA_UI_URL')}/user/login")
 
     def auth_form_is_displayed(self) -> None:
         expect(self._auth_form).to_be_visible()

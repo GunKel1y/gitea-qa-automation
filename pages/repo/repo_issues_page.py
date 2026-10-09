@@ -12,7 +12,7 @@ class RepoIssuesPage(BaseRepoPage):
         self._new_issues_button = page.locator("a.issue-list-new")
 
     def open(self, *, username: str, repo_name: str) -> None:
-        self.page.goto(f"{os.getenv('BASE_URL_UI')}/{username}/{repo_name}/issues")
+        self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{username}/{repo_name}/issues")
 
     def click_new_issues_button(self):
         self._new_issues_button.click()

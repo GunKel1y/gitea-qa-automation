@@ -27,7 +27,7 @@ class CreateRepositoryPage(BaseRepoPage):
         return self.page.locator(f"#repo_owner_dropdown>div.menu>div[title='{owner}']")
 
     def open(self) -> None:
-        self.page.goto(f"{os.getenv("BASE_URL_UI")}/repo/create")
+        self.page.goto(f"{os.getenv("GITEA_UI_URL")}/repo/create")
 
     def fill_repo_name_field(self, value:str) -> None:
         self._repo_name_field.fill(value)

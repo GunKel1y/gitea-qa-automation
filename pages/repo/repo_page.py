@@ -18,7 +18,7 @@ class RepoPage(BaseRepoPage):
         self.repo_header = RepoHeader(page)
 
     def open(self, *, username: str, repo_name: str) -> None:
-        self.page.goto(f"{os.getenv('BASE_URL_UI')}/{username}/{repo_name}")
+        self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{username}/{repo_name}")
 
     def empty_repo_guide_is_displayed(self) -> None:
         expect(self._empty_repo_guide).to_be_visible()

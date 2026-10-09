@@ -33,7 +33,7 @@ class IssueDetailsPage(BaseRepoPage):
         return CommentForm(self.page.locator("div.timeline-item.comment:not(.form)").filter(has_text=comment_text))
 
     def open(self, *, repo_owner: str, repo_name: str, issue_index: int) -> None:
-        self.page.goto(f"{os.getenv("BASE_URL_UI")}/{repo_owner}/{repo_name}/issues/{issue_index}")
+        self.page.goto(f"{os.getenv("GITEA_UI_URL")}/{repo_owner}/{repo_name}/issues/{issue_index}")
 
     def get_issue_id(self) -> str:
         return self._issue_id.inner_text()
