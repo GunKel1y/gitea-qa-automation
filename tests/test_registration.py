@@ -6,7 +6,7 @@ from pages.not_found_error_page import NotFoundErrorPage
 from pages.registration_page import RegisterPage
 from pages.dashboard_page import DashboardPage
 
-from helpers.test_data import random_email, random_password, password_with_length, unique_name, email_with_length
+from helpers.test_data import random_email, random_password, value_with_length, unique_name, email_with_length
 
 
 @pytest.mark.p2
@@ -43,12 +43,12 @@ def test_registration_with_invalid_email_format(page: Page, invalid_email):
 @pytest.mark.parametrize("delete_user_after_registration", [
     pytest.param(None, id='unique_creds', marks=pytest.mark.p1),
     pytest.param(
-        (unique_name(prefix='user'), password_with_length(8), random_email()),
+        (unique_name(prefix='user'), value_with_length(8), random_email()),
         id='minimum_password_length',
         marks=pytest.mark.p3
     ),
     pytest.param(
-        (unique_name(prefix='user'), password_with_length(255), random_email()),
+        (unique_name(prefix='user'), value_with_length(255), random_email()),
         id='upper_limit_password',
         marks=pytest.mark.p3
     ),
@@ -60,6 +60,16 @@ def test_registration_with_invalid_email_format(page: Page, invalid_email):
     pytest.param(
         (unique_name(prefix='user'), random_password(), email_with_length(length=1, domain="@ru")),
         id='minimum_email_length',
+        marks=pytest.mark.p3
+    ),
+    pytest.param(
+        (value_with_length(length=1), random_password(), random_email()),
+        id='minimum_username_length',
+        marks=pytest.mark.p3
+    ),
+    pytest.param(
+        (value_with_length(length=40), random_password(), random_email()),
+        id='upper_limit_username',
         marks=pytest.mark.p3
     )
 ], indirect=["delete_user_after_registration"])
@@ -107,8 +117,8 @@ def test_registration_with_taken_login_or_email(page: Page, test_user, taken_fie
     registration_page.error_message_has_text(expected_error)
     registration_page.check_url("/user/sign_up")
 
-SHORT_PASSWORD = password_with_length(7)
-LONG_PASSWORD = password_with_length(256)
+SHORT_PASSWORD = value_with_length(7)
+LONG_PASSWORD = value_with_length(256)
 
 @pytest.mark.p2
 @pytest.mark.parametrize("password, confirm, expected_error", [
@@ -185,3 +195,26 @@ def test_registration_with_empty_value_in_fields(page: Page, username, password,
 
     validation_method(registration_page)
     registration_page.check_url("/user/sign_up")
+
+@pytest.mark.p3
+def test_registration_with_username_exceeding_max_length(page: Page, delete_user_after_registration):
+    register_page = RegisterPage(page)
+    not_found_page = NotFoundErrorPage(page)
+    delete_user_after_registration["login"] = value_with_length(length=41)
+    password = delete_user_after_registration["password"]
+
+    register_page.open()
+
+    register_page.fill_username(delete_user_after_registration["login"])
+    register_page.fill_email(delete_user_after_registration["email"])
+    register_page.fill_password(password)
+    register_page.fill_doublecheck_password(password)
+
+    register_page.click_registration_button()
+
+    register_page.error_message_has_text("Пользователь должен содержать максимум 40 символов.")
+    register_page.check_url('/user/sign_up')
+
+    register_page.open_profile_user(delete_user_after_registration["login"])
+    not_found_page.check_title_text()
+    not_found_page.check_description_text()

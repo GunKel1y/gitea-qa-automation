@@ -11,7 +11,7 @@ def random_password() -> str:
 def random_email() -> str:
     return f'test-{str(uuid4())[:15]}@test.ru'
 
-def password_with_length(length: int) -> str:
+def value_with_length(length: int) -> str:
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 def email_with_length(*, length: int, domain: str) -> str:
