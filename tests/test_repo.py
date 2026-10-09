@@ -101,10 +101,8 @@ def test_private_repo_is_inaccessible_to_another_user(
     not_found_page = NotFoundErrorPage(authenticated_second_user_page)
     repo_page.open(username=test_user['login'], repo_name=created_private_repo['repo_name'])
 
-    not_found_page.check_title_text("404 Not Found")
-    not_found_page.check_description_text(
-        "Либо страница, которую вы пытаетесь открыть, не существует, либо у вас недостаточно прав для ее просмотра."
-    )
+    not_found_page.check_title_text()
+    not_found_page.check_description_text()
 
 @pytest.mark.p1
 def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
