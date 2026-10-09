@@ -13,6 +13,7 @@ class RegisterPage(BasePage):
         self._password_field = page.locator('#password')
         self._doublecheck_password_field = page.locator('#retype')
         self._registration_button = page.get_by_text('Регистрация аккаунта')
+        self._invalid_fields = page.locator(":invalid")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv('BASE_URL_UI')}/user/sign_up")
@@ -37,3 +38,9 @@ class RegisterPage(BasePage):
 
     def click_registration_button(self) -> None:
         self._registration_button.click()
+
+    def check_show_error_in_required_username(self) -> None:
+        expect(self._username_field.and_(self._invalid_fields)).to_have_count(1)
+
+    def check_show_error_in_required_password(self) -> None:
+        expect(self._password_field.and_(self._invalid_fields)).to_have_count(1)

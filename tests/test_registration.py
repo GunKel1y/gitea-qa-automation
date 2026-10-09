@@ -127,3 +127,50 @@ def test_registration_with_invalid_password(page: Page, password, confirm, expec
 
     registration_page.error_message_has_text(expected_error)
     registration_page.check_url("/user/sign_up")
+
+@pytest.mark.p2
+@pytest.mark.parametrize("username_value", [
+    pytest.param(unique_name(prefix="😊test"), id="emoji"),
+    pytest.param(unique_name(prefix="test/"), id="slash"),
+    pytest.param(unique_name(prefix="te st"), id="space")
+])
+def test_registration_with_invalid_characters_in_username(page: Page, username_value):
+    password = random_password()
+    registration_page = RegisterPage(page)
+
+    registration_page.open()
+    registration_page.fill_username(username_value)
+    registration_page.fill_email(random_email())
+    registration_page.fill_password(password)
+    registration_page.fill_doublecheck_password(password)
+    registration_page.click_registration_button()
+
+    registration_page.error_message_has_text("""
+    Пользователь can only contain alphanumeric characters ('0-9','a-z','A-Z'), dash ('-'), 
+    underscore ('_') and dot ('.'). It cannot begin or end with non-alphanumeric characters, 
+    and consecutive non-alphanumeric characters are also forbidden.
+    """)
+    registration_page.check_url("/user/sign_up")
+
+@pytest.mark.p2
+@pytest.mark.parametrize("username, password, validation_method", [
+    pytest.param("", random_password(), RegisterPage.check_show_error_in_required_username,
+                 id='empty_username'
+    ),
+    pytest.param(
+        unique_name(prefix="user"), "", RegisterPage.check_show_error_in_required_password,
+        id='empty_password'
+    )
+])
+def test_registration_with_empty_value_in_fields(page: Page, username, password, validation_method):
+    registration_page = RegisterPage(page)
+
+    registration_page.open()
+    registration_page.fill_username(username)
+    registration_page.fill_email(random_email())
+    registration_page.fill_password(password)
+    registration_page.fill_doublecheck_password(password)
+    registration_page.click_registration_button()
+
+    validation_method(registration_page)
+    registration_page.check_url("/user/sign_up")
