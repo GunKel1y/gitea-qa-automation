@@ -6,10 +6,11 @@ import requests as req
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-BASE_URL_API = os.getenv("BASE_API_URL")
-ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
+BASE_URL_API = os.getenv("GITEA_API_URL")
+GITEA_ADMIN_TOKEN = os.getenv("GITEA_ADMIN_TOKEN")
 
-HEADERS = {"Authorization": f"token {ADMIN_TOKEN}"}
+API_TIMEOUT = (5, 15)
+HEADERS = {"Authorization": f"token {GITEA_ADMIN_TOKEN}"}
 
 def create_user(*, username: str, password: str, email: str, must_change_password: bool = False) -> req.Response:
     return req.post(
@@ -20,27 +21,31 @@ def create_user(*, username: str, password: str, email: str, must_change_passwor
             "password": password,
             "email": email,
             "must_change_password": must_change_password
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def delete_user(username: str) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/admin/users/{username}",
         headers=HEADERS,
-        params={"purge": "true"}
+        params={"purge": "true"},
+        timeout=API_TIMEOUT
     )
 
 def create_repo(*, owner: str, repo_name: str, private: bool, issue_labels: str = None) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/admin/users/{owner}/repos",
         headers=HEADERS,
-        json={"name": repo_name, "private": private, "issue_labels": issue_labels}
+        json={"name": repo_name, "private": private, "issue_labels": issue_labels},
+        timeout=API_TIMEOUT
     )
 
 def delete_repo(*, owner: str, repo_name: str) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/repos/{owner}/{repo_name}",
-        headers=HEADERS
+        headers=HEADERS,
+        timeout=API_TIMEOUT
     )
 
 def create_user_token(*, username: str, password: str, scopes: list[str], token_name: str = "test-token") -> req.Response:
@@ -50,7 +55,8 @@ def create_user_token(*, username: str, password: str, scopes: list[str], token_
         json={
             "name": token_name,
             "scopes": scopes
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def create_organization(*, org_name: str, visibility: str) -> req.Response:
@@ -60,13 +66,15 @@ def create_organization(*, org_name: str, visibility: str) -> req.Response:
         json={
             "username": org_name,
             "visibility": visibility
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def delete_organization(org_name: str) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/orgs/{org_name}",
-        headers=HEADERS
+        headers=HEADERS,
+        timeout=API_TIMEOUT
     )
 
 def create_organization_by_user(*, org_name: str, visibility: str, user_token: str) -> req.Response:
@@ -76,7 +84,8 @@ def create_organization_by_user(*, org_name: str, visibility: str, user_token: s
         json={
             "username": org_name,
             "visibility": visibility
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def create_team(*, org_name: str, team_name: str, permission: str, can_create_org_repo: bool,
@@ -89,13 +98,15 @@ def create_team(*, org_name: str, team_name: str, permission: str, can_create_or
             "permission": permission,
             "can_create_org_repo": can_create_org_repo,
             "units": units or ["repo.code"],
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def add_team_member(*, team_id: int, username: str) -> req.Response:
     return req.put(
         f"{BASE_URL_API}/teams/{team_id}/members/{username}",
-        headers=HEADERS
+        headers=HEADERS,
+        timeout=API_TIMEOUT
     )
 
 def create_issue_repo(*, owner_repo: str, repo_name: str, title: str, closed: bool, comment: str) -> req.Response:
@@ -106,13 +117,15 @@ def create_issue_repo(*, owner_repo: str, repo_name: str, title: str, closed: bo
             "title": title,
             "closed": closed,
             "body": comment
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int):
     return req.delete(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}",
-        headers=HEADERS
+        headers=HEADERS,
+        timeout=API_TIMEOUT
     )
 
 def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, label_color: str):
@@ -122,7 +135,8 @@ def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, labe
         json = {
             "name": label_name,
             "color": label_color
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labels: list[str]):
@@ -131,7 +145,8 @@ def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labe
         headers=HEADERS,
         json={
             "labels": labels
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str):
@@ -140,7 +155,8 @@ def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str):
         headers=HEADERS,
         json={
             "title": milestone_name
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int, comment: str):
@@ -149,11 +165,13 @@ def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int
         headers = HEADERS,
         json = {
             "body": comment
-        }
+        },
+        timeout=API_TIMEOUT
     )
 
 def delete_timeline_comment(*, owner_repo: str, repo_name: str, comment_id: int):
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/comments/{comment_id}",
-        headers=HEADERS
+        headers=HEADERS,
+        timeout=API_TIMEOUT
     )
