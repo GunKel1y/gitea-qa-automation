@@ -20,3 +20,6 @@ class BasePage:
 
     def open_user_settings(self) -> None:
         self.page.goto(f"{os.getenv("BASE_URL_UI")}/user/settings")
+
+    def open_profile_user(self, login: str) -> None:
+        self.page.goto(f"{os.getenv("BASE_URL_UI")}/{login}")

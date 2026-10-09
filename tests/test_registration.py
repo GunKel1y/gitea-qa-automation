@@ -2,6 +2,7 @@ import pytest
 
 from playwright.sync_api import Page
 
+from pages.not_found_error_page import NotFoundErrorPage
 from pages.registration_page import RegisterPage
 from pages.dashboard_page import DashboardPage
 
@@ -13,14 +14,16 @@ from helpers.test_data import random_email, random_password, password_with_lengt
     pytest.param('', id="empty_value"),
     pytest.param(unique_name(), id="no_symbol"),
     pytest.param(f"{unique_name()}@", id="no_domain"),
-    pytest.param(f"@{unique_name()}.com", id="no_local")
+    pytest.param(f"@{unique_name()}.com", id="no_local"),
+    pytest.param(email_with_length(length=247, domain="@test.ru"), id="above_max", marks=pytest.mark.p3)
 ])
 def test_registration_with_invalid_email_format(page: Page, invalid_email):
     registration_page = RegisterPage(page)
+    user_login = unique_name(prefix='user')
     person_password = random_password()
 
     registration_page.open()
-    registration_page.fill_username(unique_name(prefix='user'))
+    registration_page.fill_username(user_login)
     registration_page.fill_email(invalid_email)
     registration_page.fill_password(person_password)
     registration_page.fill_doublecheck_password(person_password)
@@ -28,6 +31,14 @@ def test_registration_with_invalid_email_format(page: Page, invalid_email):
     registration_page.click_registration_button()
 
     registration_page.check_url("/user/sign_up")
+    if len(invalid_email) > 254:
+        registration_page.error_message_has_text("Адрес эл. почты должен содержать максимум 254 символов.")
+
+    registration_page.open_profile_user(user_login)
+
+    not_found_page = NotFoundErrorPage(page)
+    not_found_page.check_title_text()
+    not_found_page.check_description_text()
 
 @pytest.mark.parametrize("delete_user_after_registration", [
     pytest.param(None, id='unique_creds', marks=pytest.mark.p1),
