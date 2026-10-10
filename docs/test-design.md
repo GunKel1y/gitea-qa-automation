@@ -33,16 +33,16 @@
 | Модуль | Автоматизировано | Всего | Покрытие |
 |--------|------------------|-------|----------|
 | Auth | 27               | 27 | 100%     |
-| Repository | 23               | 29 | 79%      |
-| Issues | 15               | 25 | 60%      |
+| Repository | 24               | 29 | 83%      |
+| Issues | 17               | 25 | 68%      |
 | Pull Requests | 0                | 15 | 0%       |
-| **Итого** | **65**           | **96** | **68%**  |
+| **Итого** | **68**           | **96** | **71%**  |
 
 | Приоритет | Автоматизировано | Всего | Покрытие |
 |-----------|------------------|-------|----------|
 | P0 | 5                | 7 | 71%      |
 | P1 | 24               | 32 | 75%      |
-| P2 | 19               | 33 | 58%      |
+| P2 | 22               | 33 | 67%      |
 | P3 | 17               | 24 | 71%      |
 
 ## Матрицы «поле × вид проверки»
@@ -134,7 +134,7 @@
 | TC-R-023a | P2 | edge | **Эмодзи внутри имени заменяется дефисом** | Юзер авторизован | 1. New Repository<br>2. Ввести `test-⭐`<br>3. Create | Репозиторий создан с именем `test--` | да |
 | TC-R-023b | P2 | negative | **Имя только из эмодзи отклоняется** | Юзер авторизован | 1. New Repository<br>2. Ввести `⭐`<br>3. Create | Репозиторий не создан, URL `/repo/create`, форма остаётся | да |
 | TC-R-024 | P2 | permissions | **Организация без прав на создание репо** | Юзер — участник организации БЕЗ права создавать репо | 1. Попытаться создать репо от имени организации | В списке owner своя учётная запись выбираема, организация без права создавать репозитории недоступна для выбора | да |
-| TC-R-040 | P2 | positive | **Создание репозитория с описанием** | Юзер авторизован | 1. New Repository<br>2. Ввести имя и описание<br>3. Включить инициализацию (README)<br>4. Create | Описание отображается на странице репозитория | нет |
+| TC-R-040 | P2 | positive | **Создание репозитория с описанием** | Юзер авторизован | 1. New Repository<br>2. Ввести имя и описание<br>3. Включить инициализацию (README)<br>4. Create | Описание отображается на странице репозитория | да |
 | TC-R-030 | P3 | boundary | **Имя минимальной длины (1 символ)** | Юзер авторизован | 1. Ввести имя из 1 символа<br>2. Create | Репозиторий с именем из 1 символа создан (пустой, показан гайд создания) | да |
 | TC-R-031 | P3 | boundary | **Имя на границе максимальной длины (100 символов)** | Юзер авторизован | 1. Ввести имя из 100 символов<br>2. Create | Репозиторий с именем из 100 символов создан | да |
 | TC-R-032 | P3 | boundary | **Имя длиннее максимума (101 символ) обрезается до 100** | Юзер авторизован | 1. Ввести имя из 101 символа<br>2. Create | Репозиторий создан с именем из 100 символов (лишний символ отброшен) | да |
@@ -169,8 +169,8 @@
 | TC-I-019 | P1 | positive | **Удаление своего комментария (с подтверждением)** | Комментарий существует, автор: текущий юзер | 1. Открыть меню комментария<br>2. Delete<br>3. Подтвердить в диалоге | Комментарий удалён из треда | да |
 | TC-I-019b | P1 | positive | **Отмена удаления своего комментария** | Комментарий существует, автор: текущий юзер | 1. Открыть меню комментария<br>2. Delete<br>3. Отменить в диалоге | Диалог подтверждения закрыт, комментарий остаётся в треде | да |
 | TC-I-020 | P1 | positive | **Комментарий в закрытой issue** | Issue закрыта | 1. Открыть закрытую issue<br>2. Написать комментарий<br>3. Comment | Комментарий добавляется, статус issue остаётся Closed | да |
-| TC-I-030 | P2 | negative | **Создание issue с пустым title** | Репозиторий существует | 1. New Issue<br>2. Оставить title пустым<br>3. Submit | Форма не отправляется, issue не создана. Браузер показывает нативную подсказку HTML5 (её нет в DOM) | нет |
-| TC-I-032 | P2 | negative | **Создание issue в репозитории с отключёнными issues** | В репозитории отключены Issues (Settings → Issues off) | 1. Попытаться перейти на /repo/issues/new | 404 либо редирект: issues недоступны | нет |
+| TC-I-030 | P2 | negative | **Создание issue с пустым title** | Репозиторий существует | 1. New Issue<br>2. Оставить title пустым<br>3. Submit | Форма не отправляется, issue не создана: URL остаётся `/{owner}/{repo}/issues/new`, поле title в состоянии `:invalid`. Браузер показывает нативную подсказку HTML5 (её нет в DOM, текст в тесте не проверяется) | да |
+| TC-I-032 | P2 | negative | **Создание issue в репозитории с отключёнными issues** | В репозитории отключены Issues (Settings → Issues off) | 1. Попытаться перейти на /repo/issues/new | Страница 404 (заголовок и описание ошибки проверяются): issues недоступны | да |
 | TC-I-036 | P2 | positive | **Создание issue с меткой** | В репозитории есть метки | 1. New Issue<br>2. Title<br>3. Выбрать метку в sidebar<br>4. Submit | Issue создана с меткой | нет |
 | TC-I-037 | P2 | positive | **Создание issue с исполнителем** | Есть collaborator | 1. New Issue<br>2. Title<br>3. Выбрать исполнителя<br>4. Submit | Issue создана с исполнителем | нет |
 | TC-I-038 | P2 | positive | **Создание issue с milestone** | Milestone создан | 1. New Issue<br>2. Title<br>3. Выбрать milestone<br>4. Submit | Issue создана с milestone | нет |
@@ -258,6 +258,7 @@
 | TC-R-034 | `tests/test_repo.py::test_name_validation[with_slash]` |
 | TC-R-035 | `tests/test_repo.py::test_name_validation[*]` |
 | TC-R-037 | `tests/test_repo.py::test_create_repo_default_branch[empty_field_in_default_branch_field]` |
+| TC-R-040 | `tests/test_repo.py::test_create_repo_with_description` |
 | TC-I-001 | `tests/test_issues.py::test_add_issue_with_minimal_data` |
 | TC-I-002 | `tests/test_issues.py::test_switch_issue_status[closing]` |
 | TC-I-010 | `tests/test_issues.py::test_add_issue_with_pinned_comment` |
@@ -273,3 +274,5 @@
 | TC-I-019 | `tests/test_issues.py::test_delete_timeline_comment[confirm_delete]` |
 | TC-I-019b | `tests/test_issues.py::test_delete_timeline_comment[cancel_delete]` |
 | TC-I-020 | `tests/test_issues.py::test_adding_timeline_comment_with_closed_issue_status` |
+| TC-I-030 | `tests/test_issues.py::test_add_issue_with_empty_title` |
+| TC-I-032 | `tests/test_issues.py::test_add_issue_with_disabled_has_issue_param_in_repo` |
