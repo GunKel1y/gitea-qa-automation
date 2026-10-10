@@ -261,3 +261,21 @@ def test_public_repo_is_accessible_to_another_user(
 
     repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=user_login)
     repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
+
+@pytest.mark.p2
+def test_create_repo_with_description(authenticated_user_page: Page, test_user):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = unique_name(prefix="repo")
+    repo_description = unique_name(prefix="description")
+
+    create_repo_page.open()
+
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.fill_repo_description(repo_description)
+    create_repo_page.select_checkbox_initialization_repo()
+
+    create_repo_page.click_repo_create_button()
+    repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+    repo_page.check_repo_description_text(repo_description)
+    repo_page.check_url(f'/{test_user["login"]}/{repo_name}')

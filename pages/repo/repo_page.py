@@ -11,6 +11,7 @@ class RepoPage(BaseRepoPage):
     def __init__(self, page: Page):
         super().__init__(page)
         self._empty_repo_guide = page.locator("div.content>div.empty-repo-guide")
+        self._repo_description = page.locator("div.repo-description")
         self._privacy_status = page.locator("div.flex-item-trailing>span.not-mobile")
         self._readme_content = page.locator("div#readme")
         self._branch_dropdown_button = page.locator("div.custom.branch-selector-dropdown")
@@ -37,3 +38,6 @@ class RepoPage(BaseRepoPage):
 
     def check_branch_dropdown_button_text(self, value: str) -> None:
         expect(self._branch_text_in_dropdown).to_have_text(value)
+
+    def check_repo_description_text(self, text: str) -> None:
+        expect(self._repo_description).to_have_text(text)

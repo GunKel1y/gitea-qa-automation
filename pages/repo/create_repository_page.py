@@ -15,6 +15,7 @@ class CreateRepositoryPage(BaseRepoPage):
             "//div[@class='inline field']/button[contains(text(), 'Создать репозиторий')]"
         )
         self._create_repo_form = page.locator("form.new-repo-form[action='/repo/create']")
+        self._repo_description = page.locator("#description")
         self._checkbox_private_repo = page.locator("input[name='private'][type='checkbox']")
         self._initialization_repo_checkbox = page.locator("input[name='auto_init'][type='checkbox']")
         self.gitignore_dropdown = SearchDropdown(page, "gitignores")
@@ -61,3 +62,6 @@ class CreateRepositoryPage(BaseRepoPage):
 
     def owner_is_not_selectable(self, owner: str) -> None:
         expect(self._owner_menu_item(owner)).not_to_be_visible()
+
+    def fill_repo_description(self, text: str) -> None:
+        self._repo_description.fill(text)
