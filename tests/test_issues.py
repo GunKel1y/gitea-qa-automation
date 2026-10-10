@@ -4,6 +4,7 @@ from playwright.sync_api import Page
 
 from components.comment_form import CommentForm
 from helpers.test_data import unique_name
+from pages.not_found_error_page import NotFoundErrorPage
 from pages.repo.issue_details_page import IssueDetailsPage
 from pages.repo.new_issues_page import NewIssuesPage
 from pages.repo.repo_issues_page import RepoIssuesPage
@@ -279,3 +280,35 @@ def test_adding_timeline_comment_with_closed_issue_status(
     issue_page.comment_by_text(comment_text).check_visible()
     issue_page.comment_by_text(comment_text).check_text(comment_text)
     issue_page.check_issue_status_label_text("Закрыто")
+
+@pytest.mark.p2
+def test_add_issue_with_empty_title(
+        authenticated_user_page: Page,
+        created_public_repo,
+        test_user):
+    new_issue_page = NewIssuesPage(authenticated_user_page)
+    repo_owner = test_user["login"]
+    repo_name = created_public_repo["repo_name"]
+
+    new_issue_page.open(repo_owner=repo_owner, repo_name=repo_name)
+    new_issue_page.click_add_issue_button()
+
+    new_issue_page.check_url(f"/{repo_owner}/{repo_name}/issues/new")
+    new_issue_page.check_show_error_in_required_title()
+
+@pytest.mark.p2
+def test_add_issue_with_disabled_has_issue_param_in_repo(
+        authenticated_user_page: Page,
+        test_user,
+        created_public_repo,
+        disabling_ability_add_issue_to_repo):
+    new_issue_page = NewIssuesPage(authenticated_user_page)
+    not_found_page = NotFoundErrorPage(authenticated_user_page)
+    repo_owner = test_user["login"]
+    repo_name = created_public_repo["repo_name"]
+
+    new_issue_page.open(repo_owner=repo_owner, repo_name=repo_name)
+
+    not_found_page.check_url(f"/{repo_owner}/{repo_name}/issues/new")
+    not_found_page.check_title_text()
+    not_found_page.check_description_text()

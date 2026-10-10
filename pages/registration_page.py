@@ -13,7 +13,6 @@ class RegisterPage(BasePage):
         self._password_field = page.locator('#password')
         self._doublecheck_password_field = page.locator('#retype')
         self._registration_button = page.get_by_text('Регистрация аккаунта')
-        self._invalid_fields = page.locator(":invalid")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/user/sign_up")

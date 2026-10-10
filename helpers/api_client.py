@@ -121,14 +121,14 @@ def create_issue_repo(*, owner_repo: str, repo_name: str, title: str, closed: bo
         timeout=API_TIMEOUT
     )
 
-def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int):
+def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}",
         headers=HEADERS,
         timeout=API_TIMEOUT
     )
 
-def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, label_color: str):
+def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, label_color: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/labels",
         headers=HEADERS,
@@ -139,7 +139,7 @@ def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, labe
         timeout=API_TIMEOUT
     )
 
-def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labels: list[str]):
+def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labels: list[str]) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}/labels",
         headers=HEADERS,
@@ -149,7 +149,7 @@ def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labe
         timeout=API_TIMEOUT
     )
 
-def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str):
+def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/milestones",
         headers=HEADERS,
@@ -159,7 +159,7 @@ def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str):
         timeout=API_TIMEOUT
     )
 
-def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int, comment: str):
+def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int, comment: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}/comments",
         headers = HEADERS,
@@ -169,9 +169,19 @@ def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int
         timeout=API_TIMEOUT
     )
 
-def delete_timeline_comment(*, owner_repo: str, repo_name: str, comment_id: int):
+def delete_timeline_comment(*, owner_repo: str, repo_name: str, comment_id: int) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/comments/{comment_id}",
         headers=HEADERS,
+        timeout=API_TIMEOUT
+    )
+
+def update_repo_ability_repo_add_issues(*, owner_repo: str, repo_name: str, has_issues: bool) -> req.Response:
+    return req.patch(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}",
+        headers=HEADERS,
+        json={
+            "has_issues": has_issues
+        },
         timeout=API_TIMEOUT
     )

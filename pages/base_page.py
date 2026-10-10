@@ -11,6 +11,7 @@ class BasePage:
         self.page = page
         self.global_header = GlobalHeader(page)
         self._error_message = page.locator("div.negative.message.flash-message.flash-error")
+        self._invalid_fields = page.locator(":invalid")
 
     def check_url(self, expected_endpoint: str) -> None:
         expect(self.page).to_have_url(f"{os.getenv("GITEA_UI_URL")}{expected_endpoint}")

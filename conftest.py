@@ -9,7 +9,7 @@ from playwright.sync_api import Browser
 from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
     delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
     delete_issue_repo, create_issue_repo, create_milestone, create_label_issue, add_label_on_repo, \
-    create_timeline_comment, delete_timeline_comment
+    create_timeline_comment, delete_timeline_comment, update_repo_ability_repo_add_issues
 from helpers.test_data import random_password, random_email, unique_name, get_random_color
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -233,4 +233,12 @@ def created_timeline_comment(created_public_repo, test_user, created_repo_issue)
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         comment_id=comment_id
+    )
+
+@pytest.fixture()
+def disabling_ability_add_issue_to_repo(created_public_repo, test_user):
+    update_repo_ability_repo_add_issues(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        has_issues=False
     )
