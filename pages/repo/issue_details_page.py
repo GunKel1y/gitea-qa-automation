@@ -19,9 +19,12 @@ class IssueDetailsPage(BaseRepoPage):
         self._update_title_button = page.locator("button#issue-title-edit-show")
         self._update_title_field = page.locator("form#issue-title-editor>div>input[name='title']")
         self._save_new_title_button = page.locator("div.issue-title-buttons>button[type='submit']")
-        self.labels = IssueMetadata(page=page, metadata_name='labels')
-        self.assignees = IssueMetadata(page=page, metadata_name='assignee')
-        self.milestones = IssueMetadata(page=page, metadata_name='milestone')
+        self.labels = IssueMetadata(page=page, container=self._by_update_url("labels"))
+        self.assignees = IssueMetadata(page=page, container=self._by_update_url("assignee"))
+        self.milestones = IssueMetadata(page=page, container=self._by_update_url("milestone"))
+
+    def _by_update_url(self, name: str) -> Locator:
+        return self.page.locator(f"//div[contains(@data-update-url, '/issues/{name}')]")
 
     def first_comment(self) -> CommentForm:
         return CommentForm(self.page.locator("div.timeline-item.comment.first"))

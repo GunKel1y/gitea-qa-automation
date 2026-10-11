@@ -185,3 +185,22 @@ def update_repo_ability_repo_add_issues(*, owner_repo: str, repo_name: str, has_
         },
         timeout=API_TIMEOUT
     )
+
+def adding_collaborator_for_repo(
+        *, owner_repo: str, repo_name: str, collaborator_login: str, permission: str
+) -> req.Response:
+    return req.put(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/collaborators/{collaborator_login}",
+        headers=HEADERS,
+        json={
+            "permission": permission
+        },
+        timeout=API_TIMEOUT
+    )
+
+def delete_collaborator_for_repo(*, owner_repo: str, repo_name: str, collaborator_login: str) -> req.Response:
+    return req.delete(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/collaborators/{collaborator_login}",
+        headers=HEADERS,
+        timeout=API_TIMEOUT
+    )

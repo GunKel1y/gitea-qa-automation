@@ -3,11 +3,10 @@ from playwright.sync_api import Page, Locator, expect
 
 class IssueMetadata:
 
-    def __init__(self, *, page: Page, metadata_name: str):
+    def __init__(self, *, page: Page, container: Locator):
         self.page = page
-        self.metadata_name = metadata_name
-        self._metadata_container = page.locator(f"//div[contains(@data-update-url, '/issues/{metadata_name}')]")
-        self._dropdown = self._metadata_container.locator(f"//div[contains(@class, 'dropdown')]")
+        self._metadata_container = container
+        self._dropdown = container.locator("xpath=.//div[contains(@class, 'dropdown')]")
 
     def _item_in_list_metadata(self, item_name: str) -> Locator:
         return self._metadata_container.locator(

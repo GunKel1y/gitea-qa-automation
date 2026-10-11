@@ -9,7 +9,8 @@ from playwright.sync_api import Browser
 from helpers.api_client import create_user, delete_user, create_repo, delete_repo, create_organization, \
     delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
     delete_issue_repo, create_issue_repo, create_milestone, create_label_issue, add_label_on_repo, \
-    create_timeline_comment, delete_timeline_comment, update_repo_ability_repo_add_issues
+    create_timeline_comment, delete_timeline_comment, update_repo_ability_repo_add_issues, adding_collaborator_for_repo, \
+    delete_collaborator_for_repo
 from helpers.test_data import random_password, random_email, unique_name, get_random_color
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -191,7 +192,7 @@ def created_repo_issue_with_label(created_public_repo, test_user):
     )
 
 @pytest.fixture()
-def created_label_on_issue(created_public_repo, test_user):
+def created_repo_label(created_public_repo, test_user):
     label_name = unique_name(prefix='label')
     label_color = get_random_color()
 
@@ -241,4 +242,22 @@ def disabling_ability_add_issue_to_repo(created_public_repo, test_user):
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         has_issues=False
+    )
+
+@pytest.fixture()
+def adding_collaboration_for_repo_with_admin_permission(created_public_repo, test_user, second_test_user):
+    collaboration_name = second_test_user["login"]
+    adding_collaborator_for_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        collaborator_login=collaboration_name,
+        permission="admin"
+    )
+
+    yield {"collaborator_login": collaboration_name}
+
+    delete_collaborator_for_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        collaborator_login=collaboration_name
     )

@@ -113,10 +113,10 @@ def test_adding_issue_label(
         authenticated_user_page: Page,
         created_public_repo,
         created_repo_issue,
-        created_label_on_issue,
+        created_repo_label,
         test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
-    issue_label_text = created_label_on_issue["label_name"]
+    issue_label_text = created_repo_label["label_name"]
 
     issue_page.open(
         repo_owner=test_user["login"],
@@ -312,3 +312,74 @@ def test_add_issue_with_disabled_has_issue_param_in_repo(
     not_found_page.check_url(f"/{repo_owner}/{repo_name}/issues/new")
     not_found_page.check_title_text()
     not_found_page.check_description_text()
+
+@pytest.mark.p2
+def test_creating_issue_with_label(
+        authenticated_user_page: Page,
+        test_user,
+        created_public_repo,
+        created_repo_label):
+    new_issue_page = NewIssuesPage(authenticated_user_page)
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    issue_name = unique_name(prefix='issue')
+    label_item = created_repo_label["label_name"]
+
+    new_issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"]
+    )
+    new_issue_page.fill_input_issue_title(issue_name)
+
+    new_issue_page.labels.open()
+    new_issue_page.labels.select_item(label_item)
+    new_issue_page.labels.close()
+    new_issue_page.click_add_issue_button()
+
+    issue_page.labels.check_item_in_list(label_item)
+
+@pytest.mark.p2
+def test_creating_issue_with_assignee(
+        authenticated_user_page: Page,
+        test_user,
+        created_public_repo,
+        adding_collaboration_for_repo_with_admin_permission
+):
+    new_issue_page = NewIssuesPage(authenticated_user_page)
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    issue_name = unique_name(prefix='issue')
+    collaborator_name = adding_collaboration_for_repo_with_admin_permission["collaborator_login"]
+
+    new_issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"]
+    )
+    new_issue_page.fill_input_issue_title(issue_name)
+
+    new_issue_page.assignees.open()
+    new_issue_page.assignees.select_item(collaborator_name)
+    new_issue_page.assignees.close()
+    new_issue_page.click_add_issue_button()
+
+    issue_page.assignees.check_item_in_list(collaborator_name)
+
+@pytest.mark.p2
+def test_creating_issue_with_milestone(
+        authenticated_user_page: Page, test_user, created_public_repo, created_milestone
+):
+    new_issue_page = NewIssuesPage(authenticated_user_page)
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    issue_name = unique_name(prefix='issue')
+    milestone_name = created_milestone["milestone_name"]
+
+    new_issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"]
+    )
+    new_issue_page.fill_input_issue_title(issue_name)
+
+    new_issue_page.milestones.open()
+    new_issue_page.milestones.select_item(milestone_name)
+    new_issue_page.milestones.close()
+    new_issue_page.click_add_issue_button()
+
+    issue_page.milestones.check_item_in_list(milestone_name)

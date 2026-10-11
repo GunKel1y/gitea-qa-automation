@@ -1,7 +1,8 @@
 import os
 
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, expect, Locator
 
+from components.issue_metadata import IssueMetadata
 from pages.repo.base_repo_page import BaseRepoPage
 
 
@@ -12,6 +13,14 @@ class NewIssuesPage(BaseRepoPage):
         self._input_issue_title = page.locator("input#issue_title")
         self._add_issue_button = page.locator("div.content>div.tw-justify-end>button")
         self._comment_field = page.locator("div[data-tab-panel='markdown-writer']>*>textarea.markdown-text-editor")
+        self.labels = IssueMetadata(page=page, container=self._combo("label_ids"))
+        self.assignees = IssueMetadata(page=page, container=self._combo("assignee_ids"))
+        self.milestones = IssueMetadata(page=page, container=self._combo("milestone_id"))
+
+    def _combo(self, input_name: str) -> Locator:
+        return self.page.locator("div.issue-sidebar-combo").filter(
+            has=self.page.locator(f"input[name='{input_name}']")
+        )
 
     def open(self, *, repo_owner: str, repo_name: str) -> None:
         self.page.goto(f"{os.getenv("GITEA_UI_URL")}/{repo_owner}/{repo_name}/issues/new")
