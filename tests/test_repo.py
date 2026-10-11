@@ -132,8 +132,7 @@ def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Pag
     create_repo_page.fill_repo_name_field(repo_name)
 
     create_repo_page.gitignore_dropdown.open()
-
-    create_repo_page.gitignore_dropdown.select("Python")
+    create_repo_page.gitignore_dropdown.select_random_item()
 
     create_repo_page.select_checkbox_initialization_repo()
 
@@ -155,8 +154,7 @@ def test_create_repo_with_license_and_readme_file(authenticated_user_page: Page,
     create_repo_page.fill_repo_name_field(repo_name)
 
     create_repo_page.license_dropdown.open()
-
-    create_repo_page.license_dropdown.select("Apache-2.0")
+    create_repo_page.license_dropdown.select_random_item()
 
     create_repo_page.select_checkbox_initialization_repo()
 
@@ -177,11 +175,11 @@ def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_
     create_repo_page.fill_repo_name_field(repo_name)
 
     create_repo_page.gitignore_dropdown.open()
-    create_repo_page.gitignore_dropdown.select("Go")
+    create_repo_page.gitignore_dropdown.select_random_item()
     create_repo_page.press_esc()
 
     create_repo_page.license_dropdown.open()
-    create_repo_page.license_dropdown.select("EPL-1.0")
+    create_repo_page.license_dropdown.select_random_item()
 
     create_repo_page.select_checkbox_initialization_repo()
 
