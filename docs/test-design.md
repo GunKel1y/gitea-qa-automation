@@ -34,15 +34,15 @@
 |--------|------------------|-------|----------|
 | Auth | 27               | 27 | 100%     |
 | Repository | 24               | 29 | 83%      |
-| Issues | 17               | 25 | 68%      |
+| Issues | 20               | 25 | 80%      |
 | Pull Requests | 0                | 15 | 0%       |
-| **Итого** | **68**           | **96** | **71%**  |
+| **Итого** | **71**           | **96** | **74%**  |
 
 | Приоритет | Автоматизировано | Всего | Покрытие |
 |-----------|------------------|-------|----------|
 | P0 | 5                | 7 | 71%      |
 | P1 | 24               | 32 | 75%      |
-| P2 | 22               | 33 | 67%      |
+| P2 | 25               | 33 | 76%      |
 | P3 | 17               | 24 | 71%      |
 
 ## Матрицы «поле × вид проверки»
@@ -171,9 +171,9 @@
 | TC-I-020 | P1 | positive | **Комментарий в закрытой issue** | Issue закрыта | 1. Открыть закрытую issue<br>2. Написать комментарий<br>3. Comment | Комментарий добавляется, статус issue остаётся Closed | да |
 | TC-I-030 | P2 | negative | **Создание issue с пустым title** | Репозиторий существует | 1. New Issue<br>2. Оставить title пустым<br>3. Submit | Форма не отправляется, issue не создана: URL остаётся `/{owner}/{repo}/issues/new`, поле title в состоянии `:invalid`. Браузер показывает нативную подсказку HTML5 (её нет в DOM, текст в тесте не проверяется) | да |
 | TC-I-032 | P2 | negative | **Создание issue в репозитории с отключёнными issues** | В репозитории отключены Issues (Settings → Issues off) | 1. Попытаться перейти на /repo/issues/new | Страница 404 (заголовок и описание ошибки проверяются): issues недоступны | да |
-| TC-I-036 | P2 | positive | **Создание issue с меткой** | В репозитории есть метки | 1. New Issue<br>2. Title<br>3. Выбрать метку в sidebar<br>4. Submit | Issue создана с меткой | нет |
-| TC-I-037 | P2 | positive | **Создание issue с исполнителем** | Есть collaborator | 1. New Issue<br>2. Title<br>3. Выбрать исполнителя<br>4. Submit | Issue создана с исполнителем | нет |
-| TC-I-038 | P2 | positive | **Создание issue с milestone** | Milestone создан | 1. New Issue<br>2. Title<br>3. Выбрать milestone<br>4. Submit | Issue создана с milestone | нет |
+| TC-I-036 | P2 | positive | **Создание issue с меткой** | В репозитории есть метки | 1. New Issue<br>2. Title<br>3. Выбрать метку в sidebar<br>4. Submit | Issue создана с меткой | да |
+| TC-I-037 | P2 | positive | **Создание issue с исполнителем** | Есть collaborator | 1. New Issue<br>2. Title<br>3. Выбрать исполнителя<br>4. Submit | Issue создана с исполнителем | да |
+| TC-I-038 | P2 | positive | **Создание issue с milestone** | Milestone создан | 1. New Issue<br>2. Title<br>3. Выбрать milestone<br>4. Submit | Issue создана с milestone | да |
 | TC-I-040 | P2 | permissions | **Чужой юзер не может редактировать title и описание чужой issue** | Issue создана юзером A; юзер B не коллаборатор | 1. Залогиниться юзером B<br>2. Открыть issue | Кнопка Edit недоступна | нет |
 | TC-I-041 | P2 | permissions | **Чужой юзер не может закрыть чужую issue** | Issue создана юзером A; юзер B не коллаборатор | 1. Залогиниться юзером B<br>2. Открыть issue | Кнопка закрытия недоступна | нет |
 | TC-I-042 | P2 | permissions | **Чужой юзер не может редактировать и удалять чужой комментарий** | Комментарий оставлен юзером A; юзер B не коллаборатор | 1. Залогиниться юзером B<br>2. Открыть меню комментария | Пункты Edit и Delete недоступны | нет |
@@ -276,3 +276,6 @@
 | TC-I-020 | `tests/test_issues.py::test_adding_timeline_comment_with_closed_issue_status` |
 | TC-I-030 | `tests/test_issues.py::test_add_issue_with_empty_title` |
 | TC-I-032 | `tests/test_issues.py::test_add_issue_with_disabled_has_issue_param_in_repo` |
+| TC-I-036 | `tests/test_issues.py::test_creating_issue_with_label` |
+| TC-I-037 | `tests/test_issues.py::test_creating_issue_with_assignee` |
+| TC-I-038 | `tests/test_issues.py::test_creating_issue_with_milestone` |
