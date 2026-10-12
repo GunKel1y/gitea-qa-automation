@@ -10,7 +10,7 @@ class SearchDropdown:
         self.field_name = field_name
         self._input = page.locator(f"*[name='{field_name}']~input.search")
         self._menu = page.locator(f"input[name='{field_name}']~div.menu")
-        self._item_list = self._menu.locator(f"div.item")
+        self._item_list = self._menu.locator("div.item[data-value]:not([data-value=''])")
         self._tags = page.locator(f"input[name='{field_name}']~a")
         self._text_in_input = page.locator(f"*[name='{field_name}']~input.search~div.text")
 
@@ -18,7 +18,10 @@ class SearchDropdown:
         return self._menu.locator(f"div[data-value='{value}']")
 
     def _get_random_item(self) -> str:
-        self._item_list.first.wait_for(state="visible")
+        expect(
+            self._item_list,
+            "Невозможно выбрать рандомный элемент, так как не отображается список"
+        ).not_to_have_count(0)
         return random.choice(self._item_list.all()).get_attribute("data-value")
 
     def open(self) -> None:
