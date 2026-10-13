@@ -56,6 +56,12 @@ class IssueDetailsPage(BaseRepoPage):
     def check_switch_status_button_text(self, value: str) -> None:
         expect(self._switch_status_button).to_have_text(value)
 
+    def switch_status_button_should_be_hidden(self) -> None:
+        expect(self._switch_status_button).to_be_hidden()
+
+    def update_title_button_should_be_hidden(self) -> None:
+        expect(self._update_title_button).to_be_hidden()
+
     def click_update_title_button(self):
         self._update_title_button.click()
 

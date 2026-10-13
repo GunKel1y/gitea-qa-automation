@@ -21,6 +21,9 @@ class CommentForm:
     def click_context_dropdown(self) -> None:
         self._context_dropdown.click()
 
+    def edit_item_should_be_hidden(self) -> None:
+        expect(self._edit_item).to_be_hidden()
+
     def click_edit_item_in_menu(self) -> None:
         self._edit_item.click()
         expect(self._input).to_be_visible()
@@ -32,6 +35,9 @@ class CommentForm:
 
         self.comment.page.once("dialog", action)
         self._delete_item.click()
+
+    def delete_should_be_hidden(self) -> None:
+        expect(self._delete_item).to_be_hidden()
 
     def fill_input(self, new_comment: str) -> None:
         self._input.fill(new_comment)

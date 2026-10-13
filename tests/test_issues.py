@@ -383,3 +383,62 @@ def test_creating_issue_with_milestone(
     new_issue_page.click_add_issue_button()
 
     issue_page.milestones.check_item_in_list(milestone_name)
+
+@pytest.mark.p2
+def test_trying_update_issue_title_and_pinned_comment_by_other_user(
+        test_user,
+        authenticated_second_user_page,
+        second_test_user,
+        created_public_repo,
+        created_repo_issue
+):
+    issue_page = IssueDetailsPage(authenticated_second_user_page)
+    pinned_comment = issue_page.comment_by_text(created_repo_issue["issue_comment"])
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.update_title_button_should_be_hidden()
+    pinned_comment.click_context_dropdown()
+    pinned_comment.edit_item_should_be_hidden()
+
+@pytest.mark.p2
+def test_trying_close_issue_by_other_user(
+        test_user,
+        authenticated_second_user_page,
+        created_public_repo,
+        created_repo_issue
+):
+    issue_page = IssueDetailsPage(authenticated_second_user_page)
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.switch_status_button_should_be_hidden()
+
+@pytest.mark.p2
+def test_trying_update_and_delete_comment_by_other_user(
+        test_user,
+        authenticated_second_user_page,
+        created_public_repo,
+        created_repo_issue,
+        created_timeline_comment
+):
+    issue_page = IssueDetailsPage(authenticated_second_user_page)
+    comment = issue_page.comment_by_text(created_timeline_comment["comment_name"])
+
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    comment.click_context_dropdown()
+    comment.edit_item_should_be_hidden()
+    comment.delete_should_be_hidden()
