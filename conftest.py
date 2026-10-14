@@ -146,7 +146,7 @@ def created_repo_issue(created_public_repo, test_user):
     issue_index = create_issue_response.json()["number"]
     issue_id = create_issue_response.json()["id"]
 
-    yield {"issue_id": issue_id, "issue_index": issue_index, "issue_name": issue_name}
+    yield {"issue_id": issue_id, "issue_index": issue_index, "issue_name": issue_name, "issue_comment": issue_comment}
 
     delete_issue_repo(
         owner_repo=test_user["login"],
