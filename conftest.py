@@ -18,16 +18,17 @@ load_dotenv(Path(__file__).parent / ".env")
 def _login_context(*, browser, browser_context_args, user):
     context = browser.new_context(**browser_context_args)
     context.add_cookies([{"name": "lang", "value": "ru-RU", "domain": "localhost", "path": "/"}])
-    rspns = context.request.post(f"{os.getenv('GITEA_UI_URL')}/user/login", form={
+    authorized = context.request.post(f"{os.getenv('GITEA_UI_URL')}/user/login", form={
         "user_name": user["login"],
         "password": user["password"],
     })
-    assert rspns.ok and "/user/login" not in rspns.url, f"Login failed: {rspns.status} {rspns.url}"
+    assert authorized.ok and "/user/login" not in authorized.url, f"Ошибка входа: {authorized.status} {authorized.url}"
     return context
 
 def _make_user() -> dict:
     user = {"login": unique_name(prefix='user'), "password": random_password(), "email": random_email()}
-    create_user(username=user["login"], email=user["email"], password=user["password"])
+    created_user = create_user(username=user["login"], email=user["email"], password=user["password"])
+    assert created_user.ok, f"Ошибка при создании пользователя: {created_user.status_code} {created_user.text}"
     return user
 
 @pytest.fixture(scope="session")
@@ -75,7 +76,8 @@ def delete_user_after_registration(request):
 @pytest.fixture()
 def created_public_repo(test_user):
     repo_name = unique_name(prefix='repo')
-    create_repo(owner=test_user["login"], repo_name=repo_name, private=False)
+    created_repo = create_repo(owner=test_user["login"], repo_name=repo_name, private=False)
+    assert created_repo.ok, f"Ошибка создания публичного репозитория: {created_repo.status_code} {created_repo.text}"
 
     yield {"repo_name": repo_name}
 
@@ -84,7 +86,8 @@ def created_public_repo(test_user):
 @pytest.fixture()
 def created_private_repo(test_user):
     repo_name = unique_name(prefix='repo')
-    create_repo(owner=test_user["login"], repo_name=repo_name, private=True)
+    created_repo = create_repo(owner=test_user["login"], repo_name=repo_name, private=True)
+    assert created_repo.ok, f"Ошибка создания приватного репозитория: {created_repo.status_code} {created_repo.text}"
 
     yield {"repo_name": repo_name}
 
@@ -136,15 +139,16 @@ def created_organization_without_creation_rights(test_user):
 def created_repo_issue(created_public_repo, test_user):
     issue_name = unique_name(prefix='issue')
     issue_comment = unique_name(prefix='comment-issue')
-    create_issue_response = create_issue_repo(
+    created_issue = create_issue_repo(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         title=issue_name,
         closed=False,
         comment=issue_comment
     )
-    issue_index = create_issue_response.json()["number"]
-    issue_id = create_issue_response.json()["id"]
+    assert created_issue.ok, f"Ошибка при создании задачи: {created_issue.status_code} {created_issue.text}"
+    issue_index = created_issue.json()["number"]
+    issue_id = created_issue.json()["id"]
 
     yield {"issue_id": issue_id, "issue_index": issue_index, "issue_name": issue_name, "issue_comment": issue_comment}
 
@@ -158,30 +162,35 @@ def created_repo_issue(created_public_repo, test_user):
 def created_repo_issue_with_label(created_public_repo, test_user):
     issue_name = unique_name(prefix='issue')
     issue_comment = unique_name(prefix='comment')
-    create_issue_response = create_issue_repo(
+    created_issue = create_issue_repo(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         title=issue_name,
         closed=False,
         comment=issue_comment
     )
-    issue_index = create_issue_response.json()["number"]
-    issue_id = create_issue_response.json()["id"]
+    assert created_issue.ok, f"Ошибка при создании задачи: {created_issue.status_code} {created_issue.text}"
+    issue_index = created_issue.json()["number"]
+    issue_id = created_issue.json()["id"]
 
     label_name = unique_name(prefix='label')
     label_color = get_random_color()
-    create_label_issue(
+    created_label = create_label_issue(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         label_name=label_name,
         label_color=label_color
     )
-    add_label_on_repo(
+    assert created_label.ok, f"Ошибка при создании метки: {created_label.status_code} {created_label.text}"
+
+    added_label_for_issue = add_label_on_repo(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         issue_index=issue_index,
         labels=[label_name]
     )
+    assert added_label_for_issue.ok, \
+        f"Ошибка при добавлении метки к задачи: {added_label_for_issue.status_code} {added_label_for_issue.text}"
 
     yield {"issue_id": issue_id, "issue_index": issue_index, "issue_name": issue_name, "label_name": label_name}
 
@@ -196,12 +205,13 @@ def created_repo_label(created_public_repo, test_user):
     label_name = unique_name(prefix='label')
     label_color = get_random_color()
 
-    create_label_issue(
+    created_label = create_label_issue(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         label_name=label_name,
         label_color=label_color
     )
+    assert created_label.ok, f"Ошибка при создании метки: {created_label.status_code} {created_label.text}"
 
     yield {"label_name": label_name}
 
@@ -209,24 +219,27 @@ def created_repo_label(created_public_repo, test_user):
 def created_milestone(created_public_repo, test_user):
     milestone_name = unique_name(prefix='milestone')
 
-    create_milestone(
+    created_milestone_resp = create_milestone(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         milestone_name=milestone_name
     )
+    assert created_milestone_resp.ok,\
+        f"Ошибка при создании этапа: {created_milestone_resp.status_code} {created_milestone_resp.text}"
 
     yield {"milestone_name": milestone_name}
 
 @pytest.fixture()
 def created_timeline_comment(created_public_repo, test_user, created_repo_issue):
     comment = unique_name(prefix='comment')
-    create_comment_response = create_timeline_comment(
+    created_comment = create_timeline_comment(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         issue_index=created_repo_issue["issue_index"],
         comment=comment
     )
-    comment_id = create_comment_response.json()["id"]
+    assert created_comment.ok, f"Ошибка при создании комментария: {created_comment.status_code} {created_comment.text}"
+    comment_id = created_comment.json()["id"]
 
     yield {"comment_id": comment_id, "comment_name": comment}
 
@@ -238,21 +251,26 @@ def created_timeline_comment(created_public_repo, test_user, created_repo_issue)
 
 @pytest.fixture()
 def disabling_ability_add_issue_to_repo(created_public_repo, test_user):
-    update_repo_ability_repo_add_issues(
+    updated_ability_add_issues = update_repo_ability_repo_add_issues(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         has_issues=False
     )
+    assert updated_ability_add_issues.ok, \
+        (f"Ошибка при отключении возможности добавлять задачи в репозитории: "
+         f"{updated_ability_add_issues.status_code} {updated_ability_add_issues.text}")
 
 @pytest.fixture()
 def adding_collaboration_for_repo_with_admin_permission(created_public_repo, test_user, second_test_user):
     collaboration_name = second_test_user["login"]
-    adding_collaborator_for_repo(
+    added_collaborator = adding_collaborator_for_repo(
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         collaborator_login=collaboration_name,
         permission="admin"
     )
+    assert added_collaborator.ok, \
+        f"Ошибка при добавлении соавтора репозитория: {added_collaborator.status_code} {added_collaborator.text}"
 
     yield {"collaborator_login": collaboration_name}
 

@@ -170,7 +170,7 @@ def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int
     )
 
 def delete_timeline_comment(*, owner_repo: str, repo_name: str, comment_id: int) -> req.Response:
-    return req.post(
+    return req.delete(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/comments/{comment_id}",
         headers=HEADERS,
         timeout=API_TIMEOUT
