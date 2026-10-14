@@ -15,6 +15,12 @@ class CommentForm:
         self._edit_save_button = comment.locator("div.flex-text-block>button[type='submit']")
         self._comment_button = comment.locator("button#comment-button")
 
+    def _header(self, author_name: str) -> Locator:
+        return self.comment.locator(f'a.muted[href="/{author_name}"]')
+
+    def check_author(self, author_name: str) -> None:
+        expect(self._header(author_name)).to_have_text(author_name)
+
     def check_text(self, comment_text: str) -> None:
         expect(self._body).to_have_text(comment_text)
 

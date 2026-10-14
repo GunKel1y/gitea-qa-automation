@@ -2,6 +2,8 @@ import random
 import string
 from uuid import uuid4
 
+MAX_TITLE_LENGTH = 255
+
 def unique_name(*, prefix: str = "test", length: int = 8) -> str:
     return f"{prefix}_{uuid4().hex[:length]}"
 

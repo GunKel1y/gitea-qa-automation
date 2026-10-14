@@ -3,7 +3,7 @@ import pytest
 from playwright.sync_api import Page
 
 from components.comment_form import CommentForm
-from helpers.test_data import unique_name
+from helpers.test_data import unique_name, value_with_length, MAX_TITLE_LENGTH
 from pages.not_found_error_page import NotFoundErrorPage
 from pages.repo.issue_details_page import IssueDetailsPage
 from pages.repo.new_issues_page import NewIssuesPage
@@ -26,7 +26,7 @@ def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_publ
     issue_page.check_issue_status_label_text("Открыто")
 
     issue_id = issue_page.get_issue_id()
-    issue_page.check_issue_title_value(issue_name + " " + issue_id)
+    issue_page.check_issue_title_value(expected_title=issue_name, expected_id=issue_id)
 
 @pytest.mark.p1
 def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_public_repo, test_user):
@@ -47,7 +47,7 @@ def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_pu
     issue_page.check_issue_status_label_text("Открыто")
 
     issue_id = issue_page.get_issue_id()
-    issue_page.check_issue_title_value(issue_name + " " + issue_id)
+    issue_page.check_issue_title_value(expected_title=issue_name, expected_id=issue_id)
     issue_page.first_comment().check_text(comment_text)
 
 @pytest.mark.parametrize("issue_status, switch_button_text", [
@@ -88,7 +88,9 @@ def test_update_issue_title(authenticated_user_page: Page, created_public_repo, 
     issue_page.click_update_title_button()
     issue_page.fill_update_title_field(new_issue_title)
     issue_page.click_save_new_title_button()
-    issue_page.check_issue_title_value(new_issue_title + " #" + str(created_repo_issue["issue_index"]))
+    issue_page.check_issue_title_value(
+        expected_title=new_issue_title, expected_id=f"#{created_repo_issue['issue_index']}"
+    )
 
 @pytest.mark.p1
 def test_update_issue_pinned_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
@@ -442,3 +444,48 @@ def test_trying_update_and_delete_comment_by_other_user(
     comment.click_context_dropdown()
     comment.edit_item_should_be_hidden()
     comment.delete_should_be_hidden()
+
+@pytest.mark.p2
+def test_adding_timeline_comment_in_repo_by_other_user(
+        test_user,
+        authenticated_second_user_page,
+        second_test_user,
+        created_public_repo,
+        created_repo_issue
+):
+    issue_page = IssueDetailsPage(authenticated_second_user_page)
+    user_name = second_test_user["login"]
+    comment = unique_name(prefix="comment")
+    issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=created_repo_issue["issue_index"]
+    )
+
+    issue_page.new_comment_form().fill_input(comment)
+    issue_page.new_comment_form().click_comment_button()
+
+    timeline_comment = issue_page.comment_by_text(comment)
+    timeline_comment.check_author(user_name)
+    timeline_comment.check_text(comment)
+
+@pytest.mark.p3
+def test_adding_issue_with_max_length_title(
+        test_user,
+        authenticated_user_page,
+        created_public_repo
+):
+    new_issue_page = NewIssuesPage(authenticated_user_page)
+    issue_page = IssueDetailsPage(authenticated_user_page)
+    title = value_with_length(length=MAX_TITLE_LENGTH+1)
+
+    new_issue_page.open(
+        repo_owner=test_user["login"],
+        repo_name=created_public_repo["repo_name"]
+    )
+
+    new_issue_page.fill_input_issue_title(title)
+    new_issue_page.issue_title_should_be_equal(title[:MAX_TITLE_LENGTH])
+    new_issue_page.click_add_issue_button()
+    issue_id = issue_page.get_issue_id()
+    issue_page.check_issue_title_value(expected_title=title[:MAX_TITLE_LENGTH], expected_id=issue_id)

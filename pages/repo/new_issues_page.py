@@ -36,3 +36,6 @@ class NewIssuesPage(BaseRepoPage):
 
     def check_show_error_in_required_title(self) -> None:
         expect(self._input_issue_title.and_(self._invalid_fields)).to_have_count(1)
+
+    def issue_title_should_be_equal(self, comment: str) -> None:
+        expect(self._input_issue_title).to_have_value(comment)

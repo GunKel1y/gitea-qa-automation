@@ -1,4 +1,5 @@
 import os
+import re
 
 from playwright.sync_api import Page, expect, Locator
 
@@ -44,8 +45,9 @@ class IssueDetailsPage(BaseRepoPage):
     def issue_title_is_displayed(self) -> None:
         expect(self._issue_title).to_be_visible()
 
-    def check_issue_title_value(self, expected_title_with_id: str) -> None:
-        expect(self._issue_title).to_have_text(expected_title_with_id)
+    def check_issue_title_value(self, *, expected_title: str, expected_id: str) -> None:
+        full_expected_text = f"{expected_title} {expected_id}"
+        expect(self._issue_title).to_have_text(full_expected_text)
 
     def check_issue_status_label_text(self, status_text: str) -> None:
         expect(self._issue_status_label).to_have_text(status_text)
