@@ -65,3 +65,6 @@ class CreateRepositoryPage(BaseRepoPage):
 
     def fill_repo_description(self, text: str) -> None:
         self._repo_description.fill(text)
+
+    def repo_description_value_should_be_equal(self, text: str) -> None:
+        expect(self._repo_description).to_have_value(text)

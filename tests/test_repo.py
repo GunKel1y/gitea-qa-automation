@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import Page
 
-from helpers.test_data import unique_name
+from helpers.test_data import unique_name, value_with_length
 
 from pages.repo.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
@@ -277,3 +277,55 @@ def test_create_repo_with_description(authenticated_user_page: Page, test_user):
     repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
     repo_page.check_repo_description_text(repo_description)
     repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
+
+@pytest.mark.p3
+def test_trying_create_repo_with_exceeding_description_value(authenticated_user_page: Page, test_user):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = unique_name(prefix="repo")
+    description = value_with_length(3000)
+
+    create_repo_page.open()
+
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.fill_repo_description(description)
+    create_repo_page.repo_description_value_should_be_equal(description[:2048])
+    create_repo_page.select_checkbox_initialization_repo()
+    create_repo_page.click_repo_create_button()
+
+    repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
+    repo_page.check_repo_description_text(description[:2048])
+
+
+@pytest.mark.p3
+def test_create_repo_with_value_exceeding_maximum_for_default_branch(authenticated_user_page: Page):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_name = unique_name(prefix="repo")
+    default_branch = value_with_length(101)
+
+    create_repo_page.open()
+
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.fill_default_branch_field(default_branch)
+    create_repo_page.select_checkbox_initialization_repo()
+    create_repo_page.click_repo_create_button()
+
+    create_repo_page.check_url("/repo/create")
+    create_repo_page.error_message_has_text("form.DefaultBranch должен содержать максимум 100 символов.")
+
+@pytest.mark.p3
+def test_create_repo_with_default_branch_upper_limit_value(authenticated_user_page: Page, test_user):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = unique_name(prefix="repo")
+    default_branch = value_with_length(100)
+
+    create_repo_page.open()
+
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.fill_default_branch_field(default_branch)
+    create_repo_page.select_checkbox_initialization_repo()
+    create_repo_page.click_repo_create_button()
+
+    repo_page.check_url(f"/{test_user["login"]}/{repo_name}")
+    repo_page.check_branch_dropdown_button_text(default_branch)
