@@ -190,7 +190,7 @@ def created_repo_issue_with_label(created_public_repo, test_user):
         labels=[label_name]
     )
     assert added_label_for_issue.ok, \
-        f"Ошибка при добавлении метки к задачи: {added_label_for_issue.status_code} {added_label_for_issue.text}"
+        f"Ошибка при добавлении метки к задаче: {added_label_for_issue.status_code} {added_label_for_issue.text}"
 
     yield {"issue_id": issue_id, "issue_index": issue_index, "issue_name": issue_name, "label_name": label_name}
 
