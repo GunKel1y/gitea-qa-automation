@@ -33,17 +33,17 @@
 | Модуль | Автоматизировано | Всего | Покрытие |
 |--------|------------------|-------|----------|
 | Auth | 27               | 27 | 100%     |
-| Repository | 24               | 29 | 83%      |
+| Repository | 27               | 29 | 93%      |
 | Issues | 25               | 25 | 100%     |
 | Pull Requests | 0                | 15 | 0%       |
-| **Итого** | **76**           | **96** | **79%**  |
+| **Итого** | **79**           | **96** | **82%**  |
 
 | Приоритет | Автоматизировано | Всего | Покрытие |
 |-----------|------------------|-------|----------|
 | P0 | 5                | 7 | 71%      |
 | P1 | 24               | 32 | 75%      |
 | P2 | 29               | 33 | 88%      |
-| P3 | 18               | 24 | 75%      |
+| P3 | 21               | 24 | 88%      |
 
 ## Матрицы «поле × вид проверки»
 
@@ -144,9 +144,9 @@
 | TC-R-037 | P3 | edge | **Пустой default branch** | Юзер авторизован | 1. Включить readme<br>2. Очистить поле branch<br>3. Create | Пустое поле default branch: fallback на `main` | да |
 | TC-R-041 | P3 | positive | **Создание репозитория из шаблона** | Существует репозиторий-шаблон | 1. New Repository<br>2. Выбрать шаблон<br>3. Create | Файлы шаблона присутствуют в новом репозитории | нет |
 | TC-R-042 | P3 | positive | **Создание репозитория с набором меток (Issue Labels)** | Юзер авторизован | 1. New Repository<br>2. Выбрать набор меток из выпадающего списка<br>3. Create | Метки набора доступны в Issues нового репозитория. Проверяются встроенные наборы из выпадающего списка | нет |
-| TC-R-043 | P3 | boundary | **Default branch максимальной длины (100 символов)** | Юзер авторизован | 1. Включить readme<br>2. Указать branch из 100 символов<br>3. Create | Репозиторий создан, default branch = указанное имя из 100 символов (парная граница к R-044) | нет |
-| TC-R-044 | P3 | boundary | **Default branch длиннее максимума (101 символ)** | Юзер авторизован | 1. Включить readme<br>2. Указать branch из 101 символа<br>3. Create | Репозиторий не создан, показана ошибка о превышении максимальной длины (100 символов) default branch | нет |
-| TC-R-045 | P3 | boundary | **Описание репозитория: ввод ограничен 2048 символами** | Юзер авторизован | 1. New Repository<br>2. Ввести описание длиннее 2048 символов | Поле принимает не более 2048 символов, остальной ввод блокируется. Пустое описание допустимо (R-001) | нет |
+| TC-R-043 | P3 | boundary | **Default branch максимальной длины (100 символов)** | Юзер авторизован | 1. Включить readme<br>2. Указать branch из 100 символов<br>3. Create | Репозиторий создан, default branch = указанное имя из 100 символов (парная граница к R-044) | да |
+| TC-R-044 | P3 | boundary | **Default branch длиннее максимума (101 символ)** | Юзер авторизован | 1. Включить readme<br>2. Указать branch из 101 символа<br>3. Create | Репозиторий не создан, показана ошибка о превышении максимальной длины (100 символов) default branch | да |
+| TC-R-045 | P3 | boundary | **Описание репозитория: ввод ограничен 2048 символами** | Юзер авторизован | 1. New Repository<br>2. Ввести описание длиннее 2048 символов | Поле принимает не более 2048 символов, остальной ввод блокируется. Пустое описание допустимо (R-001) | да |
 
 ## Issues
 
@@ -259,6 +259,9 @@
 | TC-R-035 | `tests/test_repo.py::test_name_validation[*]` |
 | TC-R-037 | `tests/test_repo.py::test_create_repo_default_branch[empty_field_in_default_branch_field]` |
 | TC-R-040 | `tests/test_repo.py::test_create_repo_with_description` |
+| TC-R-043 | `tests/test_repo.py::test_create_repo_with_default_branch_upper_limit_value` |
+| TC-R-044 | `tests/test_repo.py::test_create_repo_with_value_exceeding_maximum_for_default_branch` |
+| TC-R-045 | `tests/test_repo.py::test_trying_create_repo_with_exceeding_description_value` |
 | TC-I-001 | `tests/test_issues.py::test_add_issue_with_minimal_data` |
 | TC-I-002 | `tests/test_issues.py::test_switch_issue_status[closing]` |
 | TC-I-010 | `tests/test_issues.py::test_add_issue_with_pinned_comment` |
