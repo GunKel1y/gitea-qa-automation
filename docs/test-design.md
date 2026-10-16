@@ -34,16 +34,16 @@
 |--------|------------------|-------|----------|
 | Auth | 27               | 27 | 100%     |
 | Repository | 24               | 29 | 83%      |
-| Issues | 23               | 25 | 92%      |
+| Issues | 25               | 25 | 100%     |
 | Pull Requests | 0                | 15 | 0%       |
-| **Итого** | **74**           | **96** | **77%**  |
+| **Итого** | **76**           | **96** | **79%**  |
 
 | Приоритет | Автоматизировано | Всего | Покрытие |
 |-----------|------------------|-------|----------|
 | P0 | 5                | 7 | 71%      |
 | P1 | 24               | 32 | 75%      |
-| P2 | 28               | 33 | 85%      |
-| P3 | 17               | 24 | 71%      |
+| P2 | 29               | 33 | 88%      |
+| P3 | 18               | 24 | 75%      |
 
 ## Матрицы «поле × вид проверки»
 
@@ -177,8 +177,8 @@
 | TC-I-040 | P2 | permissions | **Чужой юзер не может редактировать title и описание чужой issue** | Issue создана юзером A; юзер B не коллаборатор | 1. Залогиниться юзером B<br>2. Открыть issue | Кнопка Edit недоступна | да |
 | TC-I-041 | P2 | permissions | **Чужой юзер не может закрыть чужую issue** | Issue создана юзером A; юзер B не коллаборатор | 1. Залогиниться юзером B<br>2. Открыть issue | Кнопка закрытия недоступна | да |
 | TC-I-042 | P2 | permissions | **Чужой юзер не может редактировать и удалять чужой комментарий** | Комментарий оставлен юзером A; юзер B не коллаборатор | 1. Залогиниться юзером B<br>2. Открыть меню комментария | Пункты Edit и Delete недоступны | да |
-| TC-I-043 | P2 | permissions | **Чужой юзер может оставить комментарий в публичном репозитории** | Публичный репозиторий; юзер B не коллаборатор | 1. Залогиниться юзером B<br>2. Открыть issue<br>3. Написать комментарий | Комментарий добавлен (ограничения на комментирование нет) | нет |
-| TC-I-033 | P3 | boundary | **Title issue: ввод ограничен максимальной длиной** | Репозиторий существует | 1. New Issue<br>2. Ввести title длиннее лимита<br>3. Submit | Поле не позволяет ввести больше максимально допустимого числа символов; issue с title максимальной длины создаётся. Минимального ограничения нет | нет |
+| TC-I-043 | P2 | permissions | **Чужой юзер может оставить комментарий в публичном репозитории** | Публичный репозиторий; юзер B не коллаборатор | 1. Залогиниться юзером B<br>2. Открыть issue<br>3. Написать комментарий | Комментарий добавлен (ограничения на комментирование нет) | да |
+| TC-I-033 | P3 | boundary | **Title issue: ввод ограничен максимальной длиной** | Репозиторий существует | 1. New Issue<br>2. Ввести title длиннее лимита<br>3. Submit | Поле не позволяет ввести больше 255 символов; issue с title длиной 255 создаётся. Минимального ограничения нет | да |
 
 ## Pull Requests
 
@@ -276,9 +276,11 @@
 | TC-I-020 | `tests/test_issues.py::test_adding_timeline_comment_with_closed_issue_status` |
 | TC-I-030 | `tests/test_issues.py::test_add_issue_with_empty_title` |
 | TC-I-032 | `tests/test_issues.py::test_add_issue_with_disabled_has_issue_param_in_repo` |
+| TC-I-033 | `tests/test_issues.py::test_adding_issue_with_max_length_title` |
 | TC-I-036 | `tests/test_issues.py::test_creating_issue_with_label` |
 | TC-I-037 | `tests/test_issues.py::test_creating_issue_with_assignee` |
 | TC-I-038 | `tests/test_issues.py::test_creating_issue_with_milestone` |
 | TC-I-040 | `tests/test_issues.py::test_trying_update_issue_title_and_pinned_comment_by_other_user` |
 | TC-I-041 | `tests/test_issues.py::test_trying_close_issue_by_other_user` |
 | TC-I-042 | `tests/test_issues.py::test_trying_update_and_delete_comment_by_other_user` |
+| TC-I-043 | `tests/test_issues.py::test_adding_timeline_comment_in_repo_by_other_user` |
