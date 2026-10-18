@@ -1,7 +1,7 @@
 import os
 
 from components.repo_header import RepoHeader
-from playwright.sync_api import Page, expect, Locator
+from playwright.sync_api import Page, expect
 
 from pages.repo.base_repo_page import BaseRepoPage
 
@@ -14,6 +14,8 @@ class RepoPage(BaseRepoPage):
         self._repo_description = page.locator("div.repo-description")
         self._privacy_status = page.locator("div.flex-item-trailing>span.not-mobile")
         self._readme_content = page.locator("div#readme")
+        self._readme_title = page.locator("div#readme h1")
+        self._readme_text = page.locator("div#readme h1~p")
         self._branch_dropdown_button = page.locator("div.custom.branch-selector-dropdown")
         self._branch_text_in_dropdown = page.locator("span.gt-ellipsis>strong.gt-ellipsis")
         self.repo_header = RepoHeader(page)
@@ -41,3 +43,9 @@ class RepoPage(BaseRepoPage):
 
     def check_repo_description_text(self, text: str) -> None:
         expect(self._repo_description).to_have_text(text)
+
+    def check_readme_title(self, title: str) -> None:
+        expect(self._readme_title).to_have_text(title)
+
+    def check_readme_text(self, text: str) -> None:
+        expect(self._readme_text).to_have_text(text)

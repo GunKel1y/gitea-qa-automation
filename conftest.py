@@ -1,4 +1,6 @@
 import os
+import random
+
 import pytest
 
 from pathlib import Path
@@ -10,7 +12,7 @@ from helpers.api_client import create_user, delete_user, create_repo, delete_rep
     delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
     delete_issue_repo, create_issue_repo, create_milestone, create_label_issue, add_label_on_repo, \
     create_timeline_comment, delete_timeline_comment, update_repo_ability_repo_add_issues, adding_collaborator_for_repo, \
-    delete_collaborator_for_repo
+    delete_collaborator_for_repo, get_licenses, get_gitignore_templates
 from helpers.test_data import random_password, random_email, unique_name, get_random_color
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -92,6 +94,35 @@ def created_private_repo(test_user):
     yield {"repo_name": repo_name}
 
     delete_repo(owner=test_user["login"], repo_name=repo_name)
+
+@pytest.fixture()
+def created_template_repo(test_user):
+    repo_owner = test_user["login"]
+    repo_name = unique_name(prefix='repo')
+    description = unique_name(prefix="description")
+    license_type = random.choice(get_licenses().json())["name"]
+    gitignore_type = random.choice(get_gitignore_templates().json())
+    created_repo = create_repo(
+        auto_init=True,
+        owner=repo_owner,
+        repo_name=repo_name,
+        description=description,
+        gitignores_type=gitignore_type,
+        license_type=license_type,
+        private=False,
+        is_template=True
+    )
+    assert created_repo.ok, f"Ошибка создания репозитория-шаблона: {created_repo.status_code} {created_repo.text}"
+
+    yield {
+        "repo_id": created_repo.json()["id"],
+        "repo_name": repo_name,
+        "description": description,
+        "license_type": license_type,
+        "gitignore_type": gitignore_type
+    }
+
+    delete_repo(owner=repo_owner, repo_name=repo_name)
 
 @pytest.fixture()
 def created_public_organization_by_user(test_user):

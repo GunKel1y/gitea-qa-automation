@@ -6,6 +6,7 @@ from helpers.test_data import unique_name, value_with_length
 from pages.repo.create_repository_page import CreateRepositoryPage
 from pages.dashboard_page import DashboardPage
 from pages.not_found_error_page import NotFoundErrorPage
+from pages.repo.repo_issues_page import RepoIssuesPage
 from pages.repo.repo_page import RepoPage
 
 @pytest.mark.parametrize("repo_name, expected_name", [
@@ -92,6 +93,53 @@ def test_create_private_repo(authenticated_user_page: Page, test_user):
     repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
 
     repo_page.privacy_status_is_displayed()
+
+@pytest.mark.p3
+def test_create_repo_by_template(authenticated_user_page: Page, test_user, created_template_repo):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = unique_name(prefix='repo')
+    template_repo_name = created_template_repo["repo_name"]
+    username = test_user["login"]
+
+    create_repo_page.open()
+
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.repo_template.open()
+    create_repo_page.repo_template.select(created_template_repo["repo_id"])
+    create_repo_page.select_checkbox_git_content()
+    create_repo_page.click_repo_create_button()
+
+    repo_page.check_url(f'/{username}/{repo_name}')
+    repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=username)
+    repo_page.specified_file_in_list(".gitignore")
+    repo_page.specified_file_in_list("LICENSE")
+    repo_page.specified_file_in_list("README.md")
+    repo_page.check_readme_title(template_repo_name)
+    repo_page.check_readme_text(created_template_repo["description"])
+    repo_page.repo_header.check_created_by_repo_text(owner_template=username, repo_template=template_repo_name)
+
+@pytest.mark.p3
+@pytest.mark.parametrize("labels_template, label_item", [
+       pytest.param("Advanced", "Kind/Bug", id="advanced_labels"),
+       pytest.param("Default", "help wanted", id="default_labels")
+   ])
+def test_create_repo_with_label_template(authenticated_user_page: Page, test_user, labels_template, label_item):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_issues_page = RepoIssuesPage(authenticated_user_page)
+
+    username = test_user["login"]
+    repo_name = unique_name(prefix='repo')
+
+    create_repo_page.open()
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.issue_labels.open()
+    create_repo_page.issue_labels.select(labels_template)
+    create_repo_page.click_repo_create_button()
+
+    repo_issues_page.open(username=username, repo_name=repo_name)
+    repo_issues_page.open_labels_dropdown()
+    repo_issues_page.labels_item_should_be_visible(label_item)
 
 @pytest.mark.p1
 def test_private_repo_is_inaccessible_to_another_user(

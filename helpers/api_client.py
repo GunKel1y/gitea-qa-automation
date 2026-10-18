@@ -33,11 +33,33 @@ def delete_user(username: str) -> req.Response:
         timeout=API_TIMEOUT
     )
 
-def create_repo(*, owner: str, repo_name: str, private: bool, issue_labels: str = None) -> req.Response:
+def create_repo(
+        *,
+        owner: str,
+        repo_name: str,
+        description: str = None,
+        private: bool,
+        auto_init: bool = False,
+        gitignores_type: str = None,
+        license_type: str = None,
+        issue_labels: str = None,
+        readme: str = "Default",
+        is_template: bool = False,
+) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/admin/users/{owner}/repos",
         headers=HEADERS,
-        json={"name": repo_name, "private": private, "issue_labels": issue_labels},
+        json={
+            "auto_init": auto_init,
+            "name": repo_name,
+            "description": description,
+            "private": private,
+            "readme": readme,
+            "issue_labels": issue_labels,
+            "gitignores": gitignores_type,
+            "license": license_type,
+            "template": is_template,
+        },
         timeout=API_TIMEOUT
     )
 
@@ -204,3 +226,22 @@ def delete_collaborator_for_repo(*, owner_repo: str, repo_name: str, collaborato
         headers=HEADERS,
         timeout=API_TIMEOUT
     )
+
+def get_licenses() -> req.Response:
+    licenses = req.get(
+        f"{BASE_URL_API}/licenses",
+        headers=HEADERS,
+        timeout=API_TIMEOUT
+    )
+    assert licenses.ok, f"Ошибка при получении списка лицензий: {licenses.status_code} {licenses.text}"
+    return licenses
+
+def get_gitignore_templates() -> req.Response:
+    gitignore_templates = req.get(
+        f"{BASE_URL_API}/gitignore/templates",
+        headers=HEADERS,
+        timeout=API_TIMEOUT
+    )
+    assert gitignore_templates.ok,\
+        f"Ошибка при получении списка gitignore: {gitignore_templates.status_code} {gitignore_templates.text}"
+    return gitignore_templates

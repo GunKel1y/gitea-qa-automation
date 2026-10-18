@@ -20,9 +20,12 @@ class CreateRepositoryPage(BaseRepoPage):
         self._initialization_repo_checkbox = page.locator("input[name='auto_init'][type='checkbox']")
         self.gitignore_dropdown = SearchDropdown(page, "gitignores")
         self.license_dropdown = SearchDropdown(page, "license")
+        self.repo_template = SearchDropdown(page, "repo_template")
+        self.issue_labels = SearchDropdown(page, "issue_labels")
         self._full_main_content = page.locator("div.full.height")
         self._default_branch_input = page.locator("#default_branch")
         self._owner_field = page.locator("#repo_owner_dropdown")
+        self._checkbox_git_content = page.locator("input[name='git_content']")
 
     def _owner_menu_item(self, owner: str) -> Locator:
         return self.page.locator(f"#repo_owner_dropdown>div.menu>div[title='{owner}']")
@@ -68,3 +71,6 @@ class CreateRepositoryPage(BaseRepoPage):
 
     def repo_description_value_should_be_equal(self, text: str) -> None:
         expect(self._repo_description).to_have_value(text)
+
+    def select_checkbox_git_content(self) -> None:
+        self._checkbox_git_content.check()
