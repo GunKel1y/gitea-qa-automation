@@ -125,6 +125,43 @@ def created_template_repo(test_user):
     delete_repo(owner=repo_owner, repo_name=repo_name)
 
 @pytest.fixture()
+def created_template_repo_with_label(test_user):
+    repo_owner = test_user["login"]
+    repo_name = unique_name(prefix='repo')
+
+    created_repo = create_repo(
+        auto_init=True,
+        owner=repo_owner,
+        repo_name=repo_name,
+        private=False,
+        is_template=True
+    )
+    assert created_repo.ok, f"Ошибка создания репозитория-шаблона: {created_repo.status_code} {created_repo.text}"
+
+    try:
+        created_labels = []
+
+        for _ in range(2):
+            create_label_to_repo = create_label_issue(
+                owner_repo=repo_owner,
+                repo_name=repo_name,
+                label_name=unique_name(prefix="label"),
+                label_color=get_random_color()
+            )
+            assert create_label_to_repo.ok, \
+                f"Ошибка создания метки в репозитории: {create_label_to_repo.status_code, create_label_to_repo.text}"
+
+            created_labels.append(create_label_to_repo.json()["name"])
+
+        yield {
+            "repo_id": created_repo.json()["id"],
+            "repo_name": repo_name,
+            "labels": created_labels,
+        }
+    finally:
+        delete_repo(owner=repo_owner, repo_name=repo_name)
+
+@pytest.fixture()
 def created_public_organization_by_user(test_user):
     org_name = unique_name(prefix='org')
 

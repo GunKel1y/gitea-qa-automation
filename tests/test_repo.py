@@ -141,6 +141,28 @@ def test_create_repo_with_label_template(authenticated_user_page: Page, test_use
     repo_issues_page.open_labels_dropdown()
     repo_issues_page.labels_item_should_be_visible(label_item)
 
+@pytest.mark.p3
+def test_create_repo_by_template_with_label(authenticated_user_page: Page, test_user, created_template_repo_with_label):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_issues_page = RepoIssuesPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+
+    username = test_user["login"]
+    repo_name = unique_name(prefix='repo')
+
+    create_repo_page.open()
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.repo_template.open()
+    create_repo_page.repo_template.select(created_template_repo_with_label["repo_id"])
+    create_repo_page.select_checkbox_labels_issues()
+    create_repo_page.click_repo_create_button()
+    repo_page.check_url(f'/{username}/{repo_name}')
+
+    repo_issues_page.open(username=username, repo_name=repo_name)
+    repo_issues_page.open_labels_dropdown()
+    repo_issues_page.labels_item_should_be_visible(created_template_repo_with_label["labels"][0])
+    repo_issues_page.labels_item_should_be_visible(created_template_repo_with_label["labels"][1])
+
 @pytest.mark.p1
 def test_private_repo_is_inaccessible_to_another_user(
         authenticated_second_user_page: Page, created_private_repo, test_user

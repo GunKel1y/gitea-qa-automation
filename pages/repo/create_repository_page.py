@@ -26,6 +26,7 @@ class CreateRepositoryPage(BaseRepoPage):
         self._default_branch_input = page.locator("#default_branch")
         self._owner_field = page.locator("#repo_owner_dropdown")
         self._checkbox_git_content = page.locator("input[name='git_content']")
+        self._checkbox_labels = page.locator("input[name='labels']")
 
     def _owner_menu_item(self, owner: str) -> Locator:
         return self.page.locator(f"#repo_owner_dropdown>div.menu>div[title='{owner}']")
@@ -74,3 +75,6 @@ class CreateRepositoryPage(BaseRepoPage):
 
     def select_checkbox_git_content(self) -> None:
         self._checkbox_git_content.check()
+
+    def select_checkbox_labels_issues(self) -> None:
+        self._checkbox_labels.check()
