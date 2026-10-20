@@ -22,6 +22,8 @@ def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_publ
     new_issues_page.fill_input_issue_title(issue_name)
     new_issues_page.click_add_issue_button()
 
+    issue_id = issue_page.get_issue_id().replace("#", "")
+    issue_page.check_url(f"/{test_user["login"]}/{created_public_repo["repo_name"]}/issues/{issue_id}")
     issue_page.issue_title_is_displayed()
     issue_page.check_issue_status_label_text("Открыто")
 
@@ -43,6 +45,8 @@ def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_pu
     new_issues_page.fill_comment(comment_text)
     new_issues_page.click_add_issue_button()
 
+    issue_id = issue_page.get_issue_id().replace("#", "")
+    issue_page.check_url(f"/{test_user["login"]}/{created_public_repo["repo_name"]}/issues/{issue_id}")
     issue_page.issue_title_is_displayed()
     issue_page.check_issue_status_label_text("Открыто")
 
@@ -263,7 +267,7 @@ def test_delete_timeline_comment(
 def test_adding_timeline_comment_with_closed_issue_status(
         authenticated_user_page: Page,
         created_public_repo,
-        created_repo_issue,
+        created_closed_repo_issue,
         test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
     comment_text = unique_name(prefix='comment')
@@ -271,10 +275,9 @@ def test_adding_timeline_comment_with_closed_issue_status(
     issue_page.open(
         repo_owner=test_user["login"],
         repo_name=created_public_repo["repo_name"],
-        issue_index=created_repo_issue["issue_index"]
+        issue_index=created_closed_repo_issue["issue_index"]
     )
 
-    issue_page.switch_status_button_click()
     issue_page.check_issue_status_label_text("Закрыто")
 
     issue_page.new_comment_form().fill_input(comment_text)
@@ -337,6 +340,8 @@ def test_creating_issue_with_label(
     new_issue_page.labels.close()
     new_issue_page.click_add_issue_button()
 
+    issue_id = issue_page.get_issue_id().replace("#", "")
+    issue_page.check_url(f"/{test_user["login"]}/{created_public_repo["repo_name"]}/issues/{issue_id}")
     issue_page.labels.check_item_in_list(label_item)
 
 @pytest.mark.p2
@@ -362,6 +367,8 @@ def test_creating_issue_with_assignee(
     new_issue_page.assignees.close()
     new_issue_page.click_add_issue_button()
 
+    issue_id = issue_page.get_issue_id().replace("#", "")
+    issue_page.check_url(f"/{test_user["login"]}/{created_public_repo["repo_name"]}/issues/{issue_id}")
     issue_page.assignees.check_item_in_list(collaborator_name)
 
 @pytest.mark.p2
@@ -384,6 +391,8 @@ def test_creating_issue_with_milestone(
     new_issue_page.milestones.close()
     new_issue_page.click_add_issue_button()
 
+    issue_id = issue_page.get_issue_id().replace("#", "")
+    issue_page.check_url(f"/{test_user["login"]}/{created_public_repo["repo_name"]}/issues/{issue_id}")
     issue_page.milestones.check_item_in_list(milestone_name)
 
 @pytest.mark.p2

@@ -269,6 +269,26 @@ def created_repo_issue_with_label(created_public_repo, test_user):
     )
 
 @pytest.fixture()
+def created_closed_repo_issue(test_user, created_public_repo):
+    issue_name = unique_name(prefix='issue')
+    created_issue = create_issue_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        title=issue_name,
+        closed=True
+    )
+    assert created_issue.ok, f"Ошибка при создании задачи: {created_issue.status_code} {created_issue.text}"
+    issue_index = created_issue.json()["number"]
+
+    yield {"issue_index": issue_index}
+
+    delete_issue_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        issue_index=issue_index
+    )
+
+@pytest.fixture()
 def created_repo_label(created_public_repo, test_user):
     label_name = unique_name(prefix='label')
     label_color = get_random_color()
