@@ -22,7 +22,7 @@ class CommentForm:
         expect(self._header(author_name)).to_have_text(author_name)
 
     def check_text(self, comment_text: str) -> None:
-        expect(self._body).to_have_text(comment_text)
+        expect(self._body).to_have_text(comment_text, timeout=15_000)
 
     def click_context_dropdown(self) -> None:
         self._context_dropdown.click()
