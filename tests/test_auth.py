@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from playwright.sync_api import Page
@@ -7,6 +8,7 @@ from pages.dashboard_page import DashboardPage
 
 from helpers.test_data import random_password, unique_name
 
+@allure.testcase("TC-A-001")
 @pytest.mark.p0
 def test_login_with_valid_creds(page: Page, test_user):
     auth_page = AuthPage(page)
@@ -27,8 +29,8 @@ def test_login_with_valid_creds(page: Page, test_user):
     dashboard_page.switch_user_image_is_displayed()
 
 @pytest.mark.parametrize("case", [
-    pytest.param("invalid_password", marks=pytest.mark.p2),
-    pytest.param("non_exist_creds", marks=pytest.mark.p2)
+    pytest.param("invalid_password", marks=[pytest.mark.p2, allure.testcase("TC-A-020")]),
+    pytest.param("non_exist_creds", marks=[pytest.mark.p2, allure.testcase("TC-A-021")])
 ])
 def test_login_with_invalid_creds(page: Page, test_user, case):
     auth_page = AuthPage(page)
@@ -49,6 +51,7 @@ def test_login_with_invalid_creds(page: Page, test_user, case):
     auth_page.auth_form_is_displayed()
     auth_page.check_url('/user/login')
 
+@allure.testcase("TC-A-030")
 @pytest.mark.p3
 def test_login_with_empty_fields(page: Page):
     auth_page = AuthPage(page)
@@ -61,6 +64,7 @@ def test_login_with_empty_fields(page: Page):
     auth_page.auth_form_is_displayed()
     auth_page.check_url('/user/login')
 
+@allure.testcase("TC-A-002")
 @pytest.mark.p0
 def test_logout(authenticated_user_page: Page):
     dashboard_page = DashboardPage(authenticated_user_page)
@@ -77,6 +81,7 @@ def test_logout(authenticated_user_page: Page):
     auth_page.open_user_settings()
     auth_page.check_url('/user/login?redirect_to=%2Fuser%2Fsettings')
 
+@allure.testcase("TC-A-011")
 @pytest.mark.p1
 def test_access_page_without_auth_is_denied(page: Page):
     auth_page = AuthPage(page)

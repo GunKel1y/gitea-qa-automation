@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from playwright.sync_api import Page
@@ -11,11 +12,13 @@ from helpers.test_data import random_email, random_password, value_with_length, 
 
 @pytest.mark.p2
 @pytest.mark.parametrize("invalid_email", [
-    pytest.param('', id="empty_value"),
-    pytest.param(unique_name(), id="no_symbol"),
-    pytest.param(f"{unique_name()}@", id="no_domain"),
-    pytest.param(f"@{unique_name()}.com", id="no_local"),
-    pytest.param(email_with_length(length=247, domain="@test.ru"), id="above_max", marks=pytest.mark.p3)
+    pytest.param('', id="empty_value", marks=[allure.testcase("TC-A-036")]),
+    pytest.param(unique_name(), id="no_symbol", marks=[allure.testcase("TC-A-023")]),
+    pytest.param(f"{unique_name()}@", id="no_domain", marks=[allure.testcase("TC-A-037")]),
+    pytest.param(f"@{unique_name()}.com", id="no_local", marks=[allure.testcase("TC-A-038")]),
+    pytest.param(email_with_length(length=247, domain="@test.ru"),
+                 id="above_max", marks=[pytest.mark.p3, allure.testcase("TC-A-040")]
+    )
 ])
 def test_registration_with_invalid_email_format(page: Page, invalid_email):
     registration_page = RegisterPage(page)
@@ -41,36 +44,36 @@ def test_registration_with_invalid_email_format(page: Page, invalid_email):
     not_found_page.check_description_text()
 
 @pytest.mark.parametrize("delete_user_after_registration", [
-    pytest.param(None, id='unique_creds', marks=pytest.mark.p1),
+    pytest.param(None, id='unique_creds', marks=[pytest.mark.p1, allure.testcase("TC-A-010")]),
     pytest.param(
         (unique_name(prefix='user'), value_with_length(8), random_email()),
         id='minimum_password_length',
-        marks=pytest.mark.p3
+        marks=[pytest.mark.p3, allure.testcase("TC-A-027")]
     ),
     pytest.param(
         (unique_name(prefix='user'), value_with_length(255), random_email()),
         id='upper_limit_password',
-        marks=pytest.mark.p3
+        marks=[pytest.mark.p3, allure.testcase("TC-A-028")]
     ),
     pytest.param(
         (unique_name(prefix='user'), random_password(), email_with_length(length=246, domain="@test.ru")),
         id='upper_limit_email',
-        marks=pytest.mark.p3
+        marks=[pytest.mark.p3, allure.testcase("TC-A-039")]
     ),
     pytest.param(
         (unique_name(prefix='user'), random_password(), email_with_length(length=1, domain="@ru")),
         id='minimum_email_length',
-        marks=pytest.mark.p3
+        marks=[pytest.mark.p3, allure.testcase("TC-A-041")]
     ),
     pytest.param(
         (value_with_length(length=1), random_password(), random_email()),
         id='minimum_username_length',
-        marks=pytest.mark.p3
+        marks=[pytest.mark.p3, allure.testcase("TC-A-034a")]
     ),
     pytest.param(
         (value_with_length(length=40), random_password(), random_email()),
         id='upper_limit_username',
-        marks=pytest.mark.p3
+        marks=[pytest.mark.p3, allure.testcase("TC-A-034b")]
     )
 ], indirect=["delete_user_after_registration"])
 def test_register_with_valid_creds(page: Page, delete_user_after_registration):
@@ -94,12 +97,17 @@ def test_register_with_valid_creds(page: Page, delete_user_after_registration):
     dashboard_page.check_url('/')
 
 @pytest.mark.parametrize("taken_field, expected_error", [
-    pytest.param("login", "Имя пользователя уже занято.", id="in_use_username", marks=pytest.mark.p2),
+    pytest.param(
+        "login",
+        "Имя пользователя уже занято.",
+        id="in_use_username",
+        marks=[pytest.mark.p2, allure.testcase("TC-A-022")]
+    ),
     pytest.param(
         "email",
         "Этот адрес электронной почты уже используется.",
         id="in_use_email",
-        marks=pytest.mark.p3
+        marks=[pytest.mark.p3, allure.testcase("TC-A-031")]
     ),
 ])
 def test_registration_with_taken_login_or_email(page: Page, test_user, taken_field, expected_error):
@@ -122,18 +130,26 @@ LONG_PASSWORD = value_with_length(256)
 
 @pytest.mark.p2
 @pytest.mark.parametrize("password, confirm, expected_error", [
-    pytest.param(random_password(), random_password(), "Пароли не совпадают.", id="failed_confirm_pass"),
+    pytest.param(
+        random_password(),
+        random_password(),
+        "Пароли не совпадают.",
+        id="failed_confirm_pass",
+        marks=allure.testcase("TC-A-024")
+    ),
     pytest.param(
         SHORT_PASSWORD,
         SHORT_PASSWORD,
         "Пароль не может быть короче 8 символов.",
-        id="min_length_pass"
+        id="min_length_pass",
+        marks=allure.testcase("TC-A-025")
     ),
     pytest.param(
         LONG_PASSWORD,
         LONG_PASSWORD,
         "Пароль должен содержать максимум 255 символов.",
-        id="max_length_pass"
+        id="max_length_pass",
+        marks=allure.testcase("TC-A-026")
     ),
 ])
 def test_registration_with_invalid_password(page: Page, password, confirm, expected_error):
@@ -149,6 +165,7 @@ def test_registration_with_invalid_password(page: Page, password, confirm, expec
     registration_page.error_message_has_text(expected_error)
     registration_page.check_url("/user/sign_up")
 
+@allure.testcase("TC-A-033")
 @pytest.mark.p2
 @pytest.mark.parametrize("username_value", [
     pytest.param(unique_name(prefix="😊test"), id="emoji"),
@@ -175,12 +192,15 @@ def test_registration_with_invalid_characters_in_username(page: Page, username_v
 
 @pytest.mark.p2
 @pytest.mark.parametrize("username, password, validation_method", [
-    pytest.param("", random_password(), RegisterPage.check_show_error_in_required_username,
-                 id='empty_username'
+    pytest.param(
+        "", random_password(), RegisterPage.check_show_error_in_required_username,
+        id='empty_username',
+        marks=allure.testcase("TC-A-032")
     ),
     pytest.param(
         unique_name(prefix="user"), "", RegisterPage.check_show_error_in_required_password,
-        id='empty_password'
+        id='empty_password',
+        marks=allure.testcase("TC-A-035")
     )
 ])
 def test_registration_with_empty_value_in_fields(page: Page, username, password, validation_method):
@@ -196,6 +216,7 @@ def test_registration_with_empty_value_in_fields(page: Page, username, password,
     validation_method(registration_page)
     registration_page.check_url("/user/sign_up")
 
+@allure.testcase("TC-A-034c")
 @pytest.mark.p3
 def test_registration_with_username_exceeding_max_length(page: Page, delete_user_after_registration):
     register_page = RegisterPage(page)

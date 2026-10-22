@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from playwright.sync_api import Page
@@ -9,6 +10,7 @@ from pages.repo.issue_details_page import IssueDetailsPage
 from pages.repo.new_issues_page import NewIssuesPage
 from pages.repo.repo_issues_page import RepoIssuesPage
 
+@allure.testcase("TC-I-001")
 @pytest.mark.p0
 def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_public_repo, test_user):
     repo_issues_page = RepoIssuesPage(authenticated_user_page)
@@ -30,6 +32,7 @@ def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_publ
     issue_id = issue_page.get_issue_id()
     issue_page.check_issue_title_value(expected_title=issue_name, expected_id=issue_id)
 
+@allure.testcase("TC-I-010")
 @pytest.mark.p1
 def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_public_repo, test_user):
     repo_issues_page = RepoIssuesPage(authenticated_user_page)
@@ -55,8 +58,8 @@ def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_pu
     issue_page.first_comment().check_text(comment_text)
 
 @pytest.mark.parametrize("issue_status, switch_button_text", [
-    pytest.param("Закрыто", "Открыть снова", id="closing", marks=pytest.mark.p0),
-    pytest.param("Открыто", "Закрыть задачу", id="reopen", marks=pytest.mark.p1)
+    pytest.param("Закрыто", "Открыть снова", id="closing", marks=[pytest.mark.p0, allure.testcase("TC-I-002")]),
+    pytest.param("Открыто", "Закрыть задачу", id="reopen", marks=[pytest.mark.p1, allure.testcase("TC-I-011")])
 ])
 def test_switch_issue_status(
         authenticated_user_page,
@@ -78,6 +81,7 @@ def test_switch_issue_status(
     issue_page.check_issue_status_label_text(issue_status)
     issue_page.check_switch_status_button_text(switch_button_text)
 
+@allure.testcase("TC-I-012a")
 @pytest.mark.p1
 def test_update_issue_title(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
@@ -96,6 +100,7 @@ def test_update_issue_title(authenticated_user_page: Page, created_public_repo, 
         expected_title=new_issue_title, expected_id=f"#{created_repo_issue['issue_index']}"
     )
 
+@allure.testcase("TC-I-012b")
 @pytest.mark.p1
 def test_update_issue_pinned_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
@@ -114,6 +119,7 @@ def test_update_issue_pinned_comment(authenticated_user_page: Page, created_publ
 
     issue_page.first_comment().check_text(new_issue_comment)
 
+@allure.testcase("TC-I-013")
 @pytest.mark.p1
 def test_adding_issue_label(
         authenticated_user_page: Page,
@@ -135,6 +141,7 @@ def test_adding_issue_label(
     issue_page.labels.close()
     issue_page.labels.check_item_in_list(issue_label_text)
 
+@allure.testcase("TC-I-014")
 @pytest.mark.p1
 def test_removing_label_from_issue(
         authenticated_user_page: Page,
@@ -156,6 +163,7 @@ def test_removing_label_from_issue(
     issue_page.labels.close()
     issue_page.labels.check_item_absence_in_list(label_name)
 
+@allure.testcase("TC-I-015")
 @pytest.mark.p1
 def test_adding_issue_assignee(
         authenticated_user_page: Page,
@@ -176,6 +184,7 @@ def test_adding_issue_assignee(
     issue_page.assignees.close()
     issue_page.assignees.check_item_in_list(test_user["login"])
 
+@allure.testcase("TC-I-016")
 @pytest.mark.p1
 def test_issue_linking_with_milestone(
         authenticated_user_page: Page,
@@ -198,6 +207,7 @@ def test_issue_linking_with_milestone(
     issue_page.milestones.close()
     issue_page.milestones.check_item_in_list(milestone_name)
 
+@allure.testcase("TC-I-017")
 @pytest.mark.p1
 def test_adding_timeline_comment(authenticated_user_page: Page, created_public_repo, created_repo_issue, test_user):
     issue_page = IssueDetailsPage(authenticated_user_page)
@@ -213,6 +223,7 @@ def test_adding_timeline_comment(authenticated_user_page: Page, created_public_r
     issue_page.new_comment_form().click_comment_button()
     issue_page.comment_by_text(comment_text).check_visible()
 
+@allure.testcase("TC-I-018")
 @pytest.mark.p1
 def test_update_timeline_comment(
         authenticated_user_page: Page,
@@ -237,8 +248,11 @@ def test_update_timeline_comment(
     issue_page.comment_by_id(comment_id).check_text(update_comment_text)
 
 @pytest.mark.parametrize("confirm, check_result", [
-    pytest.param(True, CommentForm.check_absence, id="confirm_delete", marks=pytest.mark.p1),
-    pytest.param(False, CommentForm.check_visible, id="cancel_delete", marks=pytest.mark.p1),
+    pytest.param(True, CommentForm.check_absence,
+                 id="confirm_delete", marks=[pytest.mark.p1, allure.testcase("TC-I-019")]
+    ),
+    pytest.param(False, CommentForm.check_visible,
+                 id="cancel_delete", marks=[pytest.mark.p1, allure.testcase("TC-I-019b")]),
 ])
 def test_delete_timeline_comment(
         authenticated_user_page: Page,
@@ -263,6 +277,7 @@ def test_delete_timeline_comment(
     comment.click_delete_item_in_menu(confirm=confirm)
     check_result(comment)
 
+@allure.testcase("TC-I-020")
 @pytest.mark.p1
 def test_adding_timeline_comment_with_closed_issue_status(
         authenticated_user_page: Page,
@@ -286,6 +301,7 @@ def test_adding_timeline_comment_with_closed_issue_status(
     issue_page.comment_by_text(comment_text).check_text(comment_text)
     issue_page.check_issue_status_label_text("Закрыто")
 
+@allure.testcase("TC-I-030")
 @pytest.mark.p2
 def test_add_issue_with_empty_title(
         authenticated_user_page: Page,
@@ -301,6 +317,7 @@ def test_add_issue_with_empty_title(
     new_issue_page.check_url(f"/{repo_owner}/{repo_name}/issues/new")
     new_issue_page.check_show_error_in_required_title()
 
+@allure.testcase("TC-I-032")
 @pytest.mark.p2
 def test_add_issue_with_disabled_has_issue_param_in_repo(
         authenticated_user_page: Page,
@@ -318,6 +335,7 @@ def test_add_issue_with_disabled_has_issue_param_in_repo(
     not_found_page.check_title_text()
     not_found_page.check_description_text()
 
+@allure.testcase("TC-I-036")
 @pytest.mark.p2
 def test_creating_issue_with_label(
         authenticated_user_page: Page,
@@ -344,6 +362,7 @@ def test_creating_issue_with_label(
     issue_page.check_url(f"/{test_user["login"]}/{created_public_repo["repo_name"]}/issues/{issue_id}")
     issue_page.labels.check_item_in_list(label_item)
 
+@allure.testcase("TC-I-037")
 @pytest.mark.p2
 def test_creating_issue_with_assignee(
         authenticated_user_page: Page,
@@ -371,6 +390,7 @@ def test_creating_issue_with_assignee(
     issue_page.check_url(f"/{test_user["login"]}/{created_public_repo["repo_name"]}/issues/{issue_id}")
     issue_page.assignees.check_item_in_list(collaborator_name)
 
+@allure.testcase("TC-I-038")
 @pytest.mark.p2
 def test_creating_issue_with_milestone(
         authenticated_user_page: Page, test_user, created_public_repo, created_milestone
@@ -395,6 +415,7 @@ def test_creating_issue_with_milestone(
     issue_page.check_url(f"/{test_user["login"]}/{created_public_repo["repo_name"]}/issues/{issue_id}")
     issue_page.milestones.check_item_in_list(milestone_name)
 
+@allure.testcase("TC-I-040")
 @pytest.mark.p2
 def test_trying_update_issue_title_and_pinned_comment_by_other_user(
         test_user,
@@ -416,6 +437,7 @@ def test_trying_update_issue_title_and_pinned_comment_by_other_user(
     pinned_comment.click_context_dropdown()
     pinned_comment.edit_item_should_be_hidden()
 
+@allure.testcase("TC-I-041")
 @pytest.mark.p2
 def test_trying_close_issue_by_other_user(
         test_user,
@@ -433,6 +455,7 @@ def test_trying_close_issue_by_other_user(
 
     issue_page.switch_status_button_should_be_hidden()
 
+@allure.testcase("TC-I-042")
 @pytest.mark.p2
 def test_trying_update_and_delete_comment_by_other_user(
         test_user,
@@ -454,6 +477,7 @@ def test_trying_update_and_delete_comment_by_other_user(
     comment.edit_item_should_be_hidden()
     comment.delete_should_be_hidden()
 
+@allure.testcase("TC-I-043")
 @pytest.mark.p2
 def test_adding_timeline_comment_in_repo_by_other_user(
         test_user,
@@ -478,6 +502,7 @@ def test_adding_timeline_comment_in_repo_by_other_user(
     timeline_comment.check_author(user_name)
     timeline_comment.check_text(comment)
 
+@allure.testcase("TC-I-033")
 @pytest.mark.p3
 def test_adding_issue_with_max_length_title(
         test_user,
