@@ -1,9 +1,12 @@
 import os
 import random
+from uuid import uuid4
 
 import pytest
 
 from pathlib import Path
+
+import requests
 from dotenv import load_dotenv
 
 from playwright.sync_api import Browser
@@ -12,7 +15,7 @@ from helpers.api_client import create_user, delete_user, create_repo, delete_rep
     delete_organization, create_organization_by_user, create_user_token, create_team, add_team_member, \
     delete_issue_repo, create_issue_repo, create_milestone, create_label_issue, add_label_on_repo, \
     create_timeline_comment, delete_timeline_comment, update_repo_ability_repo_add_issues, adding_collaborator_for_repo, \
-    delete_collaborator_for_repo, get_licenses, get_gitignore_templates
+    delete_collaborator_for_repo, get_licenses, get_gitignore_templates, set_admin_token
 from helpers.test_data import random_password, random_email, unique_name, get_random_color
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -45,6 +48,32 @@ def test_user():
     user = _make_user()
     yield {"login": user["login"], "password": user["password"], "email": user["email"]}
     delete_user(user["login"])
+
+@pytest.fixture(scope="session", autouse=True)
+def admin_token(worker_id):
+    API_URL = os.getenv("GITEA_API_URL")
+    ADMIN_LOGIN = os.getenv("GITEA_ADMIN_LOGIN")
+    ADMIN_PASS = os.getenv("GITEA_ADMIN_PASSWORD")
+    name = f"tests-{worker_id}-{uuid4().hex[:8]}"
+
+    tokens_response = requests.post(
+        f"{API_URL}/users/{ADMIN_LOGIN}/tokens",
+        auth=(ADMIN_LOGIN, ADMIN_PASS),
+        json={"name": name, "scopes": ["all"]},
+    )
+    assert tokens_response.status_code == 201,\
+        f"Ошибка создания админ-токена: {tokens_response.status_code} {tokens_response.text}"
+
+    token = tokens_response.json()["sha1"]
+    set_admin_token(token)
+
+    yield token
+
+    set_admin_token(None)
+    requests.delete(
+        f"{API_URL}/users/{ADMIN_LOGIN}/tokens/{name}",
+        auth=(ADMIN_LOGIN, ADMIN_PASS),
+    )
 
 @pytest.fixture()
 def authenticated_user_page(browser: Browser, browser_context_args, test_user):

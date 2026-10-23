@@ -1,0 +1,90 @@
+# ==============================================================================
+# Стенд для автотестов: Gitea + PostgreSQL + одноразовое создание админа
+# ------------------------------------------------------------------------------
+# 1. Значения берутся из файла .env рядом с текущим файлом (образец: .env.example)
+# 2. Поднять и дождаться готовности: docker compose up -d --wait
+# 3. Остановить с сохранением данных: docker compose down
+# 4. Снести вместе с данными: docker compose down -v
+# ------------------------------------------------------------------------------
+# При -v: стираются оба тома,
+#         поэтому при следующем запуске стенд пустой и админ создастся заново
+# ==============================================================================
+
+services:
+  # --- Gitea: тестовый стенд ---
+  gitea:
+    image: gitea/gitea:1.26.2
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      # UID и GID пользователя внутри контейнера:
+      # от них зависит владелец файлов в томе gitea_data
+      # и создание админа, от которого зависит весь запуск тестов
+      - USER_UID=${USER_UID:-1000}
+      - USER_GID=${USER_GID:-1000}
+      # Настройки Gitea для подключения к PostgreSQL
+      # Формат переменных: GITEA__раздел__КЛЮЧ (раздел и ключ из app.ini)
+      - GITEA__database__DB_TYPE=postgres
+      - GITEA__database__HOST=database:5432
+      - GITEA__database__NAME=${DATABASE_NAME}
+      - GITEA__database__USER=${DATABASE_USER}
+      - GITEA__database__PASSWD=${DATABASE_PASSWORD}
+      # Отключение страницы установки при первом переходе
+      - GITEA__security__INSTALL_LOCK=true
+      # Явное открытие регистрации в системе (для тестов)
+      - GITEA__service__DISABLE_REGISTRATION=false
+    ports:
+      - "3000:3000"
+    volumes:
+      - gitea_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:3000/api/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- Одноразовое создание админа ---
+  gitea-init:
+      image: gitea/gitea:1.26.2
+      depends_on:
+        gitea:
+          condition: service_healthy
+      volumes:
+        - gitea_data:/data
+      # Одноразовый контейнер
+      restart: "no"
+      entrypoint: ["/bin/sh", "-c"]
+      command:
+        # CLI Gitea не работает от root, команда идёт от пользователя
+        # --must-change-password=false: админ входит без смены пароля
+        - >
+          su-exec ${USER_UID:-1000}:${USER_GID:-1000} gitea admin user create --admin
+          --username "${GITEA_ADMIN_LOGIN}"
+          --password "${GITEA_ADMIN_PASSWORD}"
+          --email "${GITEA_ADMIN_EMAIL}"
+          --must-change-password=false
+          || echo "admin already exists"
+
+
+
+  # --- PostgreSQL: база данных стенда ---
+  database:
+    image: postgres:16-alpine
+    environment:
+      # При первом запуске создаёт пользователя и базу с указанными данными
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - gitea_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  gitea_data:
+  gitea_postgres_data:

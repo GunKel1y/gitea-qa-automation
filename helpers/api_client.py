@@ -7,15 +7,22 @@ import requests as req
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 BASE_URL_API = os.getenv("GITEA_API_URL")
-GITEA_ADMIN_TOKEN = os.getenv("GITEA_ADMIN_TOKEN")
-
 API_TIMEOUT = (5, 15)
-HEADERS = {"Authorization": f"token {GITEA_ADMIN_TOKEN}"}
+_admin_token: str | None = None
+
+def set_admin_token(token: str | None) -> None:
+    global _admin_token
+    _admin_token = token
+
+def _headers() -> dict:
+    if _admin_token is None:
+        raise RuntimeError("Админ-токен не задан")
+    return {"Authorization": f"token {_admin_token}"}
 
 def create_user(*, username: str, password: str, email: str, must_change_password: bool = False) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/admin/users",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "username": username,
             "password": password,
@@ -28,7 +35,7 @@ def create_user(*, username: str, password: str, email: str, must_change_passwor
 def delete_user(username: str) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/admin/users/{username}",
-        headers=HEADERS,
+        headers=_headers(),
         params={"purge": "true"},
         timeout=API_TIMEOUT
     )
@@ -48,7 +55,7 @@ def create_repo(
 ) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/admin/users/{owner}/repos",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "auto_init": auto_init,
             "name": repo_name,
@@ -66,7 +73,7 @@ def create_repo(
 def delete_repo(*, owner: str, repo_name: str) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/repos/{owner}/{repo_name}",
-        headers=HEADERS,
+        headers=_headers(),
         timeout=API_TIMEOUT
     )
 
@@ -84,7 +91,7 @@ def create_user_token(*, username: str, password: str, scopes: list[str], token_
 def create_organization(*, org_name: str, visibility: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/orgs",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "username": org_name,
             "visibility": visibility
@@ -95,7 +102,7 @@ def create_organization(*, org_name: str, visibility: str) -> req.Response:
 def delete_organization(org_name: str) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/orgs/{org_name}",
-        headers=HEADERS,
+        headers=_headers(),
         timeout=API_TIMEOUT
     )
 
@@ -114,7 +121,7 @@ def create_team(*, org_name: str, team_name: str, permission: str, can_create_or
                  units: list[str] | None = None) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/orgs/{org_name}/teams",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "name": team_name,
             "permission": permission,
@@ -127,14 +134,14 @@ def create_team(*, org_name: str, team_name: str, permission: str, can_create_or
 def add_team_member(*, team_id: int, username: str) -> req.Response:
     return req.put(
         f"{BASE_URL_API}/teams/{team_id}/members/{username}",
-        headers=HEADERS,
+        headers=_headers(),
         timeout=API_TIMEOUT
     )
 
 def create_issue_repo(*, owner_repo: str, repo_name: str, title: str, closed: bool, comment: str = None) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "title": title,
             "closed": closed,
@@ -146,14 +153,14 @@ def create_issue_repo(*, owner_repo: str, repo_name: str, title: str, closed: bo
 def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}",
-        headers=HEADERS,
+        headers=_headers(),
         timeout=API_TIMEOUT
     )
 
 def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, label_color: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/labels",
-        headers=HEADERS,
+        headers=_headers(),
         json = {
             "name": label_name,
             "color": label_color
@@ -164,7 +171,7 @@ def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, labe
 def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labels: list[str]) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}/labels",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "labels": labels
         },
@@ -174,7 +181,7 @@ def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labe
 def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/milestones",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "title": milestone_name
         },
@@ -184,7 +191,7 @@ def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str) ->
 def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int, comment: str) -> req.Response:
     return req.post(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/{issue_index}/comments",
-        headers = HEADERS,
+        headers=_headers(),
         json = {
             "body": comment
         },
@@ -194,14 +201,14 @@ def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int
 def delete_timeline_comment(*, owner_repo: str, repo_name: str, comment_id: int) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/issues/comments/{comment_id}",
-        headers=HEADERS,
+        headers=_headers(),
         timeout=API_TIMEOUT
     )
 
 def update_repo_ability_repo_add_issues(*, owner_repo: str, repo_name: str, has_issues: bool) -> req.Response:
     return req.patch(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "has_issues": has_issues
         },
@@ -213,7 +220,7 @@ def adding_collaborator_for_repo(
 ) -> req.Response:
     return req.put(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/collaborators/{collaborator_login}",
-        headers=HEADERS,
+        headers=_headers(),
         json={
             "permission": permission
         },
@@ -223,14 +230,14 @@ def adding_collaborator_for_repo(
 def delete_collaborator_for_repo(*, owner_repo: str, repo_name: str, collaborator_login: str) -> req.Response:
     return req.delete(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/collaborators/{collaborator_login}",
-        headers=HEADERS,
+        headers=_headers(),
         timeout=API_TIMEOUT
     )
 
 def get_licenses() -> req.Response:
     licenses = req.get(
         f"{BASE_URL_API}/licenses",
-        headers=HEADERS,
+        headers=_headers(),
         timeout=API_TIMEOUT
     )
     assert licenses.ok, f"Ошибка при получении списка лицензий: {licenses.status_code} {licenses.text}"
@@ -239,7 +246,7 @@ def get_licenses() -> req.Response:
 def get_gitignore_templates() -> req.Response:
     gitignore_templates = req.get(
         f"{BASE_URL_API}/gitignore/templates",
-        headers=HEADERS,
+        headers=_headers(),
         timeout=API_TIMEOUT
     )
     assert gitignore_templates.ok,\
