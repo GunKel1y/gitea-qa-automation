@@ -27,7 +27,7 @@ load_dotenv(Path(__file__).parent / ".env")
 def _login_context(*, browser, browser_context_args, user):
     """Возвращает контекст браузера, авторизованный через API запрос (без UI), с русскими куками"""
     context = browser.new_context(**browser_context_args)
-    context.add_cookies([{"name": "lang", "value": "ru-RU", "domain": "localhost", "path": "/"}])
+    context.add_cookies([{"name": "lang", "value": "ru-RU", "url": os.getenv("GITEA_UI_URL")}])
     authorized = context.request.post(f"{os.getenv('GITEA_UI_URL')}/user/login", form={
         "user_name": user["login"],
         "password": user["password"],

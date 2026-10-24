@@ -84,6 +84,19 @@ services:
       timeout: 5s
       retries: 5
 
+  tests:
+    build: .
+    profiles: ["tests"]
+    depends_on:
+      gitea-init:
+        condition: service_completed_successfully
+    environment:
+      - PYTEST_ADDOPTS=--base-url http://gitea:3000
+      - GITEA_UI_URL=http://gitea:3000
+      - GITEA_API_URL=http://gitea:3000/api/v1
+      - GITEA_ADMIN_LOGIN=${GITEA_ADMIN_LOGIN}
+      - GITEA_ADMIN_PASSWORD=${GITEA_ADMIN_PASSWORD}
+      - GITEA_ADMIN_EMAIL=${GITEA_ADMIN_EMAIL}
 
 volumes:
   gitea_data:
