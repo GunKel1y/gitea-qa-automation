@@ -20,7 +20,12 @@ from helpers.test_data import random_password, random_email, unique_name, get_ra
 
 load_dotenv(Path(__file__).parent / ".env")
 
+#===========================================#
+#       Приватные хелперы для фикстур       #
+#===========================================#
+
 def _login_context(*, browser, browser_context_args, user):
+    """Возвращает контекст браузера, авторизованный через API запрос (без UI), с русскими куками"""
     context = browser.new_context(**browser_context_args)
     context.add_cookies([{"name": "lang", "value": "ru-RU", "domain": "localhost", "path": "/"}])
     authorized = context.request.post(f"{os.getenv('GITEA_UI_URL')}/user/login", form={
@@ -31,26 +36,26 @@ def _login_context(*, browser, browser_context_args, user):
     return context
 
 def _make_user() -> dict:
+    """Создает нового пользователя со случайными данными, возвращает его login, password и email словарем"""
     user = {"login": unique_name(prefix='user'), "password": random_password(), "email": random_email()}
     created_user = create_user(username=user["login"], email=user["email"], password=user["password"])
     assert created_user.ok, f"Ошибка при создании пользователя: {created_user.status_code} {created_user.text}"
     return user
 
+#===========================================#
+#            Сессионные фикстуры            #
+#===========================================#
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
+    """Опции контекста браузера: размер окна и русский язык интерфейса"""
     return {**browser_context_args,
             "viewport": {"width": 1920, "height": 1080},
             "locale": "ru-RU"
             }
 
-@pytest.fixture()
-def test_user():
-    user = _make_user()
-    yield {"login": user["login"], "password": user["password"], "email": user["email"]}
-    delete_user(user["login"])
-
 @pytest.fixture(scope="session", autouse=True)
 def admin_token(worker_id):
+    """Создает токен админа, отдает в api_client и удаляет в конце тестовой сессии"""
     API_URL = os.getenv("GITEA_API_URL")
     ADMIN_LOGIN = os.getenv("GITEA_ADMIN_LOGIN")
     ADMIN_PASS = os.getenv("GITEA_ADMIN_PASSWORD")
@@ -75,26 +80,44 @@ def admin_token(worker_id):
         auth=(ADMIN_LOGIN, ADMIN_PASS),
     )
 
-@pytest.fixture()
-def authenticated_user_page(browser: Browser, browser_context_args, test_user):
-    context = _login_context(browser=browser, browser_context_args=browser_context_args, user=test_user)
-    yield context.new_page()
-    context.close()
+#===========================================#
+#            Авторизация и юзеры            #
+#===========================================#
 
 @pytest.fixture()
-def second_test_user():
+def test_user():
+    """Создает пользователя со случайными данными, после теста удаляет его"""
     user = _make_user()
     yield {"login": user["login"], "password": user["password"], "email": user["email"]}
     delete_user(user["login"])
 
 @pytest.fixture()
+def second_test_user():
+    """Создает второго пользователя для сценариев с двумя участниками"""
+    user = _make_user()
+    yield {"login": user["login"], "password": user["password"], "email": user["email"]}
+    delete_user(user["login"])
+
+@pytest.fixture()
+def authenticated_user_page(browser: Browser, browser_context_args, test_user):
+    """Авторизованная страница браузера под test_user, контекст закрывается после теста"""
+    context = _login_context(browser=browser, browser_context_args=browser_context_args, user=test_user)
+    yield context.new_page()
+    context.close()
+
+@pytest.fixture()
 def authenticated_second_user_page(browser: Browser, browser_context_args, second_test_user):
+    """Авторизованная страница браузера под second_test_user, в отдельном контексте от первого юзера"""
     context = _login_context(browser=browser, browser_context_args=browser_context_args, user=second_test_user)
     yield context.new_page()
     context.close()
 
 @pytest.fixture()
 def delete_user_after_registration(request):
+    """
+    Готовит данные пользователя для теста регистрации (из param или случайные) и удаляет его после теста
+    Сам пользователь не создается, фикстура только чистит за тестом
+    """
     if getattr(request, "param", None):
         login, password, email = request.param
     else:
@@ -104,8 +127,13 @@ def delete_user_after_registration(request):
     yield user
     delete_user(user["login"])
 
+#===========================================#
+#                Репозитории                #
+#===========================================#
+
 @pytest.fixture()
 def created_public_repo(test_user):
+    """Создает публичный репозиторий, после теста удаляет"""
     repo_name = unique_name(prefix='repo')
     created_repo = create_repo(owner=test_user["login"], repo_name=repo_name, private=False)
     assert created_repo.ok, f"Ошибка создания публичного репозитория: {created_repo.status_code} {created_repo.text}"
@@ -116,6 +144,7 @@ def created_public_repo(test_user):
 
 @pytest.fixture()
 def created_private_repo(test_user):
+    """Создает приватный репозиторий, после теста удаляет"""
     repo_name = unique_name(prefix='repo')
     created_repo = create_repo(owner=test_user["login"], repo_name=repo_name, private=True)
     assert created_repo.ok, f"Ошибка создания приватного репозитория: {created_repo.status_code} {created_repo.text}"
@@ -126,6 +155,14 @@ def created_private_repo(test_user):
 
 @pytest.fixture()
 def created_template_repo(test_user):
+    """
+    Создает публичный репозиторий-шаблон со случайными описанием, лицензией и .gitignore;
+
+    Возвращает id, имя и выбранные параметры, чтобы тест мог сверить с ними
+    репозиторий, созданный из шаблона;
+
+    После теста репозиторий удаляется;
+    """
     repo_owner = test_user["login"]
     repo_name = unique_name(prefix='repo')
     description = unique_name(prefix="description")
@@ -155,6 +192,11 @@ def created_template_repo(test_user):
 
 @pytest.fixture()
 def created_template_repo_with_label(test_user):
+    """
+    Создает репозиторий-шаблон с двумя случайными метками, возвращает id, имя и названия меток;
+
+    Репозиторий удаляется после теста
+    """
     repo_owner = test_user["login"]
     repo_name = unique_name(prefix='repo')
 
@@ -191,7 +233,76 @@ def created_template_repo_with_label(test_user):
         delete_repo(owner=repo_owner, repo_name=repo_name)
 
 @pytest.fixture()
+def adding_collaboration_for_repo_with_admin_permission(created_public_repo, test_user, second_test_user):
+    """Добавляет second_test_user соавтором с правами admin'а в публичный репозиторий, возвращает логин соавтора"""
+    collaboration_name = second_test_user["login"]
+    added_collaborator = adding_collaborator_for_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        collaborator_login=collaboration_name,
+        permission="admin"
+    )
+    assert added_collaborator.ok, \
+        f"Ошибка при добавлении соавтора репозитория: {added_collaborator.status_code} {added_collaborator.text}"
+
+    yield {"collaborator_login": collaboration_name}
+
+    delete_collaborator_for_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        collaborator_login=collaboration_name
+    )
+
+@pytest.fixture()
+def disabling_ability_add_issue_to_repo(created_public_repo, test_user):
+    """Отключает в публичном репозитории возможность создавать задачи"""
+    updated_ability_add_issues = update_repo_ability_repo_add_issues(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        has_issues=False
+    )
+    assert updated_ability_add_issues.ok, \
+        (f"Ошибка при отключении возможности добавлять задачи в репозитории: "
+         f"{updated_ability_add_issues.status_code} {updated_ability_add_issues.text}")
+
+@pytest.fixture()
+def created_repo_label(created_public_repo, test_user):
+    """Создает метку со случайным именем и цветом в публичном репозитории, возвращает имя метки"""
+    label_name = unique_name(prefix='label')
+    label_color = get_random_color()
+
+    created_label = create_label_issue(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        label_name=label_name,
+        label_color=label_color
+    )
+    assert created_label.ok, f"Ошибка при создании метки: {created_label.status_code} {created_label.text}"
+
+    yield {"label_name": label_name}
+
+@pytest.fixture()
+def created_milestone(created_public_repo, test_user):
+    """Создает этап со случайным именем в публичном репозитории, возвращает его имя"""
+    milestone_name = unique_name(prefix='milestone')
+
+    created_milestone_resp = create_milestone(
+        owner_repo=test_user["login"],
+        repo_name=created_public_repo["repo_name"],
+        milestone_name=milestone_name
+    )
+    assert created_milestone_resp.ok,\
+        f"Ошибка при создании этапа: {created_milestone_resp.status_code} {created_milestone_resp.text}"
+
+    yield {"milestone_name": milestone_name}
+
+#===========================================#
+#                Огранизации                #
+#===========================================#
+
+@pytest.fixture()
 def created_public_organization_by_user(test_user):
+    """Создает публичную организацию, после теста удаляет ее"""
     org_name = unique_name(prefix='org')
 
     token_resp = create_user_token(
@@ -211,7 +322,9 @@ def created_public_organization_by_user(test_user):
 
 @pytest.fixture()
 def created_organization_without_creation_rights(test_user):
-    org_name = unique_name(prefix='user')
+    """Создает публичную организацию, где test_user состоит в команде только с правом чтения
+    и без права создавать репозитории, после теста организация удаляется"""
+    org_name = unique_name(prefix='org')
 
     org_resp = create_organization(org_name=org_name, visibility="public")
     assert org_resp.ok, f"Ошибка создания организации: {org_resp.status_code} {org_resp.text}"
@@ -232,8 +345,17 @@ def created_organization_without_creation_rights(test_user):
 
     delete_organization(org_name)
 
+#===========================================#
+#                   Задачи                  #
+#===========================================#
+
 @pytest.fixture()
 def created_repo_issue(created_public_repo, test_user):
+    """
+    Создает задачу с закрепленным комментарием в публичном репозитории
+
+    Возвращает id, номер, заголовок и текст комментария, после теста задача удаляется
+    """
     issue_name = unique_name(prefix='issue')
     issue_comment = unique_name(prefix='comment-issue')
     created_issue = create_issue_repo(
@@ -257,6 +379,11 @@ def created_repo_issue(created_public_repo, test_user):
 
 @pytest.fixture()
 def created_repo_issue_with_label(created_public_repo, test_user):
+    """
+    Создает задачу и новую метку в публичном репозитории, назначает метку задаче;
+
+    Возвращает id, номер и заголовок задачи, имя метки. После теста задача удаляется
+    """
     issue_name = unique_name(prefix='issue')
     issue_comment = unique_name(prefix='comment')
     created_issue = create_issue_repo(
@@ -299,6 +426,7 @@ def created_repo_issue_with_label(created_public_repo, test_user):
 
 @pytest.fixture()
 def created_closed_repo_issue(test_user, created_public_repo):
+    """Создает закрытую задачу в публичном репозитории, возвращает ее номер, после теста задача удаляется"""
     issue_name = unique_name(prefix='issue')
     created_issue = create_issue_repo(
         owner_repo=test_user["login"],
@@ -318,36 +446,8 @@ def created_closed_repo_issue(test_user, created_public_repo):
     )
 
 @pytest.fixture()
-def created_repo_label(created_public_repo, test_user):
-    label_name = unique_name(prefix='label')
-    label_color = get_random_color()
-
-    created_label = create_label_issue(
-        owner_repo=test_user["login"],
-        repo_name=created_public_repo["repo_name"],
-        label_name=label_name,
-        label_color=label_color
-    )
-    assert created_label.ok, f"Ошибка при создании метки: {created_label.status_code} {created_label.text}"
-
-    yield {"label_name": label_name}
-
-@pytest.fixture()
-def created_milestone(created_public_repo, test_user):
-    milestone_name = unique_name(prefix='milestone')
-
-    created_milestone_resp = create_milestone(
-        owner_repo=test_user["login"],
-        repo_name=created_public_repo["repo_name"],
-        milestone_name=milestone_name
-    )
-    assert created_milestone_resp.ok,\
-        f"Ошибка при создании этапа: {created_milestone_resp.status_code} {created_milestone_resp.text}"
-
-    yield {"milestone_name": milestone_name}
-
-@pytest.fixture()
 def created_timeline_comment(created_public_repo, test_user, created_repo_issue):
+    """Добавляет комментарий в ленту задачи, возвращает id и текст комментария, после теста комментарий удаляется"""
     comment = unique_name(prefix='comment')
     created_comment = create_timeline_comment(
         owner_repo=test_user["login"],
@@ -364,35 +464,4 @@ def created_timeline_comment(created_public_repo, test_user, created_repo_issue)
         owner_repo=test_user["login"],
         repo_name=created_public_repo["repo_name"],
         comment_id=comment_id
-    )
-
-@pytest.fixture()
-def disabling_ability_add_issue_to_repo(created_public_repo, test_user):
-    updated_ability_add_issues = update_repo_ability_repo_add_issues(
-        owner_repo=test_user["login"],
-        repo_name=created_public_repo["repo_name"],
-        has_issues=False
-    )
-    assert updated_ability_add_issues.ok, \
-        (f"Ошибка при отключении возможности добавлять задачи в репозитории: "
-         f"{updated_ability_add_issues.status_code} {updated_ability_add_issues.text}")
-
-@pytest.fixture()
-def adding_collaboration_for_repo_with_admin_permission(created_public_repo, test_user, second_test_user):
-    collaboration_name = second_test_user["login"]
-    added_collaborator = adding_collaborator_for_repo(
-        owner_repo=test_user["login"],
-        repo_name=created_public_repo["repo_name"],
-        collaborator_login=collaboration_name,
-        permission="admin"
-    )
-    assert added_collaborator.ok, \
-        f"Ошибка при добавлении соавтора репозитория: {added_collaborator.status_code} {added_collaborator.text}"
-
-    yield {"collaborator_login": collaboration_name}
-
-    delete_collaborator_for_repo(
-        owner_repo=test_user["login"],
-        repo_name=created_public_repo["repo_name"],
-        collaborator_login=collaboration_name
     )
