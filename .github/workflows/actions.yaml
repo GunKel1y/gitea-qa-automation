@@ -1,0 +1,50 @@
+name: Gitea CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+  workflow_dispatch:
+    inputs:
+      xdist_workers:
+        description: 'Выберите число воркеров для прогона'
+        required: true
+        default: '4'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '4'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      GITEA_ADMIN_LOGIN: ${{secrets.GITEA_ADMIN_LOGIN}}
+      GITEA_ADMIN_PASSWORD: ${{secrets.GITEA_ADMIN_PASSWORD}}
+      GITEA_ADMIN_EMAIL: ${{secrets.GITEA_ADMIN_EMAIL}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME}}
+      DATABASE_USER: ${{secrets.DATABASE_USER}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v6
+
+      - name: Запуск docker compose
+        run: docker compose up -d --wait
+
+      - name: Запуск тестов
+        run: docker compose run --build --rm tests pytest -n ${{ inputs.xdist_workers || '4' }}
+
+      - name: Логи Gitea при падении
+        if: failure()
+        run: docker compose logs gitea
+
+      - name: Снос контейнеров
+        if: always()
+        run: docker compose down -v
