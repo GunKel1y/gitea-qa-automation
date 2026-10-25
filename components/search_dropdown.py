@@ -30,5 +30,7 @@ class SearchDropdown:
     def select(self, value: str) -> None:
         self._item(value).click()
 
-    def select_random_item(self) -> None:
-        self._item(self._get_random_item()).click()
+    def select_random_item(self) -> str:
+        value = self._get_random_item()
+        self._item(value).click()
+        return value
