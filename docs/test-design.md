@@ -258,7 +258,7 @@
 | TC-R-032 | `tests/test_repo.py::test_name_validation[over_max_truncated]` |
 | TC-R-033 | `tests/test_repo.py::test_name_validation[with_space]` |
 | TC-R-034 | `tests/test_repo.py::test_name_validation[with_slash]` |
-| TC-R-035 | `tests/test_repo.py::test_name_validation[*]` |
+| TC-R-035 | `tests/test_repo.py::test_create_repo_without_init_is_empty` |
 | TC-R-037 | `tests/test_repo.py::test_create_repo_default_branch[empty_field_in_default_branch_field]` |
 | TC-R-040 | `tests/test_repo.py::test_create_repo_with_description` |
 | TC-R-041 | `tests/test_repo.py::test_create_repo_by_template` |

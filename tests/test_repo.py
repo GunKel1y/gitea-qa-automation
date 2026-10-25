@@ -28,8 +28,22 @@ def test_name_validation(authenticated_user_page: Page, test_user, repo_name, ex
     create_repo_page.open()
     create_repo_page.fill_repo_name_field(repo_name)
     create_repo_page.click_repo_create_button()
+
     repo_page.check_url(f"/{test_user['login']}/{expected_name}")
     repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=expected_name)
+
+@allure.testcase("TC-R-035")
+@pytest.mark.p3
+def test_create_repo_without_init_is_empty(authenticated_user_page: Page, test_user):
+    create_repo_page = CreateRepositoryPage(authenticated_user_page)
+    repo_page = RepoPage(authenticated_user_page)
+    repo_name = unique_name(prefix='repo')
+
+    create_repo_page.open()
+    create_repo_page.fill_repo_name_field(repo_name)
+    create_repo_page.click_repo_create_button()
+
+    repo_page.check_url(f"/{test_user['login']}/{repo_name}")
     repo_page.empty_repo_guide_is_displayed()
 
 @pytest.mark.p2
