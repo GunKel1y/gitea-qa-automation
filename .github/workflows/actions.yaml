@@ -35,15 +35,29 @@ jobs:
       - name: Клонирование репозитория
         uses: actions/checkout@v6
 
-      - name: Запуск docker compose
+      - name: Скачивание образов gitea и PostgreSQL
+        run: docker compose pull -q gitea database
+
+      - name: Сборка образа тестов
+        run: docker compose --profile tests build tests
+
+      - name: Запуск Gitea
         run: docker compose up -d --wait gitea
 
       - name: Запуск тестов
-        run: docker compose run --build --rm tests pytest -n ${{ inputs.xdist_workers || '4' }}
+        run: docker compose run --rm tests pytest -n ${{ inputs.xdist_workers || '4' }}
+
+      - name: Логи gitea-init при падении
+        if: failure()
+        run: docker compose logs --no-log-prefix gitea-init
 
       - name: Логи Gitea при падении
         if: failure()
-        run: docker compose logs
+        run: docker compose logs --no-log-prefix gitea
+
+      - name: Логи PostgreSQL при падении
+        if: failure()
+        run: docker compose logs --no-log-prefix database
 
       - name: Снос контейнеров
         if: always()
