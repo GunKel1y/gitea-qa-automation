@@ -4,6 +4,7 @@ import pytest
 from playwright.sync_api import Page
 
 from components.comment_form import CommentForm
+from conftest import created_closed_repo_issue
 from helpers.test_data import unique_name, value_with_length, MAX_TITLE_LENGTH
 from pages.not_found_error_page import NotFoundErrorPage
 from pages.repo.issue_details_page import IssueDetailsPage
@@ -57,24 +58,26 @@ def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_pu
     issue_page.check_issue_title_value(expected_title=issue_name, expected_id=issue_id)
     issue_page.first_comment().check_text(comment_text)
 
-@pytest.mark.parametrize("issue_status, switch_button_text", [
-    pytest.param("Закрыто", "Открыть снова", id="closing", marks=[pytest.mark.p0, allure.testcase("TC-I-002")]),
-    pytest.param("Открыто", "Закрыть задачу", id="reopen", marks=[pytest.mark.p1, allure.testcase("TC-I-011")])
+@pytest.mark.parametrize("issue_status, switch_button_text, fixture_name", [
+    pytest.param("Закрыто", "Открыть снова", "created_repo_issue", id="closing", marks=[pytest.mark.p0, allure.testcase("TC-I-002")]),
+    pytest.param("Открыто", "Закрыть задачу", "created_closed_repo_issue", id="reopen", marks=[pytest.mark.p1, allure.testcase("TC-I-011")])
 ])
 def test_switch_issue_status(
         authenticated_user_page,
         test_user,
         created_public_repo,
-        created_repo_issue,
         issue_status,
-        switch_button_text
+        switch_button_text,
+        fixture_name,
+        request
 ):
     issue_page = IssueDetailsPage(authenticated_user_page)
+    issue_data = request.getfixturevalue(fixture_name)
 
     issue_page.open(
         repo_owner=test_user["login"],
         repo_name=created_public_repo["repo_name"],
-        issue_index=created_repo_issue["issue_index"]
+        issue_index=issue_data["issue_index"]
     )
 
     issue_page.switch_status_button_click()
