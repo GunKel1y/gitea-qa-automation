@@ -36,14 +36,14 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Запуск docker compose
-        run: docker compose up -d --wait
+        run: docker compose up -d --wait gitea
 
       - name: Запуск тестов
         run: docker compose run --build --rm tests pytest -n ${{ inputs.xdist_workers || '4' }}
 
       - name: Логи Gitea при падении
         if: failure()
-        run: docker compose logs gitea
+        run: docker compose logs
 
       - name: Снос контейнеров
         if: always()
