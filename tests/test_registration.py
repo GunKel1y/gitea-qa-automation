@@ -10,12 +10,11 @@ from pages.dashboard_page import DashboardPage
 from helpers.test_data import random_email, random_password, value_with_length, unique_name, email_with_length
 
 
-@pytest.mark.p2
 @pytest.mark.parametrize("invalid_email", [
-    pytest.param('', id="empty_value", marks=[allure.testcase("TC-A-036")]),
-    pytest.param(unique_name(), id="no_symbol", marks=[allure.testcase("TC-A-023")]),
-    pytest.param(f"{unique_name()}@", id="no_domain", marks=[allure.testcase("TC-A-037")]),
-    pytest.param(f"@{unique_name()}.com", id="no_local", marks=[allure.testcase("TC-A-038")]),
+    pytest.param('', id="empty_value", marks=[pytest.mark.p2, allure.testcase("TC-A-036")]),
+    pytest.param(unique_name(), id="no_symbol", marks=[pytest.mark.p2, allure.testcase("TC-A-023")]),
+    pytest.param(f"{unique_name()}@", id="no_domain", marks=[pytest.mark.p2, allure.testcase("TC-A-037")]),
+    pytest.param(f"@{unique_name()}.com", id="no_local", marks=[pytest.mark.p2, allure.testcase("TC-A-038")]),
     pytest.param(email_with_length(length=247, domain="@test.ru"),
                  id="above_max", marks=[pytest.mark.p3, allure.testcase("TC-A-040")]
     )
