@@ -128,11 +128,11 @@ Gitea остаётся запущенной на http://localhost:3000 (вход
 
 Workflow `.github/workflows/actions.yaml` («Gitea CI»):
 
-- запускается на каждый push и pull request в `main`;
-- вручную: Actions -> «Gitea CI» -> Run workflow, с выбором числа воркеров (1, 2 или 4; по умолчанию 4);
+- запускается на каждый push и pull request в `main`; результаты прогонов видны во вкладке Actions;
+- вручную (для владельца репозитория или в своём форке): Actions -> «Gitea CI» -> Run workflow, с выбором числа воркеров (1, 2 или 4; по умолчанию 4);
 - поднимает тот же compose-стенд, что и локальный запуск; при падении выводит логи `gitea-init`, Gitea и PostgreSQL.
 
-Для своей копии репозитория в Settings -> Secrets and variables -> Actions нужно добавить шесть секретов: `GITEA_ADMIN_LOGIN`, `GITEA_ADMIN_PASSWORD`, `GITEA_ADMIN_EMAIL`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD` (значения как в `.env.example`).
+Чтобы запустить CI в своём форке: включить Actions во вкладке Actions форка и в Settings -> Secrets and variables -> Actions добавить шесть секретов: `GITEA_ADMIN_LOGIN`, `GITEA_ADMIN_PASSWORD`, `GITEA_ADMIN_EMAIL`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD` (значения как в `.env.example`). Секреты не копируются вместе с репозиторием.
 
 ## Структура проекта
 
