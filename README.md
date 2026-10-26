@@ -1,3 +1,8 @@
+[![Gitea CI](https://github.com/GunKel1y/gitea-qa-automation/actions/workflows/actions.yaml/badge.svg)](https://github.com/GunKel1y/gitea-qa-automation/actions/workflows/actions.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Allure Report](https://img.shields.io/badge/Allure-report-8A2BE2)](https://gunkel1y.github.io/gitea-qa-automation/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 # gitea-qa-automation
 
 Портфолио-проект по автоматизации тестирования [Gitea](https://about.gitea.com) 1.26.2.
@@ -18,7 +23,9 @@
 - **UI:** Playwright (sync)
 - **API-предусловия:** `requests`
 - **Параллельный запуск:** pytest-xdist
-- **Привязка кейсов:** allure-pytest (`@allure.testcase`); отчёт Allure пока не формируется
+- **Качество кода:** Ruff
+- **Отчёт:** allure-pytest, Allure Report 2
+  - Публикуется на GitHub Pages: https://gunkel1y.github.io/gitea-qa-automation/
 - **Стенд:** Docker, Docker Compose, Gitea, PostgreSQL 16
 - **CI:** GitHub Actions
 
@@ -129,7 +136,10 @@ Workflow `.github/workflows/actions.yaml` («Gitea CI»):
 
 - запускается на каждый push и pull request в `main`; результаты прогонов видны во вкладке Actions;
 - вручную (для владельца репозитория или в своём форке): Actions -> «Gitea CI» -> Run workflow, с выбором числа воркеров (1, 2 или 4; по умолчанию 4);
-- поднимает тот же compose-стенд, что и локальный запуск; при падении выводит логи `gitea-init`, Gitea и PostgreSQL.
+- сначала запускается линтер Ruff (`ruff check` и `ruff format --check`), тесты стартуют только после него;
+- поднимает тот же compose-стенд, что и локальный запуск; при падении выводит логи `gitea-init`, Gitea и PostgreSQL;
+- после прогона сохраняет `allure-results` как артефакт запуска, в том числе при падении тестов;
+- собирает отчёт Allure с историей прошлых прогонов (артефакт `allure-report`); с ветки `main` публикует его на GitHub Pages: https://gunkel1y.github.io/gitea-qa-automation/
 
 Чтобы запустить CI в своём форке: включить Actions во вкладке Actions форка и в Settings -> Secrets and variables -> Actions добавить шесть секретов: `GITEA_ADMIN_LOGIN`, `GITEA_ADMIN_PASSWORD`, `GITEA_ADMIN_EMAIL`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD` (значения как в `.env.example`). Секреты не копируются вместе с репозиторием.
 
