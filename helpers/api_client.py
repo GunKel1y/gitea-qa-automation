@@ -4,6 +4,8 @@ from pathlib import Path
 import requests as req
 from dotenv import load_dotenv
 
+from helpers.allure_helpers import step
+
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
@@ -16,6 +18,7 @@ API_TIMEOUT = (5, 15)
 _admin_token: str | None = None
 
 
+@step(title="Установить токен админа", mask=["token"])
 def set_admin_token(token: str | None) -> None:
     """Вызывается только фикстурой admin_token"""
     global _admin_token
@@ -32,6 +35,7 @@ def _headers() -> dict:
 # ===========================================#
 #                Пользователи               #
 # ===========================================#
+@step(title="Создать пользователя {username}", mask=["password"])
 def create_user(*, username: str, password: str, email: str, must_change_password: bool = False) -> req.Response:
     """Создает пользователя на стенде через админа"""
     return req.post(
@@ -42,6 +46,7 @@ def create_user(*, username: str, password: str, email: str, must_change_passwor
     )
 
 
+@step("Удалить пользователя {username}")
 def delete_user(username: str) -> req.Response:
     """Удаляет пользователя на стенде через админа"""
     return req.delete(
@@ -49,6 +54,7 @@ def delete_user(username: str) -> req.Response:
     )
 
 
+@step(title="Создать токен пользователя {username}", mask=["password", "token_name"])
 def create_user_token(
     *, username: str, password: str, scopes: list[str], token_name: str = "test-token"
 ) -> req.Response:
@@ -66,6 +72,7 @@ def create_user_token(
 # ===========================================#
 
 
+@step("Создать репозиторий {owner}/{repo_name}")
 def create_repo(
     *,
     owner: str,
@@ -98,11 +105,13 @@ def create_repo(
     )
 
 
+@step("Удалить репозиторий {owner}/{repo_name}")
 def delete_repo(*, owner: str, repo_name: str) -> req.Response:
     """Удаляет репозиторий на стенде через админа"""
     return req.delete(f"{BASE_URL_API}/repos/{owner}/{repo_name}", headers=_headers(), timeout=API_TIMEOUT)
 
 
+@step("Изменить возможность добавления задач в репозитории")
 def update_repo_ability_repo_add_issues(*, owner_repo: str, repo_name: str, has_issues: bool) -> req.Response:
     """Изменяет возможность добавления задач в репозитории через админа"""
     return req.patch(
@@ -113,6 +122,7 @@ def update_repo_ability_repo_add_issues(*, owner_repo: str, repo_name: str, has_
     )
 
 
+@step("Добавить соавтора {collaborator_login} в репозиторий {owner_repo}/{repo_name} с правами {permission}")
 def adding_collaborator_for_repo(
     *, owner_repo: str, repo_name: str, collaborator_login: str, permission: str
 ) -> req.Response:
@@ -125,6 +135,7 @@ def adding_collaborator_for_repo(
     )
 
 
+@step("Удалить соавтора {collaborator_login} из репозитория {owner_repo}/{repo_name}")
 def delete_collaborator_for_repo(*, owner_repo: str, repo_name: str, collaborator_login: str) -> req.Response:
     """Удаляет соавтора в репозитории"""
     return req.delete(
@@ -139,6 +150,7 @@ def delete_collaborator_for_repo(*, owner_repo: str, repo_name: str, collaborato
 # ===========================================#
 
 
+@step("Создать {visibility} организацию: {org_name}")
 def create_organization(*, org_name: str, visibility: str) -> req.Response:
     """Создает организацию через админа со значением видимости (public/limited/private)"""
     return req.post(
@@ -149,11 +161,13 @@ def create_organization(*, org_name: str, visibility: str) -> req.Response:
     )
 
 
+@step("Удалить организацию {org_name}")
 def delete_organization(org_name: str) -> req.Response:
     """Удаляет организацию через админа"""
     return req.delete(f"{BASE_URL_API}/orgs/{org_name}", headers=_headers(), timeout=API_TIMEOUT)
 
 
+@step(title="Создать {visibility} организацию {org_name}", mask=["user_token"])
 def create_organization_by_user(*, org_name: str, visibility: str, user_token: str) -> req.Response:
     """Создает организацию через токен юзера"""
     return req.post(
@@ -164,6 +178,7 @@ def create_organization_by_user(*, org_name: str, visibility: str, user_token: s
     )
 
 
+@step("Создать команду {team_name} в организации {org_name}")
 def create_team(
     *, org_name: str, team_name: str, permission: str, can_create_org_repo: bool, units: list[str] | None = None
 ) -> req.Response:
@@ -181,6 +196,7 @@ def create_team(
     )
 
 
+@step("Добавить пользователя {username} в команду {team_id}")
 def add_team_member(*, team_id: int, username: str) -> req.Response:
     """Добавляет юзера в команду через админа"""
     return req.put(f"{BASE_URL_API}/teams/{team_id}/members/{username}", headers=_headers(), timeout=API_TIMEOUT)
@@ -191,6 +207,7 @@ def add_team_member(*, team_id: int, username: str) -> req.Response:
 # ==========================================#
 
 
+@step("Создать задачу {title} в репозитории {owner_repo}/{repo_name}")
 def create_issue_repo(
     *, owner_repo: str, repo_name: str, title: str, closed: bool, comment: str | None = None
 ) -> req.Response:
@@ -203,6 +220,7 @@ def create_issue_repo(
     )
 
 
+@step("Удалить задачу {issue_index} из репозитория {owner_repo}/{repo_name}")
 def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int) -> req.Response:
     """Удаляет задачу в репозитории через админа"""
     return req.delete(
@@ -210,6 +228,7 @@ def delete_issue_repo(*, owner_repo: str, repo_name: str, issue_index: int) -> r
     )
 
 
+@step("Создать метку {label_name} для задач репозитория {owner_repo}/{repo_name}")
 def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, label_color: str) -> req.Response:
     """Создает метку для задач в репозитории через админа"""
     return req.post(
@@ -220,6 +239,7 @@ def create_label_issue(*, owner_repo: str, repo_name: str, label_name: str, labe
     )
 
 
+@step("Добавить метку {labels} задаче {issue_index}")
 def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labels: list[str]) -> req.Response:
     """Добавляет метку задаче из репозитория через админа"""
     return req.post(
@@ -230,6 +250,7 @@ def add_label_on_repo(*, owner_repo: str, repo_name: str, issue_index: int, labe
     )
 
 
+@step("Добавить этап {milestone_name} в репозитории {owner_repo}/{repo_name}")
 def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str) -> req.Response:
     """Добавляет этап в репозитории через админа"""
     return req.post(
@@ -240,6 +261,7 @@ def create_milestone(*, owner_repo: str, repo_name: str, milestone_name: str) ->
     )
 
 
+@step("Создать комментарий в ленте событий задачи")
 def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int, comment: str) -> req.Response:
     """Добавляет комментарий в ленте событий задачи"""
     return req.post(
@@ -250,6 +272,7 @@ def create_timeline_comment(*, owner_repo: str, repo_name: str, issue_index: int
     )
 
 
+@step("Удалить комментарий из ленты событий задачи")
 def delete_timeline_comment(*, owner_repo: str, repo_name: str, comment_id: int) -> req.Response:
     """Удаляет комментарий из ленты событий задачи"""
     return req.delete(
@@ -264,6 +287,7 @@ def delete_timeline_comment(*, owner_repo: str, repo_name: str, comment_id: int)
 # =========================================#
 
 
+@step("Получить ответ со списком лицензий")
 def get_licenses() -> req.Response:
     """Возвращает ответ со списком лицензий стенда"""
     licenses = req.get(f"{BASE_URL_API}/licenses", headers=_headers(), timeout=API_TIMEOUT)
@@ -271,6 +295,7 @@ def get_licenses() -> req.Response:
     return licenses
 
 
+@step("Получить ответ со списком gitignore")
 def get_gitignore_templates() -> req.Response:
     """Возвращает ответ со списком gitignore значений стенда"""
     gitignore_templates = req.get(f"{BASE_URL_API}/gitignore/templates", headers=_headers(), timeout=API_TIMEOUT)

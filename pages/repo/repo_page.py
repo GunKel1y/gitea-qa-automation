@@ -3,6 +3,7 @@ import os
 from playwright.sync_api import Page, expect
 
 from components.repo_header import RepoHeader
+from helpers.allure_helpers import step
 from pages.repo.base_repo_page import BaseRepoPage
 
 
@@ -19,32 +20,42 @@ class RepoPage(BaseRepoPage):
         self._branch_text_in_dropdown = page.locator("span.gt-ellipsis>strong.gt-ellipsis")
         self.repo_header = RepoHeader(page)
 
+    @step("Открыть репозиторий {username}/{repo_name}")
     def open(self, *, username: str, repo_name: str) -> None:
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{username}/{repo_name}")
 
+    @step("Проверить, что отображается инструкция пустого репозитория")
     def empty_repo_guide_is_displayed(self) -> None:
         expect(self._empty_repo_guide).to_be_visible()
 
+    @step("Проверить, что отображается статус приватности репозитория")
     def privacy_status_is_displayed(self):
         expect(self._privacy_status).to_be_visible()
 
+    @step("Проверить, что отображается README")
     def readme_content_is_displayed(self) -> None:
         expect(self._readme_content).to_be_visible()
 
+    @step("Проверить, что файл {file} есть в списке файлов")
     def specified_file_in_list(self, file: str) -> None:
         expect(self.page.locator(f"div.repo-file-cell.name>a.entry-name[title='{file}']")).to_be_visible()
 
+    @step("Проверить, что отображается выбор ветки")
     def branch_dropdown_button_is_displayed(self) -> None:
         expect(self._branch_dropdown_button).to_be_visible()
 
+    @step("Проверить название ветки: {value}")
     def check_branch_dropdown_button_text(self, value: str) -> None:
         expect(self._branch_text_in_dropdown).to_have_text(value)
 
+    @step("Проверить описание репозитория: {text}")
     def check_repo_description_text(self, text: str) -> None:
         expect(self._repo_description).to_have_text(text)
 
+    @step("Проверить, что заголовок README {title}")
     def check_readme_title(self, title: str) -> None:
         expect(self._readme_title).to_have_text(title)
 
+    @step("Проверить, что текст README {text}")
     def check_readme_text(self, text: str) -> None:
         expect(self._readme_text).to_have_text(text)
