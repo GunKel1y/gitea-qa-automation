@@ -1,7 +1,6 @@
 import os
-import re
 
-from playwright.sync_api import Page, expect, Locator
+from playwright.sync_api import Locator, Page, expect
 
 from components.comment_form import CommentForm
 from components.issue_metadata import IssueMetadata
@@ -9,7 +8,6 @@ from pages.repo.base_repo_page import BaseRepoPage
 
 
 class IssueDetailsPage(BaseRepoPage):
-
     def __init__(self, page: Page):
         super().__init__(page)
         self._issue_title = page.locator("div.issue-title>h1")
@@ -37,7 +35,7 @@ class IssueDetailsPage(BaseRepoPage):
         return CommentForm(self.page.locator("div.timeline-item.comment:not(.form)").filter(has_text=comment_text))
 
     def open(self, *, repo_owner: str, repo_name: str, issue_index: int) -> None:
-        self.page.goto(f"{os.getenv("GITEA_UI_URL")}/{repo_owner}/{repo_name}/issues/{issue_index}")
+        self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{repo_owner}/{repo_name}/issues/{issue_index}")
 
     def get_issue_id(self) -> str:
         return self._issue_id.inner_text()

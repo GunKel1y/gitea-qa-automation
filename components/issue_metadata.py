@@ -1,8 +1,7 @@
-from playwright.sync_api import Page, Locator, expect
+from playwright.sync_api import Locator, Page, expect
 
 
 class IssueMetadata:
-
     def __init__(self, *, page: Page, container: Locator):
         self.page = page
         self._metadata_container = container

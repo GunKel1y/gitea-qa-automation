@@ -1,12 +1,11 @@
 import os
 
-from playwright.sync_api import Page, Locator, expect
+from playwright.sync_api import Locator, Page, expect
 
 from pages.repo.base_repo_page import BaseRepoPage
 
 
 class RepoIssuesPage(BaseRepoPage):
-
     def __init__(self, page: Page):
         super().__init__(page)
         self._new_issues_button = page.locator("a.issue-list-new")

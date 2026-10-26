@@ -1,13 +1,12 @@
 import os
 
-from components.repo_header import RepoHeader
 from playwright.sync_api import Page, expect
 
+from components.repo_header import RepoHeader
 from pages.repo.base_repo_page import BaseRepoPage
 
 
 class RepoPage(BaseRepoPage):
-
     def __init__(self, page: Page):
         super().__init__(page)
         self._empty_repo_guide = page.locator("div.content>div.empty-repo-guide")

@@ -1,13 +1,12 @@
 import os
 
-from playwright.sync_api import Page, expect, Locator
+from playwright.sync_api import Locator, Page, expect
 
 from components.issue_metadata import IssueMetadata
 from pages.repo.base_repo_page import BaseRepoPage
 
 
 class NewIssuesPage(BaseRepoPage):
-
     def __init__(self, page: Page):
         super().__init__(page)
         self._input_issue_title = page.locator("input#issue_title")
@@ -18,12 +17,10 @@ class NewIssuesPage(BaseRepoPage):
         self.milestones = IssueMetadata(page=page, container=self._combo("milestone_id"))
 
     def _combo(self, input_name: str) -> Locator:
-        return self.page.locator("div.issue-sidebar-combo").filter(
-            has=self.page.locator(f"input[name='{input_name}']")
-        )
+        return self.page.locator("div.issue-sidebar-combo").filter(has=self.page.locator(f"input[name='{input_name}']"))
 
     def open(self, *, repo_owner: str, repo_name: str) -> None:
-        self.page.goto(f"{os.getenv("GITEA_UI_URL")}/{repo_owner}/{repo_name}/issues/new")
+        self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{repo_owner}/{repo_name}/issues/new")
 
     def fill_input_issue_title(self, value: str) -> None:
         self._input_issue_title.fill(value)

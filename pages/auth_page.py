@@ -1,11 +1,11 @@
 import os
 
-from pages.base_page import BasePage
 from playwright.sync_api import Page, expect
+
+from pages.base_page import BasePage
 
 
 class AuthPage(BasePage):
-
     def __init__(self, page: Page):
         super().__init__(page)
         self._auth_form = page.locator("//div[@class='ui attached segment']/form[@action='/user/login']/..")
@@ -27,5 +27,3 @@ class AuthPage(BasePage):
 
     def click_login_button(self) -> None:
         self._login_button.click()
-
-

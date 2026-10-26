@@ -1,0 +1,10 @@
+target-version = "py312"
+line-length = 120
+
+[lint]
+select = ["F", "E", "W", "I", "UP", "B"]
+ignore = ["E501"]
+
+[lint.isort]
+combine-as-imports = true
+lines-after-imports = 2

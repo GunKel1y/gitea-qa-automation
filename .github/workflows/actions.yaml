@@ -22,7 +22,32 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  lint:
+    name: Запуск линтера Ruff
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v6
+
+      - name: Установка Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Установка линтера
+        run: pip install "$(grep -i '^ruff==' requirements.txt)"
+
+      - name: Запуск линтера
+        run: ruff check .
+
+      - name: Запуск проверки форматирования
+        run: ruff format --check --diff .
+
+  tests:
+    name: Прогон тестов
+    needs: lint
     runs-on: ubuntu-latest
     timeout-minutes: 20
 

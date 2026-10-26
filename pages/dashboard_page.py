@@ -1,14 +1,15 @@
 import os
 
-from pages.base_page import BasePage
 from playwright.sync_api import Page, expect
 
-class DashboardPage(BasePage):
+from pages.base_page import BasePage
 
+
+class DashboardPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
         self._dashboard = page.locator("div.dashboard[role='main']")
-        self._success_registration_banner  = page.locator('div.positive.message')
+        self._success_registration_banner = page.locator("div.positive.message")
         self._switch_user_button = page.locator("div.secondary div.dropdown[role='menu']>span")
         self._switch_user_image = self._switch_user_button.locator("img")
 

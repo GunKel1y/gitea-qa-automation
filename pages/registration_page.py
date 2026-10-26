@@ -1,18 +1,19 @@
 import os
 
-from pages.base_page import BasePage
 from playwright.sync_api import Page, expect
 
-class RegisterPage(BasePage):
+from pages.base_page import BasePage
 
+
+class RegisterPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
         self._register_form = page.locator("//div[@class='ui attached segment']/form[@action='/user/sign_up']/..")
-        self._username_field = page.locator('#user_name')
-        self._email_field = page.locator('#email')
-        self._password_field = page.locator('#password')
-        self._doublecheck_password_field = page.locator('#retype')
-        self._registration_button = page.get_by_text('Регистрация аккаунта')
+        self._username_field = page.locator("#user_name")
+        self._email_field = page.locator("#email")
+        self._password_field = page.locator("#password")
+        self._doublecheck_password_field = page.locator("#retype")
+        self._registration_button = page.get_by_text("Регистрация аккаунта")
 
     def open(self) -> None:
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/user/sign_up")

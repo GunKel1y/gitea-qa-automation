@@ -1,10 +1,12 @@
-from pages.base_page import BasePage
 from playwright.sync_api import Page, expect
+
+from pages.base_page import BasePage
 
 
 class NotFoundErrorPage(BasePage):
-
-    DESCRIPTION = "Либо страница, которую вы пытаетесь открыть, не существует, либо у вас недостаточно прав для ее просмотра."
+    DESCRIPTION = (
+        "Либо страница, которую вы пытаетесь открыть, не существует, либо у вас недостаточно прав для ее просмотра."
+    )
 
     def __init__(self, page: Page):
         super().__init__(page)

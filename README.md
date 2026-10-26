@@ -43,7 +43,6 @@
 
 ```python
 class BasePage:
-
     def __init__(self, page: Page):
         self.page = page
         self.global_header = GlobalHeader(page)
@@ -168,7 +167,7 @@ Workflow `.github/workflows/actions.yaml` («Gitea CI»):
 def test_create_private_repo(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
-    repo_name = unique_name(prefix='repo')
+    repo_name = unique_name(prefix="repo")
 
     create_repo_page.open()
     create_repo_page.fill_repo_name_field(repo_name)
@@ -176,7 +175,7 @@ def test_create_private_repo(authenticated_user_page: Page, test_user):
     create_repo_page.click_repo_create_button()
 
     repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
-    repo_page.check_url(f'/{test_user["login"]}/{repo_name}')
+    repo_page.check_url(f"/{test_user['login']}/{repo_name}")
     repo_page.privacy_status_is_displayed()
 ```
 
@@ -186,7 +185,7 @@ def test_create_private_repo(authenticated_user_page: Page, test_user):
 @pytest.fixture()
 def created_public_repo(test_user):
     """Создает публичный репозиторий, после теста удаляет"""
-    repo_name = unique_name(prefix='repo')
+    repo_name = unique_name(prefix="repo")
     created_repo = create_repo(owner=test_user["login"], repo_name=repo_name, private=False)
     assert created_repo.ok, f"Ошибка создания публичного репозитория: {created_repo.status_code} {created_repo.text}"
 

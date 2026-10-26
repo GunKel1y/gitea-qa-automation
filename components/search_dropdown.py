@@ -1,10 +1,9 @@
 import random
 
-from playwright.sync_api import Page, Locator, expect
+from playwright.sync_api import Locator, Page, expect
 
 
 class SearchDropdown:
-
     def __init__(self, page: Page, field_name: str):
         self.page = page
         self.field_name = field_name
@@ -19,8 +18,7 @@ class SearchDropdown:
 
     def _get_random_item(self) -> str:
         expect(
-            self._item_list,
-            "Невозможно выбрать рандомный элемент, так как не отображается список"
+            self._item_list, "Невозможно выбрать рандомный элемент, так как не отображается список"
         ).not_to_have_count(0)
         return random.choice(self._item_list.all()).get_attribute("data-value")
 

@@ -1,8 +1,7 @@
-
 from playwright.sync_api import Page, expect
 
-class GlobalHeader:
 
+class GlobalHeader:
     def __init__(self, page: Page):
         self.page = page
         self._login_button = page.locator("a[href='/user/login']")

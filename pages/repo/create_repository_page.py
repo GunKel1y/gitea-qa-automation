@@ -1,13 +1,12 @@
 import os
 
-from components.search_dropdown import SearchDropdown
-from playwright.sync_api import Page, expect, Locator
+from playwright.sync_api import Locator, Page, expect
 
+from components.search_dropdown import SearchDropdown
 from pages.repo.base_repo_page import BaseRepoPage
 
 
 class CreateRepositoryPage(BaseRepoPage):
-
     def __init__(self, page: Page):
         super().__init__(page)
         self._repo_name_field = page.locator("input#repo_name")
@@ -32,9 +31,9 @@ class CreateRepositoryPage(BaseRepoPage):
         return self.page.locator(f"#repo_owner_dropdown>div.menu>div[title='{owner}']")
 
     def open(self) -> None:
-        self.page.goto(f"{os.getenv("GITEA_UI_URL")}/repo/create")
+        self.page.goto(f"{os.getenv('GITEA_UI_URL')}/repo/create")
 
-    def fill_repo_name_field(self, value:str) -> None:
+    def fill_repo_name_field(self, value: str) -> None:
         self._repo_name_field.fill(value)
 
     def click_repo_create_button(self) -> None:
