@@ -93,9 +93,12 @@ services:
       # Запускается после создания админа на стенде
       gitea-init:
         condition: service_completed_successfully
+    volumes:
+      # Результаты прогона из контейнера попадают в папку проекта на хосте
+      - ./allure-results:/usr/src/app/allure-results
     environment:
       # Дополнение pytest параметром для url в контейнере
-      - PYTEST_ADDOPTS=--base-url http://gitea:3000
+      - PYTEST_ADDOPTS=--base-url http://gitea:3000 --alluredir=allure-results --clean-alluredir
       # Базовые URL внутри контейнера
       - GITEA_UI_URL=http://gitea:3000
       - GITEA_API_URL=http://gitea:3000/api/v1

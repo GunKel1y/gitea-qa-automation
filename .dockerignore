@@ -9,3 +9,6 @@ __pycache__/
 .pytest_cache/
 .idea/
 .env
+allure-results/
+allure-report/
+.ruff_cache/
