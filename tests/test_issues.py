@@ -79,7 +79,7 @@ def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_pu
             "created_repo_issue",
             "Закрытие issue",
             id="closing",
-            marks=[pytest.mark.p0, allure.testcase("TC-I-002")],
+            marks=[pytest.mark.p0, allure.testcase("TC-I-002"), allure.severity(allure.severity_level.BLOCKER)],
         ),
         pytest.param(
             "Открыто",
@@ -87,7 +87,7 @@ def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_pu
             "created_closed_repo_issue",
             "Переоткрытие закрытой issue",
             id="reopen",
-            marks=[pytest.mark.p1, allure.testcase("TC-I-011")],
+            marks=[pytest.mark.p1, allure.testcase("TC-I-011"), allure.severity(allure.severity_level.CRITICAL)],
         ),
     ],
 )
@@ -314,14 +314,14 @@ def test_update_timeline_comment(
             CommentForm.check_absence,
             "Удаление своего комментария (с подтверждением)",
             id="confirm_delete",
-            marks=[pytest.mark.p1, allure.testcase("TC-I-019")],
+            marks=[pytest.mark.p1, allure.testcase("TC-I-019"), allure.severity(allure.severity_level.CRITICAL)],
         ),
         pytest.param(
             False,
             CommentForm.check_visible,
             "Отмена удаления своего комментария",
             id="cancel_delete",
-            marks=[pytest.mark.p1, allure.testcase("TC-I-019b")],
+            marks=[pytest.mark.p1, allure.testcase("TC-I-019b"), allure.severity(allure.severity_level.CRITICAL)],
         ),
     ],
 )

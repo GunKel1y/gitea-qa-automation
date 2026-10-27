@@ -17,45 +17,50 @@ pytestmark = allure.epic("Репозитории")
     "repo_name, expected_name, title",
     [
         pytest.param(
-            "a", "a", "Имя минимальной длины (1 символ)", id="min", marks=[pytest.mark.p3, allure.testcase("TC-R-030")]
+            "a",
+            "a",
+            "Имя минимальной длины (1 символ)",
+            id="min",
+            marks=[pytest.mark.p3, allure.testcase("TC-R-030"), allure.severity(allure.severity_level.MINOR)],
         ),
         pytest.param(
             "a" * 100,
             "a" * 100,
             "Имя на границе максимальной длины (100 символов)",
             id="max",
-            marks=[pytest.mark.p3, allure.testcase("TC-R-031")],
+            marks=[pytest.mark.p3, allure.testcase("TC-R-031"), allure.severity(allure.severity_level.MINOR)],
         ),
         pytest.param(
             "a" * 101,
             "a" * 100,
             "Имя длиннее максимума (101 символ) обрезается до 100",
             id="over_max_truncated",
-            marks=[pytest.mark.p3, allure.testcase("TC-R-032")],
+            marks=[pytest.mark.p3, allure.testcase("TC-R-032"), allure.severity(allure.severity_level.MINOR)],
         ),
         pytest.param(
             "a b",
             "a-b",
             "Имя с пробелом: пробел заменяется на дефис",
             id="with_space",
-            marks=[pytest.mark.p3, allure.testcase("TC-R-033")],
+            marks=[pytest.mark.p3, allure.testcase("TC-R-033"), allure.severity(allure.severity_level.MINOR)],
         ),
         pytest.param(
             "a/b",
             "a-b",
             "Имя со слэшем: слэш заменяется на дефис",
             id="with_slash",
-            marks=[pytest.mark.p3, allure.testcase("TC-R-034")],
+            marks=[pytest.mark.p3, allure.testcase("TC-R-034"), allure.severity(allure.severity_level.MINOR)],
         ),
         pytest.param(
             "test-⭐",
             "test--",
             "Эмодзи внутри имени заменяется дефисом",
             id="emoji",
-            marks=[pytest.mark.p2, allure.testcase("TC-R-023a")],
+            marks=[pytest.mark.p2, allure.testcase("TC-R-023a"), allure.severity(allure.severity_level.NORMAL)],
         ),
     ],
 )
+@allure.title("{title}")
 def test_name_validation(authenticated_user_page: Page, test_user, repo_name, expected_name, title):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
@@ -418,14 +423,14 @@ def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_
             "tests-master",
             "Создание репозитория с нестандартным default branch",
             id="custom_branch",
-            marks=[pytest.mark.p1, allure.testcase("TC-R-017")],
+            marks=[pytest.mark.p1, allure.testcase("TC-R-017"), allure.severity(allure.severity_level.CRITICAL)],
         ),
         pytest.param(
             "",
             "main",
             "Пустой default branch",
             id="empty_field_in_default_branch_field",
-            marks=[pytest.mark.p3, allure.testcase("TC-R-037")],
+            marks=[pytest.mark.p3, allure.testcase("TC-R-037"), allure.severity(allure.severity_level.MINOR)],
         ),
     ],
 )

@@ -40,10 +40,14 @@ def test_login_with_valid_creds(page: Page, test_user):
     "case, title",
     [
         pytest.param(
-            "invalid_password", "Логин с неверным паролем", marks=[pytest.mark.p2, allure.testcase("TC-A-020")]
+            "invalid_password",
+            "Логин с неверным паролем",
+            marks=[pytest.mark.p2, allure.testcase("TC-A-020"), allure.severity(allure.severity_level.NORMAL)],
         ),
         pytest.param(
-            "non_exist_creds", "Логин с несуществующим username", marks=[pytest.mark.p2, allure.testcase("TC-A-021")]
+            "non_exist_creds",
+            "Логин с несуществующим username",
+            marks=[pytest.mark.p2, allure.testcase("TC-A-021"), allure.severity(allure.severity_level.NORMAL)],
         ),
     ],
 )
