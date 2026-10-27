@@ -16,6 +16,7 @@
 - **Параллельность.** Тесты запускаются через `pytest-xdist` (по умолчанию 4 воркера).
 - **Читаемость.** Page Object Model с компонентами, web-first проверки через `expect`.
 - **Связь с тест-дизайном.** Каждый автоматизированный кейс из `docs/test-design.md` привязан к тесту через `@allure.testcase`. Приоритет задаётся одним маркером `p0`-`p3` на тест.
+- **Наблюдаемость.** Шаги тестов описаны в отчёте Allure (`allure.step`, методы страниц размечены декоратором `step`), у каждого теста есть читаемое название, `epic` по модулю и `severity`. Секретные значения в шагах заменяются на `***`.
 
 ## Технологии
 
@@ -108,6 +109,17 @@ docker compose run --rm --build tests
 
 Настройки в `pytest.ini`: каталог тестов `tests`, подробный вывод, `--strict-markers`. Маркеры приоритета: `p0` (критический), `p1` (высокий), `p2` (средний), `p3` (низкий).
 
+### Ruff
+
+Линтер и форматтер настроены в `ruff.toml`: длина строки 120, правила `F`, `E`, `W`, `I`, `UP`, `B` (`E501` отключено).
+
+Локальная проверка:
+
+```
+ruff check .
+ruff format --check .
+```
+
 ## Запуск тестов
 
 Все тесты (стенд поднимется сам, 4 воркера):
@@ -128,20 +140,35 @@ docker compose run --rm tests pytest -k "private"
 
 После изменений в коде тестов нужен `--build`, иначе возьмётся старый образ.
 
-Gitea остаётся запущенной на http://localhost:3000 (вход с данными администратора из `.env`). Остановить стенд: `docker compose down`; остановить и стереть данные: `docker compose down -v`.
+Результаты Allure после прогона лежат на хосте в `./allure-results` (папка подключена к контейнеру томом и очищается при каждом запуске). Локально собрать отчёт можно через Allure CLI (нужна установленная утилита `allure`):
+
+```
+allure serve allure-results
+```
+
+Gitea остаётся запущенной на http://localhost:3000 (вход с данными администратора из `.env`). 
+
+Остановить стенд: `docker compose down`; остановить и стереть данные: `docker compose down -v`.
 
 ## CI (GitHub Actions)
 
-Workflow `.github/workflows/actions.yaml` («Gitea CI»):
+Два workflow:
+
+**`.github/workflows/actions.yaml` («Gitea CI»)**
 
 - запускается на каждый push и pull request в `main`; результаты прогонов видны во вкладке Actions;
 - вручную (для владельца репозитория или в своём форке): Actions -> «Gitea CI» -> Run workflow, с выбором числа воркеров (1, 2 или 4; по умолчанию 4);
-- сначала запускается линтер Ruff (`ruff check` и `ruff format --check`), тесты стартуют только после него;
-- поднимает тот же compose-стенд, что и локальный запуск; при падении выводит логи `gitea-init`, Gitea и PostgreSQL;
-- после прогона сохраняет `allure-results` как артефакт запуска, в том числе при падении тестов;
-- собирает отчёт Allure с историей прошлых прогонов (артефакт `allure-report`); с ветки `main` публикует его на GitHub Pages: https://gunkel1y.github.io/gitea-qa-automation/
+- джоба `ruff` проверяет код (`ruff check` и `ruff format --check`), джоба `tests` стартует только после неё;
+- `tests` поднимает тот же compose-стенд, что и локальный запуск; при падении выводит логи `gitea-init`, Gitea и PostgreSQL;
+- после прогона сохраняет `allure-results` как артефакт, в том числе при падении тестов.
 
-Чтобы запустить CI в своём форке: включить Actions во вкладке Actions форка и в Settings -> Secrets and variables -> Actions добавить шесть секретов: `GITEA_ADMIN_LOGIN`, `GITEA_ADMIN_PASSWORD`, `GITEA_ADMIN_EMAIL`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD` (значения как в `.env.example`). Секреты не копируются вместе с репозиторием.
+**`.github/workflows/allure.yaml` («Allure Gitea»)**
+
+- запускается после завершения «Gitea CI»;
+- скачивает `allure-results`, подкладывает историю прошлого отчёта (чтобы работали тренды), собирает отчёт и сохраняет его артефактом `allure-report`;
+- с ветки `main` публикует отчёт на GitHub Pages: https://gunkel1y.github.io/gitea-qa-automation/
+
+Чтобы запустить CI в своём форке: включить Actions во вкладке Actions форка и в Settings -> Secrets and variables -> Actions добавить шесть секретов: `GITEA_ADMIN_LOGIN`, `GITEA_ADMIN_PASSWORD`, `GITEA_ADMIN_EMAIL`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD` (значения как в `.env.example`). Секреты не копируются вместе с репозиторием. Публикация на Pages в форке потребует включить Pages (Settings -> Pages -> Source: GitHub Actions).
 
 ## Структура проекта
 
@@ -158,35 +185,44 @@ Workflow `.github/workflows/actions.yaml` («Gitea CI»):
 ├── components/                 # переиспользуемые блоки страниц
 ├── helpers/
 │   ├── api_client.py           # клиент API Gitea
+│   ├── allure_helpers.py       # декоратор step для шагов Allure
 │   └── test_data.py            # генерация тестовых данных
 ├── docs/test-design.md         # тест-дизайн
 ├── conftest.py                 # фикстуры
 ├── pytest.ini
+├── ruff.toml                   # настройки линтера и форматтера
 ├── requirements.txt            # зависимости с зафиксированными версиями
 ├── Dockerfile                  # образ с тестами
 ├── docker-compose.yaml         # стенд: Gitea, PostgreSQL, тесты
 ├── .env.example                # образец настроек
-└── .github/workflows/actions.yaml
+├── LICENSE
+└── .github/workflows/
+    ├── actions.yaml            # Gitea CI: ruff и тесты
+    └── allure.yaml             # Allure Gitea: отчёт и публикация на Pages
 ```
 
 ## Пример теста
 
 ```python
 @allure.testcase("TC-R-011")
+@allure.title("Создание приватного репозитория")
+@allure.severity(allure.severity_level.CRITICAL)
 @pytest.mark.p1
 def test_create_private_repo(authenticated_user_page: Page, test_user):
     create_repo_page = CreateRepositoryPage(authenticated_user_page)
     repo_page = RepoPage(authenticated_user_page)
     repo_name = unique_name(prefix="repo")
 
-    create_repo_page.open()
-    create_repo_page.fill_repo_name_field(repo_name)
-    create_repo_page.select_checkbox_private_repo()
-    create_repo_page.click_repo_create_button()
+    with allure.step("Создать приватный репозиторий"):
+        create_repo_page.open()
+        create_repo_page.fill_repo_name_field(repo_name)
+        create_repo_page.select_checkbox_private_repo()
+        create_repo_page.click_repo_create_button()
 
-    repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
-    repo_page.check_url(f"/{test_user['login']}/{repo_name}")
-    repo_page.privacy_status_is_displayed()
+    with allure.step("Проверить, что репозиторий создан и приватный"):
+        repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+        repo_page.check_url(f"/{test_user['login']}/{repo_name}")
+        repo_page.privacy_status_is_displayed()
 ```
 
 Фикстура-предусловие:
