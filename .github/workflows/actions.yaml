@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   lint:
-    name: Запуск линтера Ruff
+    name: ruff
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -46,7 +46,7 @@ jobs:
         run: ruff format --check --diff .
 
   tests:
-    name: Прогон тестов
+    name: tests
     needs: lint
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -99,71 +99,3 @@ jobs:
       - name: Снос контейнеров
         if: always()
         run: docker compose down -v
-
-  allure:
-    name: Формирование Allure отчета
-    needs: tests
-    if: ${{!cancelled() && needs.tests.result != 'skipped'}}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    env:
-      REPORT_URL: https://${{github.repository_owner}}.github.io/${{github.event.repository.name}}
-
-    steps:
-      - name: Скачивание результатов
-        uses: actions/download-artifact@v8
-        with:
-          name: allure-results
-          path: allure-results
-
-      - name: Подкладывание истории из прошлого отчета
-        run: |
-          mkdir -p allure-results/history
-          for f in history.json history-trend.json duration-trend.json categories-trend.json retry-trend.json; do
-          curl -fsSL --retry 2 -o "allure-results/history/$f" "$REPORT_URL/history/$f" || rm -f "allure-results/history/$f"
-          done
-          ls allure-results/history
-
-      - name: Установка Allure
-        run: npm install -g allure-commandline@2.28.0
-
-      - name: Генерация отчета
-        run: allure generate allure-results --clean -o allure-report
-
-      - name: Сохранение отчета артефактом
-        uses: actions/upload-artifact@v7
-        with:
-          name: allure-report
-          path: allure-report
-          retention-days: 14
-
-      - name: Подготовка отчета для Pages
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: allure-report
-
-  allure_deploy:
-    name: Выгрузка Allure отчета на GitHub Pages
-    needs: allure
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
-
-    concurrency:
-      group: pages
-      cancel-in-progress: false
-
-    steps:
-      - name: Публикация на GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
