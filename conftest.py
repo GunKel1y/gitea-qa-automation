@@ -3,6 +3,7 @@ import random
 from pathlib import Path
 from uuid import uuid4
 
+import allure
 import pytest
 import requests
 from dotenv import load_dotenv
@@ -42,9 +43,38 @@ from helpers.test_data import (
 
 
 load_dotenv(Path(__file__).parent / ".env")
+# ====================#
+#         Хуки        #
+# ====================#
+PAGE_FIXTURES = ("page", "authenticated_user_page", "authenticated_second_user_page")
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_makereport(item, call):
+    """Скриншот только у упавших тестов в фазе call (выполнение тела теста)
+
+    В setup страница пустая, к teardown уже закрыта
+    """
+    report = yield
+
+    if report.when == "call" and report.failed:
+        page = next((item.funcargs[name] for name in PAGE_FIXTURES if name in item.funcargs), None)
+        if page is not None and not page.is_closed():
+            try:
+                allure.attach(
+                    page.screenshot(full_page=True),
+                    name="Скриншот страницы",
+                    attachment_type=allure.attachment_type.PNG,
+                )
+                allure.attach(page.url, name="URL страницы", attachment_type=allure.attachment_type.TEXT)
+            except Exception as e:
+                allure.attach(str(e), name="Скриншот не сделан", attachment_type=allure.attachment_type.TEXT)
+
+    return report
+
 
 # ===========================================#
-#       Приватные хелперы для фикстур       #
+#        Приватные хелперы для фикстур       #
 # ===========================================#
 
 
