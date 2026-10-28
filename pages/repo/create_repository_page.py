@@ -57,6 +57,7 @@ class CreateRepositoryPage(BaseRepoPage):
 
     @step("Нажать Esc")
     def press_esc(self):
+        """Закрывает открытый выпадающий список"""
         self._full_main_content.press("Escape")
 
     @step("Ввести ветку по умолчанию {value}")

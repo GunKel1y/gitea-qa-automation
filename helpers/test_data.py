@@ -23,6 +23,10 @@ def value_with_length(length: int) -> str:
 
 
 def email_with_length(*, length: int, domain: str) -> str:
+    """Возвращает email, где length - длина только локальной части
+
+    Итоговая длина = length + len(domain)
+    """
     return "".join(random.choices(string.ascii_letters + string.digits, k=length)) + domain
 
 

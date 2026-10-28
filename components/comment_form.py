@@ -35,12 +35,18 @@ class CommentForm:
 
     @step("Нажать «Редактировать» в меню комментария")
     def click_edit_item_in_menu(self) -> None:
+        """Открывает редактор комментария и ждёт, пока поле появится и заполнится текущим текстом"""
         self._edit_item.click()
         expect(self._input).to_be_visible()
         expect(self._input).not_to_have_value("")
 
     @step("Нажать «Удалить» в меню комментария (подтверждение: {confirm})")
     def click_delete_item_in_menu(self, *, confirm: bool) -> None:
+        """Нажимает "Удалить" и отвечает на нативный confirm: confirm=True - принять, False - отклонить
+
+        Обработчик ставится до клика, так как без него Playwright сам отклонит диалог
+        """
+
         def action(dialog):
             dialog.accept() if confirm else dialog.dismiss()
 

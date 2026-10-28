@@ -41,6 +41,7 @@ class IssueDetailsPage(BaseRepoPage):
 
     @step("Получить номер задачи")
     def get_issue_id(self) -> str:
+        """Возвращает номер задачи вместе с "#" """
         return self._issue_id.inner_text()
 
     @step("Проверить, что заголовок задачи отображается")

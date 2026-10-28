@@ -11,10 +11,11 @@ class BasePage:
         self.page = page
         self.global_header = GlobalHeader(page)
         self._error_message = page.locator("div.negative.message.flash-message.flash-error")
-        self._invalid_fields = page.locator(":invalid")
+        self._invalid_fields = page.locator(":invalid")  # :invalid - нативная валидация обязательных полей браузера
 
     @step("Проверить, что URL страницы {expected_endpoint}")
     def check_url(self, expected_endpoint: str) -> None:
+        """expected_endpoint - путь без хоста. Хост берется из GITEA_UI_URL"""
         expect(self.page).to_have_url(f"{os.getenv('GITEA_UI_URL')}{expected_endpoint}")
 
     @step("Проверить, что текст ошибки {text}")

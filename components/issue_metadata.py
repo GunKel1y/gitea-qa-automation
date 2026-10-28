@@ -4,6 +4,12 @@ from helpers.allure_helpers import step
 
 
 class IssueMetadata:
+    """Сайдбар задачи (метки/исполнители/этапы)
+
+    _metadata_container - блок конкретного списка
+    name - подпись для шагов отчёта
+    """
+
     def __init__(self, *, page: Page, container: Locator, name: str):
         self.page = page
         self.name = name

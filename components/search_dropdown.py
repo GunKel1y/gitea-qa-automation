@@ -6,10 +6,12 @@ from helpers.allure_helpers import step
 
 
 class SearchDropdown:
+    """Выпадающий список с поиском"""
+
     def __init__(self, page: Page, field_name: str, name: str):
         self.page = page
-        self.field_name = field_name
-        self.name = name
+        self.field_name = field_name  # Атрибут name поля ввода в разметке
+        self.name = name  # Подпись для шагов отчета Allure
         self._input = page.locator(f"*[name='{field_name}']~input.search")
         self._menu = page.locator(f"input[name='{field_name}']~div.menu")
         self._item_list = self._menu.locator("div.item[data-value]:not([data-value=''])")
@@ -35,6 +37,7 @@ class SearchDropdown:
 
     @step("Выбрать случайный элемент в списке «{self.name}»")
     def select_random_item(self) -> str:
+        """Возвращает значение data-value выбранного элемента; список должен быть открыт (методом open())"""
         value = self._get_random_item()
         self._item(value).click()
         return value
