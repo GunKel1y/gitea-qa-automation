@@ -1,7 +1,7 @@
 [![Gitea CI](https://github.com/GunKel1y/gitea-qa-automation/actions/workflows/actions.yaml/badge.svg)](https://github.com/GunKel1y/gitea-qa-automation/actions/workflows/actions.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![Python](https://img.shields.io/badge/python-3.12-blue.svg)
-![pytest](https://img.shields.io/badge/pytest-redbluegreen.svg)
+[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
+[![pytest](https://img.shields.io/badge/pytest-redbluegreen.svg)](https://docs.pytest.org/en/stable/)
 [![Allure Report](https://img.shields.io/badge/Allure-report-8A2BE2)](https://gunkel1y.github.io/gitea-qa-automation/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
