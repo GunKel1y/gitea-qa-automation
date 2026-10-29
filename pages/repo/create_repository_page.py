@@ -11,9 +11,7 @@ class CreateRepositoryPage(BaseRepoPage):
     def __init__(self, page: Page):
         super().__init__(page)
         self._repo_name_field = page.locator("input#repo_name")
-        self._create_repo_button = page.locator(
-            "//div[@class='inline field']/button[contains(text(), 'Создать репозиторий')]"
-        )
+        self._create_repo_button = page.locator("form.new-repo-form button")
         self._create_repo_form = page.locator("form.new-repo-form[action='/repo/create']")
         self._repo_description = page.locator("#description")
         self._checkbox_private_repo = page.locator("input[name='private'][type='checkbox']")

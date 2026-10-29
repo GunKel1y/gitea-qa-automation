@@ -14,7 +14,7 @@ class RegisterPage(BasePage):
         self._email_field = page.locator("#email")
         self._password_field = page.locator("#password")
         self._doublecheck_password_field = page.locator("#retype")
-        self._registration_button = page.get_by_text("Регистрация аккаунта")
+        self._registration_button = page.locator("form.ui.form[action='/user/sign_up'] button")
 
     @step("Открыть страницу регистрации")
     def open(self) -> None:
