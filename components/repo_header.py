@@ -12,7 +12,7 @@ class RepoHeader:
         return self.page.locator(f"a.muted[href='/{username}/{repo_name}']")
 
     @step('Проверить отображение репозитория в шапке. Ожидается: "{username}/{repo_name}"')
-    def repo_name_in_header_is_displayed(self, *, username: str, repo_name: str) -> None:
+    def check_repo_name_visible(self, *, username: str, repo_name: str) -> None:
         expect(self._repo_name_in_header(username=username, repo_name=repo_name)).to_be_visible()
 
     @step('Проверить подпись создания из шаблона. Ожидается: "создано из {owner_template}/{repo_template}"')

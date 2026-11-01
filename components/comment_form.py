@@ -18,11 +18,11 @@ class CommentForm:
         return self.comment.locator(f'a.muted[href="/{author_name}"]')
 
     @step('Проверить автора комментария. Ожидается: "{author_name}"')
-    def check_author(self, author_name: str) -> None:
+    def check_author_text(self, author_name: str) -> None:
         expect(self._header(author_name)).to_have_text(author_name)
 
     @step('Проверить текст комментария. Ожидается: "{comment_text}"')
-    def check_text(self, comment_text: str) -> None:
+    def check_comment_text(self, comment_text: str) -> None:
         expect(self._body).to_have_text(comment_text, timeout=15_000)
 
     @step("Открыть меню действий с комментарием")
@@ -30,7 +30,7 @@ class CommentForm:
         self._context_dropdown.click()
 
     @step('Проверить отсутствие пункта "Редактировать"')
-    def edit_item_should_be_hidden(self) -> None:
+    def check_edit_item_hidden(self) -> None:
         expect(self._edit_item).to_be_hidden()
 
     @step('Нажать на пункт меню "Редактировать"')
@@ -54,7 +54,7 @@ class CommentForm:
         self._delete_item.click()
 
     @step('Проверить, что пункт "Удалить" скрыт')
-    def delete_should_be_hidden(self) -> None:
+    def check_delete_item_hidden(self) -> None:
         expect(self._delete_item).to_be_hidden()
 
     @step('Ввести в поле "Комментарий" значение: "{new_comment}"')
@@ -70,9 +70,9 @@ class CommentForm:
         self._comment_button.click()
 
     @step("Проверить отображение комментария")
-    def check_visible(self) -> None:
+    def check_comment_visible(self) -> None:
         expect(self.comment).to_be_visible()
 
     @step("Проверить отсутствие комментария")
-    def check_absence(self) -> None:
+    def check_comment_hidden(self) -> None:
         expect(self.comment).not_to_be_visible()

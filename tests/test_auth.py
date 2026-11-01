@@ -30,10 +30,10 @@ def test_login_with_valid_creds(page: Page, test_user):
 
     with allure.step("Проверить, что пользователь авторизован"):
         auth_page.check_url("/")
-        dashboard_page.dashboard_is_displayed()
-        dashboard_page.global_header.profile_menu_button_is_displayed()
-        dashboard_page.switch_user_button_is_displayed()
-        dashboard_page.switch_user_image_is_displayed()
+        dashboard_page.check_dashboard_visible()
+        dashboard_page.global_header.check_profile_menu_button_visible()
+        dashboard_page.check_switch_user_button_visible()
+        dashboard_page.check_switch_user_image_visible()
 
 
 @pytest.mark.parametrize(
@@ -68,9 +68,9 @@ def test_login_with_invalid_creds(page: Page, test_user, case, title):
         auth_page.click_login_button()
 
     with allure.step("Проверить, что вход отклонен"):
-        auth_page.error_message_has_text("Неверное имя пользователя или пароль.")
+        auth_page.check_error_message_text("Неверное имя пользователя или пароль.")
 
-        auth_page.auth_form_is_displayed()
+        auth_page.check_auth_form_visible()
         auth_page.check_url("/user/login")
 
 
@@ -83,12 +83,12 @@ def test_login_with_empty_fields(page: Page):
     with allure.step("Попытаться войти с пустыми полями"):
         auth_page.open()
 
-        auth_page.auth_form_is_displayed()
+        auth_page.check_auth_form_visible()
 
         auth_page.click_login_button()
 
     with allure.step("Проверить, что вход не выполнен"):
-        auth_page.auth_form_is_displayed()
+        auth_page.check_auth_form_visible()
         auth_page.check_url("/user/login")
 
 
@@ -107,8 +107,8 @@ def test_logout(authenticated_user_page: Page):
 
         dashboard_page.global_header.click_menu_exit_button()
     with allure.step("Проверить, что пользователь вышел"):
-        auth_page.global_header.registration_button_is_displayed()
-        auth_page.global_header.login_button_is_displayed()
+        auth_page.global_header.check_registration_button_visible()
+        auth_page.global_header.check_login_button_visible()
         auth_page.check_url("/")
         auth_page.open_user_settings()
         auth_page.check_url("/user/login?redirect_to=%2Fuser%2Fsettings")
@@ -126,4 +126,4 @@ def test_access_page_without_auth_is_denied(page: Page):
         create_repo_page.open()
     with allure.step("Проверить перенаправление на страницу входа"):
         auth_page.check_url("/user/login?redirect_to=%2Frepo%2Fcreate")
-        auth_page.auth_form_is_displayed()
+        auth_page.check_auth_form_visible()

@@ -19,7 +19,7 @@ class BasePage:
         expect(self.page).to_have_url(f"{os.getenv('GITEA_UI_URL')}{expected_endpoint}")
 
     @step('Проверить текст ошибки. Ожидается: "{text}"')
-    def error_message_has_text(self, text: str) -> None:
+    def check_error_message_text(self, text: str) -> None:
         expect(self._error_message).to_have_text(text)
 
     @step("Открыть настройки пользователя")

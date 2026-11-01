@@ -40,7 +40,7 @@ class IssueMetadata:
         expect(self._item_in_list_metadata(item_name)).to_be_visible()
 
     @step('Проверить отсутствие пункта в списке "{self.name}". Ожидается отсутствие пункта: "{item_name}"')
-    def check_item_absence_in_list(self, item_name: str) -> None:
+    def check_item_not_in_list(self, item_name: str) -> None:
         expect(self._item_in_list_metadata(item_name)).not_to_be_visible()
 
     @step('Закрыть выпадающий список "{self.name}"')

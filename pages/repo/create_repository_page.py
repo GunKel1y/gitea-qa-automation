@@ -42,7 +42,7 @@ class CreateRepositoryPage(BaseRepoPage):
         self._create_repo_button.click()
 
     @step("Проверить отображение формы создания репозитория")
-    def create_repo_form_is_displayed(self) -> None:
+    def check_create_repo_form_visible(self) -> None:
         expect(self._create_repo_form).to_be_visible()
 
     @step('Отметить чекбокс "Сделать репозиторий приватным"')
@@ -71,11 +71,11 @@ class CreateRepositoryPage(BaseRepoPage):
         self._owner_menu_item(owner).click()
 
     @step('Проверить доступность выбора владельца: "{owner}"')
-    def owner_is_selectable(self, owner: str) -> None:
+    def check_owner_selectable(self, owner: str) -> None:
         expect(self._owner_menu_item(owner)).to_be_visible()
 
     @step('Проверить недоступность выбора владельца: "{owner}"')
-    def owner_is_not_selectable(self, owner: str) -> None:
+    def check_owner_not_selectable(self, owner: str) -> None:
         expect(self._owner_menu_item(owner)).not_to_be_visible()
 
     @step('Ввести в поле "Описание" значение: "{text}"')
@@ -83,7 +83,7 @@ class CreateRepositoryPage(BaseRepoPage):
         self._repo_description.fill(text)
 
     @step('Проверить значение описания репозитория. Ожидается: "{text}"')
-    def repo_description_value_should_be_equal(self, text: str) -> None:
+    def check_repo_description_value(self, text: str) -> None:
         expect(self._repo_description).to_have_value(text)
 
     @step('Отметить чекбокс "Содержимое Git" в блоке "Элементы шаблона"')

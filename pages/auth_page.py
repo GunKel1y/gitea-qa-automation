@@ -19,7 +19,7 @@ class AuthPage(BasePage):
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/user/login")
 
     @step("Проверить отображение формы входа")
-    def auth_form_is_displayed(self) -> None:
+    def check_auth_form_visible(self) -> None:
         expect(self._auth_form).to_be_visible()
 
     @step('Ввести в поле "Имя пользователя/Адрес эл.почты" значение: "{value}"')

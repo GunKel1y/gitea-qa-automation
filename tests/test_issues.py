@@ -33,7 +33,7 @@ def test_add_issue_with_minimal_data(authenticated_user_page: Page, created_publ
     with allure.step("Проверить созданную задачу"):
         issue_id = issue_page.get_issue_id().replace("#", "")
         issue_page.check_url(f"/{test_user['login']}/{created_public_repo['repo_name']}/issues/{issue_id}")
-        issue_page.issue_title_is_displayed()
+        issue_page.check_issue_title_visible()
         issue_page.check_issue_status_label_text("Открыто")
 
         issue_id = issue_page.get_issue_id()
@@ -62,12 +62,12 @@ def test_add_issue_with_pinned_comment(authenticated_user_page: Page, created_pu
     with allure.step("Проверить созданную задачу и комментарий"):
         issue_id = issue_page.get_issue_id().replace("#", "")
         issue_page.check_url(f"/{test_user['login']}/{created_public_repo['repo_name']}/issues/{issue_id}")
-        issue_page.issue_title_is_displayed()
+        issue_page.check_issue_title_visible()
         issue_page.check_issue_status_label_text("Открыто")
 
         issue_id = issue_page.get_issue_id()
         issue_page.check_issue_title_value(expected_title=issue_name, expected_id=issue_id)
-        issue_page.first_comment().check_text(comment_text)
+        issue_page.first_comment().check_comment_text(comment_text)
 
 
 @pytest.mark.parametrize(
@@ -163,7 +163,7 @@ def test_update_issue_pinned_comment(authenticated_user_page: Page, created_publ
         issue_page.first_comment().click_edit_save_button()
 
     with allure.step("Проверить новый текст комментария"):
-        issue_page.first_comment().check_text(new_issue_comment)
+        issue_page.first_comment().check_comment_text(new_issue_comment)
 
 
 @allure.testcase("TC-I-013")
@@ -211,7 +211,7 @@ def test_removing_label_from_issue(
         issue_page.labels.select_item(label_name)
         issue_page.labels.close()
     with allure.step("Проверить, что метки нет в списке"):
-        issue_page.labels.check_item_absence_in_list(label_name)
+        issue_page.labels.check_item_not_in_list(label_name)
 
 
 @allure.testcase("TC-I-015")
@@ -277,7 +277,7 @@ def test_adding_timeline_comment(authenticated_user_page: Page, created_public_r
         issue_page.new_comment_form().fill_input(comment_text)
         issue_page.new_comment_form().click_comment_button()
     with allure.step("Проверить, что комментарий появился в ленте"):
-        issue_page.comment_by_text(comment_text).check_visible()
+        issue_page.comment_by_text(comment_text).check_comment_visible()
 
 
 @allure.testcase("TC-I-018")
@@ -303,7 +303,7 @@ def test_update_timeline_comment(
         issue_page.comment_by_id(comment_id).fill_input(update_comment_text)
         issue_page.comment_by_id(comment_id).click_edit_save_button()
     with allure.step("Проверить новый текст комментария"):
-        issue_page.comment_by_id(comment_id).check_text(update_comment_text)
+        issue_page.comment_by_id(comment_id).check_comment_text(update_comment_text)
 
 
 @pytest.mark.parametrize(
@@ -311,14 +311,14 @@ def test_update_timeline_comment(
     [
         pytest.param(
             True,
-            CommentForm.check_absence,
+            CommentForm.check_comment_hidden,
             "Удаление своего комментария (с подтверждением)",
             id="confirm_delete",
             marks=[pytest.mark.p1, allure.testcase("TC-I-019"), allure.severity(allure.severity_level.CRITICAL)],
         ),
         pytest.param(
             False,
-            CommentForm.check_visible,
+            CommentForm.check_comment_visible,
             "Отмена удаления своего комментария",
             id="cancel_delete",
             marks=[pytest.mark.p1, allure.testcase("TC-I-019b"), allure.severity(allure.severity_level.CRITICAL)],
@@ -375,8 +375,8 @@ def test_adding_timeline_comment_with_closed_issue_status(
         issue_page.new_comment_form().fill_input(comment_text)
         issue_page.new_comment_form().click_comment_button()
     with allure.step("Проверить комментарий и статус задачи"):
-        issue_page.comment_by_text(comment_text).check_visible()
-        issue_page.comment_by_text(comment_text).check_text(comment_text)
+        issue_page.comment_by_text(comment_text).check_comment_visible()
+        issue_page.comment_by_text(comment_text).check_comment_text(comment_text)
         issue_page.check_issue_status_label_text("Закрыто")
 
 
@@ -395,7 +395,7 @@ def test_add_issue_with_empty_title(authenticated_user_page: Page, created_publi
 
     with allure.step("Проверить, что задача не создана"):
         new_issue_page.check_url(f"/{repo_owner}/{repo_name}/issues/new")
-        new_issue_page.check_show_error_in_required_title()
+        new_issue_page.check_title_required_hint_visible()
 
 
 @allure.testcase("TC-I-032")
@@ -516,11 +516,11 @@ def test_trying_update_issue_title_and_pinned_comment_by_other_user(
         )
 
     with allure.step("Проверить, что редактирование заголовка недоступно"):
-        issue_page.update_title_button_should_be_hidden()
+        issue_page.check_update_title_button_hidden()
     with allure.step("Открыть меню закреплённого комментария"):
         pinned_comment.click_context_dropdown()
     with allure.step("Проверить, что редактирование комментария недоступно"):
-        pinned_comment.edit_item_should_be_hidden()
+        pinned_comment.check_edit_item_hidden()
 
 
 @allure.testcase("TC-I-041")
@@ -540,7 +540,7 @@ def test_trying_close_issue_by_other_user(
         )
 
     with allure.step("Проверить, что смена статуса недоступна"):
-        issue_page.switch_status_button_should_be_hidden()
+        issue_page.check_switch_status_button_hidden()
 
 
 @allure.testcase("TC-I-042")
@@ -562,8 +562,8 @@ def test_trying_update_and_delete_comment_by_other_user(
 
         comment.click_context_dropdown()
     with allure.step("Проверить, что редактирование и удаление недоступны"):
-        comment.edit_item_should_be_hidden()
-        comment.delete_should_be_hidden()
+        comment.check_edit_item_hidden()
+        comment.check_delete_item_hidden()
 
 
 @allure.testcase("TC-I-043")
@@ -588,8 +588,8 @@ def test_adding_timeline_comment_in_repo_by_other_user(
 
     with allure.step("Проверить автора и текст комментария"):
         timeline_comment = issue_page.comment_by_text(comment)
-        timeline_comment.check_author(user_name)
-        timeline_comment.check_text(comment)
+        timeline_comment.check_author_text(user_name)
+        timeline_comment.check_comment_text(comment)
 
 
 @allure.testcase("TC-I-033")
@@ -605,7 +605,7 @@ def test_adding_issue_with_max_length_title(test_user, authenticated_user_page, 
         new_issue_page.open(repo_owner=test_user["login"], repo_name=created_public_repo["repo_name"])
 
         new_issue_page.fill_input_issue_title(title)
-        new_issue_page.issue_title_should_be_equal(title[:MAX_TITLE_LENGTH])
+        new_issue_page.check_issue_title_field_value(title[:MAX_TITLE_LENGTH])
     with allure.step("Создать задачу"):
         new_issue_page.click_add_issue_button()
     with allure.step("Проверить, что заголовок обрезан до максимума"):

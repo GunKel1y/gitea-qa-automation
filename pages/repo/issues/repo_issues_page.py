@@ -28,5 +28,5 @@ class RepoIssuesPage(BaseRepoPage):
         self._labels_dropdown.click()
 
     @step('Проверить наличие метки в фильтре. Ожидается наличие: "{item}"')
-    def labels_item_should_be_visible(self, item: str) -> None:
+    def check_labels_item_visible(self, item: str) -> None:
         expect(self._labels_item(item)).to_be_visible()

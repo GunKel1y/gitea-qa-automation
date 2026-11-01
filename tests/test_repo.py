@@ -72,7 +72,7 @@ def test_name_validation(authenticated_user_page: Page, test_user, repo_name, ex
 
     with allure.step("Проверить, что репозиторий создан"):
         repo_page.check_url(f"/{test_user['login']}/{expected_name}")
-        repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=expected_name)
+        repo_page.repo_header.check_repo_name_visible(username=test_user["login"], repo_name=expected_name)
 
 
 @allure.testcase("TC-R-035")
@@ -91,7 +91,7 @@ def test_create_repo_without_init_is_empty(authenticated_user_page: Page, test_u
 
     with allure.step("Проверить, что репозиторий пустой"):
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
-        repo_page.empty_repo_guide_is_displayed()
+        repo_page.check_empty_repo_guide_visible()
 
 
 @allure.severity(allure.severity_level.NORMAL)
@@ -124,7 +124,7 @@ def test_name_validation_no_repo_create(authenticated_user_page: Page, input_nam
 
     with allure.step("Проверить, что репозиторий не создан"):
         create_repo_page.check_url("/repo/create")
-        create_repo_page.create_repo_form_is_displayed()
+        create_repo_page.check_create_repo_form_visible()
 
 
 @allure.testcase("TC-R-021")
@@ -147,7 +147,7 @@ def test_create_repo_with_duplicate_name(authenticated_user_page: Page, created_
         create_repo_page.click_repo_create_button()
 
     with allure.step("Проверить сообщение об ошибке"):
-        create_repo_page.error_message_has_text("Название репозитория уже используется.")
+        create_repo_page.check_error_message_text("Название репозитория уже используется.")
 
 
 @allure.testcase("TC-R-001")
@@ -166,7 +166,7 @@ def test_create_public_repo(authenticated_user_page: Page, test_user):
 
         create_repo_page.click_repo_create_button()
     with allure.step("Проверить, что репозиторий создан"):
-        repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+        repo_page.repo_header.check_repo_name_visible(repo_name=repo_name, username=test_user["login"])
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
 
 
@@ -188,10 +188,10 @@ def test_create_private_repo(authenticated_user_page: Page, test_user):
 
         create_repo_page.click_repo_create_button()
     with allure.step("Проверить, что репозиторий создан и приватный"):
-        repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+        repo_page.repo_header.check_repo_name_visible(repo_name=repo_name, username=test_user["login"])
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
 
-        repo_page.privacy_status_is_displayed()
+        repo_page.check_privacy_status_visible()
 
 
 @allure.testcase("TC-R-041")
@@ -216,11 +216,11 @@ def test_create_repo_by_template(authenticated_user_page: Page, test_user, creat
 
     with allure.step("Проверить содержимое созданного репозитория"):
         repo_page.check_url(f"/{username}/{repo_name}")
-        repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=username)
+        repo_page.repo_header.check_repo_name_visible(repo_name=repo_name, username=username)
         repo_page.specified_file_in_list(".gitignore")
         repo_page.specified_file_in_list("LICENSE")
         repo_page.specified_file_in_list("README.md")
-        repo_page.check_readme_title(template_repo_name)
+        repo_page.check_readme_title_text(template_repo_name)
         repo_page.check_readme_text(created_template_repo["description"])
         repo_page.repo_header.check_created_by_repo_text(owner_template=username, repo_template=template_repo_name)
 
@@ -253,7 +253,7 @@ def test_create_repo_with_label_template(authenticated_user_page: Page, test_use
     with allure.step("Проверить, что метки добавлены в репозиторий"):
         repo_issues_page.open(username=username, repo_name=repo_name)
         repo_issues_page.open_labels_dropdown()
-        repo_issues_page.labels_item_should_be_visible(label_item)
+        repo_issues_page.check_labels_item_visible(label_item)
 
 
 @allure.testcase("TC-R-046")
@@ -280,8 +280,8 @@ def test_create_repo_by_template_with_label(authenticated_user_page: Page, test_
     with allure.step("Проверить, что метки шаблона добавлены"):
         repo_issues_page.open(username=username, repo_name=repo_name)
         repo_issues_page.open_labels_dropdown()
-        repo_issues_page.labels_item_should_be_visible(created_template_repo_with_label["labels"][0])
-        repo_issues_page.labels_item_should_be_visible(created_template_repo_with_label["labels"][1])
+        repo_issues_page.check_labels_item_visible(created_template_repo_with_label["labels"][0])
+        repo_issues_page.check_labels_item_visible(created_template_repo_with_label["labels"][1])
 
 
 @allure.testcase("TC-R-012")
@@ -319,10 +319,10 @@ def test_create_repo_with_readme_file(authenticated_user_page: Page, test_user):
         create_repo_page.click_repo_create_button()
     with allure.step("Проверить, что репозиторий создан с README"):
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
-        repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+        repo_page.repo_header.check_repo_name_visible(username=test_user["login"], repo_name=repo_name)
 
         repo_page.specified_file_in_list("README.md")
-        repo_page.readme_content_is_displayed()
+        repo_page.check_readme_content_visible()
 
 
 @allure.testcase("TC-R-014")
@@ -347,11 +347,11 @@ def test_create_repo_with_gitignore_and_readme_file(authenticated_user_page: Pag
         create_repo_page.click_repo_create_button()
     with allure.step("Проверить, что репозиторий создан с .gitignore и README"):
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
-        repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+        repo_page.repo_header.check_repo_name_visible(username=test_user["login"], repo_name=repo_name)
         repo_page.specified_file_in_list(".gitignore")
         repo_page.specified_file_in_list("README.md")
 
-        repo_page.readme_content_is_displayed()
+        repo_page.check_readme_content_visible()
 
 
 @allure.testcase("TC-R-015")
@@ -376,10 +376,10 @@ def test_create_repo_with_license_and_readme_file(authenticated_user_page: Page,
         create_repo_page.click_repo_create_button()
     with allure.step("Проверить, что репозиторий создан с лицензией и README"):
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
-        repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+        repo_page.repo_header.check_repo_name_visible(username=test_user["login"], repo_name=repo_name)
         repo_page.specified_file_in_list("LICENSE")
         repo_page.specified_file_in_list("README.md")
-        repo_page.readme_content_is_displayed()
+        repo_page.check_readme_content_visible()
 
 
 @allure.testcase("TC-R-016")
@@ -408,11 +408,11 @@ def test_create_repo_with_license_readme_and_gitignore_files(authenticated_user_
         create_repo_page.click_repo_create_button()
     with allure.step("Проверить, что репозиторий создан с лицензией, .gitignore и README"):
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
-        repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
+        repo_page.repo_header.check_repo_name_visible(username=test_user["login"], repo_name=repo_name)
         repo_page.specified_file_in_list("LICENSE")
         repo_page.specified_file_in_list(".gitignore")
         repo_page.specified_file_in_list("README.md")
-        repo_page.readme_content_is_displayed()
+        repo_page.check_readme_content_visible()
 
 
 @pytest.mark.parametrize(
@@ -451,11 +451,11 @@ def test_create_repo_default_branch(authenticated_user_page: Page, test_user, in
         create_repo_page.click_repo_create_button()
     with allure.step("Проверить ветку по умолчанию и содержимое репозитория"):
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
-        repo_page.repo_header.repo_name_in_header_is_displayed(username=test_user["login"], repo_name=repo_name)
-        repo_page.branch_dropdown_button_is_displayed()
+        repo_page.repo_header.check_repo_name_visible(username=test_user["login"], repo_name=repo_name)
+        repo_page.check_branch_dropdown_button_visible()
         repo_page.check_branch_dropdown_button_text(expected_branch)
         repo_page.specified_file_in_list("README.md")
-        repo_page.readme_content_is_displayed()
+        repo_page.check_readme_content_visible()
 
 
 @allure.testcase("TC-R-018")
@@ -479,7 +479,7 @@ def test_create_repo_in_organization(authenticated_user_page: Page, created_publ
 
     with allure.step("Проверить, что репозиторий создан в организации"):
         repo_page.check_url(f"/{org_name}/{repo_name}")
-        repo_page.repo_header.repo_name_in_header_is_displayed(username=org_name, repo_name=repo_name)
+        repo_page.repo_header.check_repo_name_visible(username=org_name, repo_name=repo_name)
 
 
 @allure.testcase("TC-R-024")
@@ -497,8 +497,8 @@ def test_repo_create_without_creation_rights(
 
         create_repo_page.owner_field_click()
     with allure.step("Проверить доступных владельцев"):
-        create_repo_page.owner_is_selectable(test_user["login"])
-        create_repo_page.owner_is_not_selectable(org_name)
+        create_repo_page.check_owner_selectable(test_user["login"])
+        create_repo_page.check_owner_not_selectable(org_name)
 
 
 @allure.testcase("TC-R-010")
@@ -515,7 +515,7 @@ def test_public_repo_is_accessible_to_another_user(
         repo_page.open(username=user_login, repo_name=repo_name)
 
     with allure.step("Проверить, что репозиторий доступен"):
-        repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=user_login)
+        repo_page.repo_header.check_repo_name_visible(repo_name=repo_name, username=user_login)
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
 
 
@@ -538,7 +538,7 @@ def test_create_repo_with_description(authenticated_user_page: Page, test_user):
 
         create_repo_page.click_repo_create_button()
     with allure.step("Проверить, что репозиторий создан с описанием"):
-        repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+        repo_page.repo_header.check_repo_name_visible(repo_name=repo_name, username=test_user["login"])
         repo_page.check_repo_description_text(repo_description)
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
 
@@ -558,7 +558,7 @@ def test_trying_create_repo_with_exceeding_description_value(authenticated_user_
 
         create_repo_page.fill_repo_name_field(repo_name)
         create_repo_page.fill_repo_description(description)
-        create_repo_page.repo_description_value_should_be_equal(description[:2048])
+        create_repo_page.check_repo_description_value(description[:2048])
         create_repo_page.select_checkbox_initialization_repo()
     with allure.step("Создать репозиторий"):
         create_repo_page.click_repo_create_button()
@@ -587,7 +587,7 @@ def test_create_repo_with_value_exceeding_maximum_for_default_branch(authenticat
 
     with allure.step("Проверить, что репозиторий не создан и показана ошибка"):
         create_repo_page.check_url("/repo/create")
-        create_repo_page.error_message_has_text("form.DefaultBranch должен содержать максимум 100 символов.")
+        create_repo_page.check_error_message_text("form.DefaultBranch должен содержать максимум 100 символов.")
 
 
 @allure.testcase("TC-R-043")

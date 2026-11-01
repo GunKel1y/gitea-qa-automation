@@ -41,13 +41,15 @@ def test_create_pr_from_branch_with_changes(
         compare_changes_page.check_url(f"/{owner_repo}/{repo_name}/compare/{BASE_BRANCH}...{new_branch_name}")
 
     with allure.step("Проверить изменения по коммитам, файлам и коду"):
-        compare_changes_page.check_count_commit(1)
-        compare_changes_page.check_branches_in_commits_header(base_branch=BASE_BRANCH, take_from_branch=new_branch_name)
+        compare_changes_page.check_commits_count(1)
+        compare_changes_page.check_commits_header_branches_text(
+            base_branch=BASE_BRANCH, take_from_branch=new_branch_name
+        )
         compare_changes_page.pr_diff.check_diff_code_value(code_diff)
 
     with allure.step("Создать запрос на слияние"):
         compare_changes_page.click_new_pr_button()
-        compare_changes_page.check_default_pr_title_field(pr_title)
+        compare_changes_page.check_pr_title_field_value(pr_title)
         compare_changes_page.click_comment_create_pr_button()
 
     pr_id = pr_page.get_pr_id()

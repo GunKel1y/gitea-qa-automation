@@ -37,9 +37,9 @@ class NewIssuesPage(BaseRepoPage):
         self._comment_field.fill(comment_text)
 
     @step('Проверить отображение подсказки о обязательности поля "Заголовок"')
-    def check_show_error_in_required_title(self) -> None:
+    def check_title_required_hint_visible(self) -> None:
         expect(self._input_issue_title.and_(self._invalid_fields)).to_have_count(1)
 
     @step('Проверить значение заголовка задачи. Ожидается: "{comment}"')
-    def issue_title_should_be_equal(self, comment: str) -> None:
+    def check_issue_title_field_value(self, comment: str) -> None:
         expect(self._input_issue_title).to_have_value(comment)

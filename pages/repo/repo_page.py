@@ -25,15 +25,15 @@ class RepoPage(BaseRepoPage):
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{username}/{repo_name}")
 
     @step('Проверить отображение блока "Краткое руководство" в репозитории')
-    def empty_repo_guide_is_displayed(self) -> None:
+    def check_empty_repo_guide_visible(self) -> None:
         expect(self._empty_repo_guide).to_be_visible()
 
     @step('Проверить отображение тега "Приватный" в хедере репозитория')
-    def privacy_status_is_displayed(self):
+    def check_privacy_status_visible(self):
         expect(self._privacy_status).to_be_visible()
 
     @step("Проверить отображение блока README")
-    def readme_content_is_displayed(self) -> None:
+    def check_readme_content_visible(self) -> None:
         expect(self._readme_content).to_be_visible()
 
     @step('Проверить наличие файла в списке. Ожидается наличие файла: "{file}"')
@@ -41,7 +41,7 @@ class RepoPage(BaseRepoPage):
         expect(self.page.locator(f"div.repo-file-cell.name>a.entry-name[title='{file}']")).to_be_visible()
 
     @step("Проверить отображение выпадающего списка с выбором ветки")
-    def branch_dropdown_button_is_displayed(self) -> None:
+    def check_branch_dropdown_button_visible(self) -> None:
         expect(self._branch_dropdown_button).to_be_visible()
 
     @step('Проверить название ветки. Ожидается: "{value}"')
@@ -53,7 +53,7 @@ class RepoPage(BaseRepoPage):
         expect(self._repo_description).to_have_text(text)
 
     @step('Проверить заголовок README. Ожидается: "{title}"')
-    def check_readme_title(self, title: str) -> None:
+    def check_readme_title_text(self, title: str) -> None:
         expect(self._readme_title).to_have_text(title)
 
     @step('Проверить основное содержание README. Ожидается: "{text}"')

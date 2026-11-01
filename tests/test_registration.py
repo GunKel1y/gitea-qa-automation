@@ -70,7 +70,7 @@ def test_registration_with_invalid_email_format(page: Page, invalid_email, title
     with allure.step("Проверить, что регистрация отклонена"):
         registration_page.check_url("/user/sign_up")
         if len(invalid_email) > 254:
-            registration_page.error_message_has_text("Адрес эл. почты должен содержать максимум 254 символов.")
+            registration_page.check_error_message_text("Адрес эл. почты должен содержать максимум 254 символов.")
 
     with allure.step("Проверить, что пользователь не создан"):
         registration_page.open_profile_user(user_login)
@@ -147,7 +147,7 @@ def test_register_with_valid_creds(page: Page, delete_user_after_registration, t
         register_page.click_registration_button()
 
     with allure.step("Проверить успешную регистрацию"):
-        dashboard_page.dashboard_is_displayed()
+        dashboard_page.check_dashboard_visible()
         dashboard_page.check_success_registration_banner_text("Учётная запись успешно создана. Добро пожаловать!")
         dashboard_page.check_url("/")
 
@@ -186,7 +186,7 @@ def test_registration_with_taken_login_or_email(page: Page, test_user, taken_fie
         registration_page.click_registration_button()
 
     with allure.step("Проверить, что регистрация отклонена"):
-        registration_page.error_message_has_text(expected_error)
+        registration_page.check_error_message_text(expected_error)
         registration_page.check_url("/user/sign_up")
 
 
@@ -238,7 +238,7 @@ def test_registration_with_invalid_password(page: Page, password, confirm, expec
         registration_page.click_registration_button()
 
     with allure.step("Проверить, что регистрация отклонена"):
-        registration_page.error_message_has_text(expected_error)
+        registration_page.check_error_message_text(expected_error)
         registration_page.check_url("/user/sign_up")
 
 
@@ -267,7 +267,7 @@ def test_registration_with_invalid_characters_in_username(page: Page, username_v
         registration_page.click_registration_button()
 
     with allure.step("Проверить, что регистрация отклонена"):
-        registration_page.error_message_has_text("""
+        registration_page.check_error_message_text("""
     Пользователь can only contain alphanumeric characters ('0-9','a-z','A-Z'), dash ('-'),
     underscore ('_') and dot ('.'). It cannot begin or end with non-alphanumeric characters,
     and consecutive non-alphanumeric characters are also forbidden.
@@ -283,7 +283,7 @@ def test_registration_with_invalid_characters_in_username(page: Page, username_v
         pytest.param(
             "",
             random_password(),
-            RegisterPage.check_show_error_in_required_username,
+            RegisterPage.check_username_required_hint_visible,
             "Регистрация с пустым username",
             id="empty_username",
             marks=allure.testcase("TC-A-032"),
@@ -291,7 +291,7 @@ def test_registration_with_invalid_characters_in_username(page: Page, username_v
         pytest.param(
             unique_name(prefix="user"),
             "",
-            RegisterPage.check_show_error_in_required_password,
+            RegisterPage.check_password_required_hint_visible,
             "Регистрация с пустым паролем",
             id="empty_password",
             marks=allure.testcase("TC-A-035"),
@@ -336,7 +336,7 @@ def test_registration_with_username_exceeding_max_length(page: Page, delete_user
         register_page.click_registration_button()
 
     with allure.step("Проверить, что регистрация отклонена"):
-        register_page.error_message_has_text("Пользователь должен содержать максимум 40 символов.")
+        register_page.check_error_message_text("Пользователь должен содержать максимум 40 символов.")
         register_page.check_url("/user/sign_up")
 
     with allure.step("Проверить, что пользователь не создан"):

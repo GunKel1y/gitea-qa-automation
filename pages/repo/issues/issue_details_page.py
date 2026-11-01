@@ -45,7 +45,7 @@ class IssueDetailsPage(BaseRepoPage):
         return self._issue_id.inner_text()
 
     @step("Проверить отображение заголовка задачи")
-    def issue_title_is_displayed(self) -> None:
+    def check_issue_title_visible(self) -> None:
         expect(self._issue_title).to_be_visible()
 
     @step('Проверить заголовок задачи. Ожидается: "{expected_title} {expected_id}"')
@@ -66,11 +66,11 @@ class IssueDetailsPage(BaseRepoPage):
         expect(self._switch_status_button).to_have_text(value)
 
     @step("Проверить отсутствие кнопки смены статуса")
-    def switch_status_button_should_be_hidden(self) -> None:
+    def check_switch_status_button_hidden(self) -> None:
         expect(self._switch_status_button).to_be_hidden()
 
     @step('Проверить отсутствие кнопки редактирования поля "Заголовок"')
-    def update_title_button_should_be_hidden(self) -> None:
+    def check_update_title_button_hidden(self) -> None:
         expect(self._update_title_button).to_be_hidden()
 
     @step('Нажать на кнопку "Изменить" у заголовка задачи')

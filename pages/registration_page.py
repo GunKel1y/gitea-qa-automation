@@ -21,7 +21,7 @@ class RegisterPage(BasePage):
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/user/sign_up")
 
     @step("Проверить отображение формы регистрации")
-    def registration_form_is_displayed(self) -> None:
+    def check_registration_form_visible(self) -> None:
         expect(self._register_form).to_be_visible()
 
     @step('Ввести в поле "Имя пользователя" значение: "{value}"')
@@ -49,9 +49,9 @@ class RegisterPage(BasePage):
         self._registration_button.click()
 
     @step('Проверить отображение нативной подсказки обязательности поля "Имя пользователя"')
-    def check_show_error_in_required_username(self) -> None:
+    def check_username_required_hint_visible(self) -> None:
         expect(self._username_field.and_(self._invalid_fields)).to_have_count(1)
 
     @step('Проверить отображение нативной подсказки обязательности поля "Пароль"')
-    def check_show_error_in_required_password(self) -> None:
+    def check_password_required_hint_visible(self) -> None:
         expect(self._password_field.and_(self._invalid_fields)).to_have_count(1)

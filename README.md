@@ -220,9 +220,9 @@ def test_create_private_repo(authenticated_user_page: Page, test_user):
         create_repo_page.click_repo_create_button()
 
     with allure.step("Проверить, что репозиторий создан и приватный"):
-        repo_page.repo_header.repo_name_in_header_is_displayed(repo_name=repo_name, username=test_user["login"])
+        repo_page.repo_header.check_repo_name_visible(repo_name=repo_name, username=test_user["login"])
         repo_page.check_url(f"/{test_user['login']}/{repo_name}")
-        repo_page.privacy_status_is_displayed()
+        repo_page.check_privacy_status_visible()
 ```
 
 Фикстура-предусловие:

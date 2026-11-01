@@ -14,15 +14,15 @@ class GlobalHeader:
         self._create_new_repository_button = page.locator("a.item[href='/repo/create']")
 
     @step("Проверить отображение кнопки входа в хедере")
-    def login_button_is_displayed(self) -> None:
+    def check_login_button_visible(self) -> None:
         expect(self._login_button).to_be_visible()
 
     @step("Проверить отображение кнопки регистрации в хедере")
-    def registration_button_is_displayed(self) -> None:
+    def check_registration_button_visible(self) -> None:
         expect(self._registration_button).to_be_visible()
 
     @step("Проверить отображение кнопки меню профиля")
-    def profile_menu_button_is_displayed(self) -> None:
+    def check_profile_menu_button_visible(self) -> None:
         expect(self._profile_and_settings_menu_button).to_be_visible()
 
     @step("Открыть меню профиля")
