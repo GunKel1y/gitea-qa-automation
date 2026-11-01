@@ -163,30 +163,6 @@ def create_branch_for_repo(*, owner_repo: str, repo_name: str, new_branch_name: 
     )
 
 
-# =============== Коммиты ===============#
-
-
-@step("Сделать коммит в ветку {branch}")
-def to_do_commit_in_branch(*, owner_repo: str, repo_name: str, branch: str, commit_id: str) -> req.Response:
-    """Сделать коммит в ветку {branch}"""
-    return req.put(
-        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/branches/{branch}",
-        headers=_headers(),
-        json={"new_commit_id": commit_id},
-        timeout=API_TIMEOUT,
-    )
-
-
-# =============== Коммиты ===============#
-
-
-@step("Получить информацию о ветке")
-def get_branch_info(*, owner_repo: str, repo_name: str, branch: str) -> req.Response:
-    return req.get(
-        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/branches/{branch}", headers=_headers(), timeout=API_TIMEOUT
-    )
-
-
 @step("Создать файл {file_name} в репозитории {repo_name}")
 def create_file_in_repo(*, owner_repo: str, repo_name: str, branch: str, file_name: str, content: str) -> req.Response:
     """Создает файл {file_name} в репозитории"""
