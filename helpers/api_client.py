@@ -1,3 +1,4 @@
+import base64
 import os
 from pathlib import Path
 
@@ -29,7 +30,7 @@ def _headers() -> dict:
     """Хедеры админа для запросов"""
     if _admin_token is None:
         raise RuntimeError("Админ-токен не задан")
-    return {"Authorization": f"token {_admin_token}"}
+    return {"Authorization": f"token {_admin_token}", "Accept-Language": "ru-RU"}
 
 
 # ===========================================#
@@ -122,6 +123,9 @@ def update_repo_ability_repo_add_issues(*, owner_repo: str, repo_name: str, has_
     )
 
 
+# =============== Соавторы ===============#
+
+
 @step("Добавить соавтора {collaborator_login} в репозиторий {owner_repo}/{repo_name} с правами {permission}")
 def adding_collaborator_for_repo(
     *, owner_repo: str, repo_name: str, collaborator_login: str, permission: str
@@ -141,6 +145,57 @@ def delete_collaborator_for_repo(*, owner_repo: str, repo_name: str, collaborato
     return req.delete(
         f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/collaborators/{collaborator_login}",
         headers=_headers(),
+        timeout=API_TIMEOUT,
+    )
+
+
+# =============== Ветки ===============#
+
+
+@step("Создать ветку в репозитории {new_branch_name}")
+def create_branch_for_repo(*, owner_repo: str, repo_name: str, new_branch_name: str) -> req.Response:
+    """Создает новую ветку {new_branch_name} в репозитории"""
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/branches",
+        headers=_headers(),
+        json={"new_branch_name": new_branch_name},
+        timeout=API_TIMEOUT,
+    )
+
+
+# =============== Коммиты ===============#
+
+
+@step("Сделать коммит в ветку {branch}")
+def to_do_commit_in_branch(*, owner_repo: str, repo_name: str, branch: str, commit_id: str) -> req.Response:
+    """Сделать коммит в ветку {branch}"""
+    return req.put(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/branches/{branch}",
+        headers=_headers(),
+        json={"new_commit_id": commit_id},
+        timeout=API_TIMEOUT,
+    )
+
+
+# =============== Коммиты ===============#
+
+
+@step("Получить информацию о ветке")
+def get_branch_info(*, owner_repo: str, repo_name: str, branch: str) -> req.Response:
+    return req.get(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/branches/{branch}", headers=_headers(), timeout=API_TIMEOUT
+    )
+
+
+@step("Создать файл {file_name} в репозитории {repo_name}")
+def create_file_in_repo(*, owner_repo: str, repo_name: str, branch: str, file_name: str, content: str) -> req.Response:
+    """Создает файл {file_name} в репозитории"""
+    content_encoded = base64.b64encode(content.encode()).decode("ascii")
+
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/contents/{file_name}",
+        headers=_headers(),
+        json={"branch": branch, "content": content_encoded},
         timeout=API_TIMEOUT,
     )
 

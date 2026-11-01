@@ -13,6 +13,8 @@ from helpers.api_client import (
     add_label_on_repo,
     add_team_member,
     adding_collaborator_for_repo,
+    create_branch_for_repo,
+    create_file_in_repo,
     create_issue_repo,
     create_label_issue,
     create_milestone,
@@ -210,6 +212,18 @@ def created_public_repo(test_user):
 
 
 @pytest.fixture()
+def created_initialized_public_repo(test_user):
+    """Создает публичный репозиторий, после теста удаляет"""
+    repo_name = unique_name(prefix="repo")
+    created_repo = create_repo(owner=test_user["login"], repo_name=repo_name, private=False, auto_init=True)
+    assert created_repo.ok, f"Ошибка создания публичного репозитория: {created_repo.status_code} {created_repo.text}"
+
+    yield {"repo_name": repo_name}
+
+    delete_repo(owner=test_user["login"], repo_name=repo_name)
+
+
+@pytest.fixture()
 def created_private_repo(test_user):
     """Создает приватный репозиторий, после теста удаляет"""
     repo_name = unique_name(prefix="repo")
@@ -362,8 +376,39 @@ def created_milestone(created_public_repo, test_user):
     yield {"milestone_name": milestone_name}
 
 
+@pytest.fixture()
+def created_branch_with_commit(created_initialized_public_repo, test_user):
+    """Создает ветку с коммитом в репозитории, возвращает имя новой ветки, название файла и его содержимое"""
+    new_branch = unique_name(prefix="branch")
+
+    created_branch = create_branch_for_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_initialized_public_repo["repo_name"],
+        new_branch_name=new_branch,
+    )
+    assert created_branch.ok, (
+        f"Ошибка при создании ветки в репозитории: {created_branch.status_code} {created_branch.text}"
+    )
+
+    file_name = unique_name(prefix="file")
+    content = unique_name(prefix="content")
+
+    created_file = create_file_in_repo(
+        owner_repo=test_user["login"],
+        repo_name=created_initialized_public_repo["repo_name"],
+        branch=new_branch,
+        file_name=file_name,
+        content=content,
+    )
+    assert created_file.ok, (
+        f"Ошибка при создании файла в репозитории в ветке {new_branch}: {created_file.status_code} {created_file.text}"
+    )
+
+    return {"branch_name": new_branch, "file_name": file_name, "content": content}
+
+
 # ===========================================#
-#                Огранизации                #
+#                Организации                #
 # ===========================================#
 
 
