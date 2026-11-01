@@ -3,8 +3,8 @@ import pytest
 from playwright.sync_api import Page
 
 from pages.repo.compare_changes_page import CompareChangesPage
-from pages.repo.pull_request_page import PullRequestPage
 from pages.repo.pull_request_files_page import PullRequestFilesPage
+from pages.repo.pull_request_page import PullRequestPage
 from pages.repo.repo_pull_requests_page import RepoPullRequestsPage
 
 

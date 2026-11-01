@@ -11,7 +11,7 @@ class RepoPullRequestsPage(BaseRepoPage):
         super().__init__(page)
         self._new_pull_request_button = page.locator("div.list-header a.new-pr-button")
 
-    @step('Открыть страницу запросов на слияние в репозитории {repo_owner}/{repo_name}')
+    @step("Открыть страницу запросов на слияние в репозитории {repo_owner}/{repo_name}")
     def open(self, *, repo_owner: str, repo_name: str) -> None:
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{repo_owner}/{repo_name}/pulls")
 
