@@ -6,7 +6,7 @@ from helpers.test_data import unique_name, value_with_length
 from pages.dashboard_page import DashboardPage
 from pages.not_found_error_page import NotFoundErrorPage
 from pages.repo.create_repository_page import CreateRepositoryPage
-from pages.repo.repo_issues_page import RepoIssuesPage
+from pages.repo.issues.repo_issues_page import RepoIssuesPage
 from pages.repo.repo_page import RepoPage
 
 

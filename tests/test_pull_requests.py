@@ -2,10 +2,10 @@ import allure
 import pytest
 from playwright.sync_api import Page
 
-from pages.repo.compare_changes_page import CompareChangesPage
-from pages.repo.pull_request_files_page import PullRequestFilesPage
-from pages.repo.pull_request_page import PullRequestPage
-from pages.repo.repo_pull_requests_page import RepoPullRequestsPage
+from pages.repo.pull_requests.compare_changes_page import CompareChangesPage
+from pages.repo.pull_requests.pull_request_files_page import PullRequestFilesPage
+from pages.repo.pull_requests.pull_request_page import PullRequestPage
+from pages.repo.pull_requests.repo_pull_requests_page import RepoPullRequestsPage
 
 
 pytestmark = allure.epic("Запросы на слияние")

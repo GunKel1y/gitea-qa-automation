@@ -5,9 +5,9 @@ from playwright.sync_api import Page
 from components.comment_form import CommentForm
 from helpers.test_data import MAX_TITLE_LENGTH, unique_name, value_with_length
 from pages.not_found_error_page import NotFoundErrorPage
-from pages.repo.issue_details_page import IssueDetailsPage
-from pages.repo.new_issues_page import NewIssuesPage
-from pages.repo.repo_issues_page import RepoIssuesPage
+from pages.repo.issues.issue_details_page import IssueDetailsPage
+from pages.repo.issues.new_issues_page import NewIssuesPage
+from pages.repo.issues.repo_issues_page import RepoIssuesPage
 
 
 pytestmark = allure.epic("Задачи")
