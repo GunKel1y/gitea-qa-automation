@@ -18,18 +18,18 @@ class AuthPage(BasePage):
     def open(self) -> None:
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/user/login")
 
-    @step("Проверить, что форма входа отображается")
+    @step("Проверить отображение формы входа")
     def auth_form_is_displayed(self) -> None:
         expect(self._auth_form).to_be_visible()
 
-    @step("Ввести логин {value}")
+    @step('Ввести в поле "Имя пользователя/Адрес эл.почты" значение: "{value}"')
     def fill_username(self, value: str) -> None:
         self._username_field.fill(value)
 
-    @step("Ввести пароль", mask=["value"])
+    @step('Ввести в поле "Пароль" значение', mask=["value"])
     def fill_password(self, value: str) -> None:
         self._password_field.fill(value)
 
-    @step("Нажать «Войти»")
+    @step('Нажать на кнопку "Вход"')
     def click_login_button(self) -> None:
         self._login_button.click()

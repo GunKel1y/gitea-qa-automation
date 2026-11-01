@@ -18,18 +18,18 @@ class DashboardPage(BasePage):
     def open(self) -> None:
         self.page.goto(os.getenv("GITEA_UI_URL"))
 
-    @step("Проверить, что отображается панель управления")
+    @step("Проверить отображение панели управления")
     def dashboard_is_displayed(self) -> None:
         expect(self._dashboard).to_be_visible()
 
-    @step("Проверить текст баннера об успешной регистрации: {expected}")
+    @step('Проверить текст баннера об успешной регистрации. Ожидается: "{expected}"')
     def check_success_registration_banner_text(self, expected: str) -> None:
         expect(self._success_registration_banner).to_have_text(expected)
 
-    @step("Проверить, что отображается кнопка переключения пользователя")
+    @step("Проверить отображение кнопки переключения пользователя")
     def switch_user_button_is_displayed(self) -> None:
         expect(self._switch_user_button).to_be_visible()
 
-    @step("Проверить, что отображается аватар в кнопке переключения пользователя")
+    @step("Проверить отображение аватара в кнопке переключения пользователя")
     def switch_user_image_is_displayed(self) -> None:
         expect(self._switch_user_image).to_be_visible()

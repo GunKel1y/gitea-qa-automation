@@ -20,26 +20,26 @@ class NewIssuesPage(BaseRepoPage):
     def _combo(self, input_name: str) -> Locator:
         return self.page.locator("div.issue-sidebar-combo").filter(has=self.page.locator(f"input[name='{input_name}']"))
 
-    @step("Открыть форму создания задачи в {repo_owner}/{repo_name}")
+    @step('Открыть форму создания задачи в "{repo_owner}/{repo_name}"')
     def open(self, *, repo_owner: str, repo_name: str) -> None:
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{repo_owner}/{repo_name}/issues/new")
 
-    @step("Ввести заголовок задачи: {value}")
+    @step('Ввести в поле "Заголовок" значение: "{value}"')
     def fill_input_issue_title(self, value: str) -> None:
         self._input_issue_title.fill(value)
 
-    @step("Нажать кнопку создания задачи")
+    @step('Нажать на кнопку "Добавить задачу"')
     def click_add_issue_button(self):
         self._add_issue_button.click()
 
-    @step("Ввести комментарий: {comment_text}")
+    @step('Ввести в поле "Комментарий" значение: "{comment_text}"')
     def fill_comment(self, comment_text: str) -> None:
         self._comment_field.fill(comment_text)
 
-    @step("Проверить, что поле заголовка подсвечено как обязательное")
+    @step('Проверить отображение подсказки о обязательности поля "Заголовок"')
     def check_show_error_in_required_title(self) -> None:
         expect(self._input_issue_title.and_(self._invalid_fields)).to_have_count(1)
 
-    @step("Проверить, что значение заголовка задачи {comment}")
+    @step('Проверить значение заголовка задачи. Ожидается: "{comment}"')
     def issue_title_should_be_equal(self, comment: str) -> None:
         expect(self._input_issue_title).to_have_value(comment)

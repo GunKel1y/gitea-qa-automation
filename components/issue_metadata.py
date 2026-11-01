@@ -27,22 +27,22 @@ class IssueMetadata:
             f"/a[contains(@class, 'item') and .//text()[normalize-space(.)='{item_name}']]"
         )
 
-    @step("Открыть список «{self.name}»")
+    @step('Открыть выпадающий список "{self.name}"')
     def open(self) -> None:
         self._dropdown.click()
 
-    @step("Выбрать {item_name} в списке «{self.name}»")
+    @step('В списке "{self.name}" выбрать пункт: "{item_name}"')
     def select_item(self, item_name: str) -> None:
         self._item_in_dropdown_menu(item_name).click()
 
-    @step("Проверить, что {item_name} есть в списке «{self.name}»")
+    @step('Проверить отображение пункта в списке "{self.name}". Ожидается наличие пункта: "{item_name}"')
     def check_item_in_list(self, item_name: str) -> None:
         expect(self._item_in_list_metadata(item_name)).to_be_visible()
 
-    @step("Проверить, что {item_name} нет в списке «{self.name}»")
+    @step('Проверить отсутствие пункта в списке "{self.name}". Ожидается отсутствие пункта: "{item_name}"')
     def check_item_absence_in_list(self, item_name: str) -> None:
         expect(self._item_in_list_metadata(item_name)).not_to_be_visible()
 
-    @step("Закрыть список «{self.name}»")
+    @step('Закрыть выпадающий список "{self.name}"')
     def close(self) -> None:
         self.page.click("body")

@@ -27,15 +27,15 @@ class SearchDropdown:
         ).not_to_have_count(0)
         return random.choice(self._item_list.all()).get_attribute("data-value")
 
-    @step("Открыть выпадающий список «{self.name}»")
+    @step('Открыть выпадающий список "{self.name}"')
     def open(self) -> None:
         self._input.click()
 
-    @step("Выбрать {value} в списке «{self.name}»")
+    @step('Выбрать "{value}" в списке "{self.name}"')
     def select(self, value: str) -> None:
         self._item(value).click()
 
-    @step("Выбрать случайный элемент в списке «{self.name}»")
+    @step('Выбрать случайный элемент в списке "{self.name}"')
     def select_random_item(self) -> str:
         """Возвращает значение data-value выбранного элемента; список должен быть открыт (методом open())"""
         value = self._get_random_item()

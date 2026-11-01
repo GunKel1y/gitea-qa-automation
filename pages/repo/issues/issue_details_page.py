@@ -35,7 +35,7 @@ class IssueDetailsPage(BaseRepoPage):
     def comment_by_text(self, comment_text: str) -> CommentForm:
         return CommentForm(self.page.locator("div.timeline-item.comment:not(.form)").filter(has_text=comment_text))
 
-    @step("Открыть задачу №{issue_index} репозитория {repo_owner}/{repo_name}")
+    @step('Открыть задачу "№{issue_index}" репозитория "{repo_owner}/{repo_name}"')
     def open(self, *, repo_owner: str, repo_name: str, issue_index: int) -> None:
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/{repo_owner}/{repo_name}/issues/{issue_index}")
 
@@ -44,44 +44,44 @@ class IssueDetailsPage(BaseRepoPage):
         """Возвращает номер задачи вместе с "#" """
         return self._issue_id.inner_text()
 
-    @step("Проверить, что заголовок задачи отображается")
+    @step("Проверить отображение заголовка задачи")
     def issue_title_is_displayed(self) -> None:
         expect(self._issue_title).to_be_visible()
 
-    @step("Проверить заголовок задачи: {expected_title} {expected_id}")
+    @step('Проверить заголовок задачи. Ожидается: "{expected_title} {expected_id}"')
     def check_issue_title_value(self, *, expected_title: str, expected_id: str) -> None:
         full_expected_text = f"{expected_title} {expected_id}"
         expect(self._issue_title).to_have_text(full_expected_text)
 
-    @step("Проверить, что статус задачи {status_text}")
+    @step('Проверить статус задачи. Ожидается: "{status_text}"')
     def check_issue_status_label_text(self, status_text: str) -> None:
         expect(self._issue_status_label).to_have_text(status_text)
 
-    @step("Нажать кнопку смены статуса задачи")
+    @step("Нажать на кнопку смены статуса задачи")
     def switch_status_button_click(self) -> None:
         self._switch_status_button.click()
 
-    @step("Проверить, что текст кнопки смены статуса {value}")
+    @step('Проверить текст кнопки смены статуса задачи. Ожидается: "{value}"')
     def check_switch_status_button_text(self, value: str) -> None:
         expect(self._switch_status_button).to_have_text(value)
 
-    @step("Проверить, что кнопка смены статуса скрыта")
+    @step("Проверить отсутствие кнопки смены статуса")
     def switch_status_button_should_be_hidden(self) -> None:
         expect(self._switch_status_button).to_be_hidden()
 
-    @step("Проверить, что кнопка редактирования заголовка скрыта")
+    @step('Проверить отсутствие кнопки редактирования поля "Заголовок"')
     def update_title_button_should_be_hidden(self) -> None:
         expect(self._update_title_button).to_be_hidden()
 
-    @step("Нажать кнопку редактирования заголовка")
+    @step('Нажать на кнопку "Изменить" у заголовка задачи')
     def click_update_title_button(self):
         self._update_title_button.click()
 
-    @step("Ввести новый заголовок задачи: {new_issue_title}")
+    @step('Ввести в поле "Заголовок" значение: "{new_issue_title}"')
     def fill_update_title_field(self, new_issue_title: str):
         self._update_title_field.fill(new_issue_title)
 
-    @step("Сохранить новый заголовок задачи")
+    @step('Нажать на кнопку "Сохранить" у редактируемого заголовка задачи')
     def click_save_new_title_button(self):
         self._save_new_title_button.click()
 

@@ -20,27 +20,27 @@ class RegisterPage(BasePage):
     def open(self) -> None:
         self.page.goto(f"{os.getenv('GITEA_UI_URL')}/user/sign_up")
 
-    @step("Проверить, что форма регистрации отображается")
+    @step("Проверить отображение формы регистрации")
     def registration_form_is_displayed(self) -> None:
         expect(self._register_form).to_be_visible()
 
-    @step("Ввести логин {value}")
+    @step('Ввести в поле "Имя пользователя" значение: "{value}"')
     def fill_username(self, value: str) -> None:
         self._username_field.fill(value)
 
-    @step("Ввести email {value}")
+    @step('Ввести в поле "Адрес электронной почты" значение: "{value}"')
     def fill_email(self, value) -> None:
         self._email_field.fill(value)
 
-    @step("Ввести пароль", mask=["value"])
+    @step('Ввести в поле "Пароль" значение', mask=["value"])
     def fill_password(self, value) -> None:
         self._password_field.fill(value)
 
-    @step("Ввести подтверждение пароля", mask=["value"])
+    @step('Ввести в поле "Подтвердить пароль" значение', mask=["value"])
     def fill_doublecheck_password(self, value) -> None:
         self._doublecheck_password_field.fill(value)
 
-    @step("Проверить значение поля подтверждения пароля", mask=["expected"])
+    @step('Проверить значение поля "Подтвердить пароль"', mask=["expected"])
     def check_doublecheck_password_value(self, expected: str) -> None:
         expect(self._doublecheck_password_field).to_have_value(expected)
 
@@ -48,10 +48,10 @@ class RegisterPage(BasePage):
     def click_registration_button(self) -> None:
         self._registration_button.click()
 
-    @step('Проверить отображение подсказки обязательности поля "Имя пользователя"')
+    @step('Проверить отображение нативной подсказки обязательности поля "Имя пользователя"')
     def check_show_error_in_required_username(self) -> None:
         expect(self._username_field.and_(self._invalid_fields)).to_have_count(1)
 
-    @step('Проверить отображение подсказки обязательности поля "Пароль"')
+    @step('Проверить отображение нативной подсказки обязательности поля "Пароль"')
     def check_show_error_in_required_password(self) -> None:
         expect(self._password_field.and_(self._invalid_fields)).to_have_count(1)

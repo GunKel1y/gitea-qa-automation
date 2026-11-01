@@ -13,15 +13,15 @@ class GlobalHeader:
         self._create_dropdown_button = page.locator("div[data-tooltip-content='Создать…']")
         self._create_new_repository_button = page.locator("a.item[href='/repo/create']")
 
-    @step("Проверить, что в шапке отображается кнопка входа")
+    @step("Проверить отображение кнопки входа в хедере")
     def login_button_is_displayed(self) -> None:
         expect(self._login_button).to_be_visible()
 
-    @step("Проверить, что в шапке отображается кнопка регистрации")
+    @step("Проверить отображение кнопки регистрации в хедере")
     def registration_button_is_displayed(self) -> None:
         expect(self._registration_button).to_be_visible()
 
-    @step("Проверить, что в шапке отображается меню профиля")
+    @step("Проверить отображение кнопки меню профиля")
     def profile_menu_button_is_displayed(self) -> None:
         expect(self._profile_and_settings_menu_button).to_be_visible()
 
@@ -29,14 +29,14 @@ class GlobalHeader:
     def click_profile_menu_button(self) -> None:
         self._profile_and_settings_menu_button.click()
 
-    @step("Нажать «Выйти»")
+    @step('Нажать на пункт меню "Выход"')
     def click_menu_exit_button(self) -> None:
         self._menu_exit_button.click()
 
-    @step("Открыть меню «Создать»")
+    @step('Открыть меню "Создать..."')
     def click_dropdown_button(self) -> None:
         self._create_dropdown_button.click()
 
-    @step("Нажать «Новый репозиторий»")
+    @step('Нажать на пункт меню "Новый репозиторий"')
     def click_create_new_repository_button(self) -> None:
         self._create_new_repository_button.click()

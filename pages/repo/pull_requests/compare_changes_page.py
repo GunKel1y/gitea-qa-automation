@@ -44,7 +44,7 @@ class CompareChangesPage(BaseRepoPage):
     def click_take_from_branch_dropdown(self) -> None:
         self._dropdown_button_take_from_branch.click()
 
-    @step('Выбрать пункт {branch_name} в выпадающем списке "Взять из:"')
+    @step('В выпадающем списке "Взять из:" выбрать пункт: "{branch_name}"')
     def select_dropdown_item(self, branch_name: str) -> None:
         self._dropdown_item(branch_name).click()
 

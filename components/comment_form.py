@@ -17,30 +17,30 @@ class CommentForm:
     def _header(self, author_name: str) -> Locator:
         return self.comment.locator(f'a.muted[href="/{author_name}"]')
 
-    @step("Проверить автора комментария: {author_name}")
+    @step('Проверить автора комментария. Ожидается: "{author_name}"')
     def check_author(self, author_name: str) -> None:
         expect(self._header(author_name)).to_have_text(author_name)
 
-    @step("Проверить текст комментария: {comment_text}")
+    @step('Проверить текст комментария. Ожидается: "{comment_text}"')
     def check_text(self, comment_text: str) -> None:
         expect(self._body).to_have_text(comment_text, timeout=15_000)
 
-    @step("Открыть меню комментария")
+    @step("Открыть меню действий с комментарием")
     def click_context_dropdown(self) -> None:
         self._context_dropdown.click()
 
-    @step("Проверить, что пункт «Редактировать» скрыт")
+    @step('Проверить отсутствие пункта "Редактировать"')
     def edit_item_should_be_hidden(self) -> None:
         expect(self._edit_item).to_be_hidden()
 
-    @step("Нажать «Редактировать» в меню комментария")
+    @step('Нажать на пункт меню "Редактировать"')
     def click_edit_item_in_menu(self) -> None:
         """Открывает редактор комментария и ждёт, пока поле появится и заполнится текущим текстом"""
         self._edit_item.click()
         expect(self._input).to_be_visible()
         expect(self._input).not_to_have_value("")
 
-    @step("Нажать «Удалить» в меню комментария (подтверждение: {confirm})")
+    @step('Нажать на пункт меню "Удалить" (подтверждение: {confirm})')
     def click_delete_item_in_menu(self, *, confirm: bool) -> None:
         """Нажимает "Удалить" и отвечает на нативный confirm: confirm=True - принять, False - отклонить
 
@@ -53,11 +53,11 @@ class CommentForm:
         self.comment.page.once("dialog", action)
         self._delete_item.click()
 
-    @step("Проверить, что пункт «Удалить» скрыт")
+    @step('Проверить, что пункт "Удалить" скрыт')
     def delete_should_be_hidden(self) -> None:
         expect(self._delete_item).to_be_hidden()
 
-    @step("Ввести текст комментария: {new_comment}")
+    @step('Ввести в поле "Комментарий" значение: "{new_comment}"')
     def fill_input(self, new_comment: str) -> None:
         self._input.fill(new_comment)
 
@@ -65,14 +65,14 @@ class CommentForm:
     def click_edit_save_button(self) -> None:
         self._edit_save_button.click()
 
-    @step("Нажать «Комментировать»")
+    @step('Нажать на кнопку "Комментировать"')
     def click_comment_button(self) -> None:
         self._comment_button.click()
 
-    @step("Проверить, что комментарий отображается")
+    @step("Проверить отображение комментария")
     def check_visible(self) -> None:
         expect(self.comment).to_be_visible()
 
-    @step("Проверить, что комментарий не отображается")
+    @step("Проверить отсутствие комментария")
     def check_absence(self) -> None:
         expect(self.comment).not_to_be_visible()
