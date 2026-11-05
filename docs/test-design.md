@@ -36,12 +36,12 @@
 | Auth | 27               | 27 | 100%     |
 | Repository | 30               | 30 | 100%     |
 | Issues | 25               | 25 | 100%     |
-| Pull Requests | 1                | 16 | 6%       |
-| **Итого** | **83**           | **98** | **85%**  |
+| Pull Requests | 2                | 16 | 13%      |
+| **Итого** | **84**           | **98** | **86%**  |
 
 | Приоритет | Автоматизировано | Всего | Покрытие |
 |-----------|------------------|-------|----------|
-| P0 | 6                | 7 | 86%      |
+| P0 | 7                | 7 | 100%     |
 | P1 | 24               | 32 | 75%      |
 | P2 | 29               | 34 | 85%      |
 | P3 | 24               | 25 | 96%      |
@@ -184,12 +184,12 @@
 
 ## Pull Requests
 
-Создание PR, способы merge, ревью, конфликты, закрытие и переоткрытие, права пользователей. Кейсов: 16, автоматизировано: 1.
+Создание PR, способы merge, ревью, конфликты, закрытие и переоткрытие, права пользователей. Кейсов: 16, автоматизировано: 2.
 
 | ID | P | Тип | Название | Предусловия | Шаги | Ожидаемый результат | Авто |
 |----|---|-----|----------|-------------|------|---------------------|------|
 | TC-P-001 | P0 | smoke | **Создание PR из ветки с изменениями** | В репо есть ветка `feature-1` с коммитом, отличным от `main` | 1. New Pull Request, base=main, compare=feature-1<br>2. Create | PR создан, статус Open, показан diff | да |
-| TC-P-002 | P0 | smoke | **Обычный merge PR без конфликтов** | PR открыт, без конфликтов | 1. Открыть PR<br>2. Merge Pull Request | PR получает статус Merged, коммит появляется в base-ветке | нет |
+| TC-P-002 | P0 | smoke | **Обычный merge PR без конфликтов** | PR открыт, без конфликтов | 1. Открыть PR<br>2. Merge Pull Request | PR получает статус Merged, коммит появляется в base-ветке | да |
 | TC-P-010 | P1 | positive | **Squash merge** | PR открыт, без конфликтов, squash разрешён в настройках | 1. Merge → Squash and merge | PR смерджен одним коммитом в base-ветке | нет |
 | TC-P-011 | P1 | positive | **Rebase merge** | PR открыт, без конфликтов, rebase разрешён в настройках | 1. Merge → Rebase and merge | PR смерджен через rebase, коммиты добавлены в base-ветку без merge-коммита | нет |
 | TC-P-012 | P1 | positive | **Ревью PR: approve** | PR открыт, у второго юзера есть права на review | 1. Второй юзер → Review → Approve | PR помечен как approved этим ревьюером | нет |
@@ -294,3 +294,4 @@
 | TC-I-042 | `tests/test_issues.py::test_trying_update_and_delete_comment_by_other_user` |
 | TC-I-043 | `tests/test_issues.py::test_adding_timeline_comment_in_repo_by_other_user` |
 | TC-P-001 | `tests/test_pull_requests.py::test_create_pr_from_branch_with_changes` |
+| TC-P-002 | `tests/test_pull_requests.py::test_merge_pr_without_conflicts` |
