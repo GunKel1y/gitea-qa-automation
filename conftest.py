@@ -20,6 +20,7 @@ from helpers.api_client import (
     create_milestone,
     create_organization,
     create_organization_by_user,
+    create_pull_request,
     create_repo,
     create_team,
     create_timeline_comment,
@@ -217,8 +218,9 @@ def created_initialized_public_repo(test_user):
     repo_name = unique_name(prefix="repo")
     created_repo = create_repo(owner=test_user["login"], repo_name=repo_name, private=False, auto_init=True)
     assert created_repo.ok, f"Ошибка создания публичного репозитория: {created_repo.status_code} {created_repo.text}"
+    created_repo_json = created_repo.json()
 
-    yield {"repo_name": repo_name}
+    yield {"repo_name": repo_name, "default_branch": created_repo_json["default_branch"]}
 
     delete_repo(owner=test_user["login"], repo_name=repo_name)
 
@@ -403,8 +405,47 @@ def created_branch_with_commit(created_initialized_public_repo, test_user):
     assert created_file.ok, (
         f"Ошибка при создании файла в репозитории в ветке {new_branch}: {created_file.status_code} {created_file.text}"
     )
+    created_file_json = created_file.json()
 
-    return {"branch_name": new_branch, "file_name": file_name, "content": content}
+    return {
+        "branch_name": new_branch,
+        "commit_sha": created_file_json["commit"]["sha"],
+        "commit_message": created_file_json["commit"]["message"],
+        "file_name": file_name,
+        "content": content,
+    }
+
+
+@pytest.fixture()
+def created_pull_request(created_initialized_public_repo, created_branch_with_commit, test_user):
+    """
+    Создает запрос на слияние ветки с коммитом в дефолтную ветку
+
+    Возвращает номер, заголовок, имена веток и sha коммита
+    """
+    owner_repo = test_user["login"]
+    repo_name = created_initialized_public_repo["repo_name"]
+    base_branch = created_initialized_public_repo["default_branch"]
+    head_branch = created_branch_with_commit["branch_name"]
+    pr_title = unique_name(prefix="pr_title")
+
+    created_pr = create_pull_request(
+        owner_repo=owner_repo,
+        repo_name=repo_name,
+        title=pr_title,
+        base=base_branch,
+        head=head_branch,
+    )
+    assert created_pr.ok, f"Ошибка при создании запроса на слияние: {created_pr.status_code} {created_pr.text}"
+    created_pr_json = created_pr.json()
+
+    return {
+        "id": created_pr_json["number"],
+        "title": pr_title,
+        "base_branch": base_branch,
+        "head_branch": head_branch,
+        "head_sha": created_branch_with_commit["commit_sha"],
+    }
 
 
 # ===========================================#

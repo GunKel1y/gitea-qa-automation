@@ -6,6 +6,7 @@ from pages.repo.pull_requests.compare_changes_page import CompareChangesPage
 from pages.repo.pull_requests.pull_request_files_page import PullRequestFilesPage
 from pages.repo.pull_requests.pull_request_page import PullRequestPage
 from pages.repo.pull_requests.repo_pull_requests_page import RepoPullRequestsPage
+from pages.repo.repo_commits_branch_page import RepoCommitsBranchPage
 
 
 pytestmark = allure.epic("Запросы на слияние")
@@ -18,7 +19,7 @@ BASE_BRANCH = "main"
 @allure.severity(allure.severity_level.BLOCKER)
 @pytest.mark.p0
 def test_create_pr_from_branch_with_changes(
-    authenticated_user_page: Page, created_initialized_public_repo, created_branch_with_commit, test_user
+    authenticated_user_page: Page, test_user, created_initialized_public_repo, created_branch_with_commit
 ):
     repo_prs_page = RepoPullRequestsPage(authenticated_user_page)
     compare_changes_page = CompareChangesPage(authenticated_user_page)
@@ -63,3 +64,41 @@ def test_create_pr_from_branch_with_changes(
     with allure.step('Открыть вкладку "Изменённые файлы" и проверить изменения'):
         pr_page.open_diff_files_tab()
         pr_files_page.pr_diff.check_diff_code_value(code_diff)
+
+
+@allure.testcase("TC-P-002")
+@allure.title("Обычное слияние PR без конфликтов")
+@allure.severity(allure.severity_level.BLOCKER)
+@pytest.mark.p0
+def test_merge_pr_without_conflicts(
+    authenticated_user_page: Page, test_user, created_initialized_public_repo, created_pull_request
+):
+    pr_page = PullRequestPage(authenticated_user_page)
+    repo_commits_branch_list = RepoCommitsBranchPage(authenticated_user_page)
+
+    owner_repo = test_user["login"]
+    repo_name = created_initialized_public_repo["repo_name"]
+    base_branch = created_pull_request["base_branch"]
+    pr_index = created_pull_request["id"]
+    pr_title = created_pull_request["title"]
+    head_commit = created_pull_request["head_sha"]
+
+    pr_page.open(owner_repo=owner_repo, repo_name=repo_name, pr_index=pr_index)
+    pr_page.click_create_commit_button()
+
+    with allure.step("Проверить значения по-умолчанию у полей коммита"):
+        pr_page.check_pr_merge_commit_title_value(
+            pr_title=pr_title,
+            pr_index="#" + str(pr_index),
+            head_branch=created_pull_request["head_branch"],
+            base_branch=base_branch,
+        )
+        pr_page.check_pr_merge_commit_description_value(owner_repo=owner_repo, repo_name=repo_name, pr_index=pr_index)
+
+    pr_page.click_pr_merge_commit_accept_button()
+
+    pr_page.check_pr_status_label_text("Слито")
+
+    with allure.step("Проверить изменения в репозитории после слияния"):
+        repo_commits_branch_list.open(owner_repo=owner_repo, repo_name=repo_name, branch=base_branch)
+        repo_commits_branch_list.check_sha_badge_in_branch_commits_list(head_commit)

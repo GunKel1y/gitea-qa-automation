@@ -149,6 +149,20 @@ def delete_collaborator_for_repo(*, owner_repo: str, repo_name: str, collaborato
     )
 
 
+# =============== Запросы на слияние ===============#
+
+
+@step('Создать запрос на слияние "{title}" в репозитории "{owner_repo}/{repo_name}"')
+def create_pull_request(*, owner_repo: str, repo_name: str, title: str, head: str, base: str) -> req.Response:
+    """Создает запрос на слияние {title} в репозитории. Base: {base}, head: {head}"""
+    return req.post(
+        f"{BASE_URL_API}/repos/{owner_repo}/{repo_name}/pulls",
+        headers=_headers(),
+        json={"title": title, "head": head, "base": base},
+        timeout=API_TIMEOUT,
+    )
+
+
 # =============== Ветки ===============#
 
 
